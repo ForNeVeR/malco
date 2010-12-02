@@ -1,0 +1,7 @@
+NSP "malco"
+CALL "how_to_create_explosives"
+POPSRC
+LOADBX ", "
+CALL "join"
+CALL "print"
+EXIT

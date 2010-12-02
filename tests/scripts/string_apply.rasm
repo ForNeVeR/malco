@@ -1,0 +1,27 @@
+JMP "start"
+
+FUNC static "func" 1 1
+  POPSRC
+  CALL "reverse"
+  RETURN
+END
+
+LABEL "start"
+
+LOADAX 4
+PUSHSRC
+LOADAX 9
+PUSHSRC
+NEW "range"
+PUSHSRC
+
+LOADAX CONST "func"
+PUSHSRC
+
+LOADAX "the quick brown fox jumped over the lazy dog"
+
+CALL "apply"
+
+CALL "print"
+
+EXIT

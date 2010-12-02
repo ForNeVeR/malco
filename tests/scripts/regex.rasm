@@ -1,0 +1,13 @@
+LOADBX "/(?<=\\b)[a-z]{3,5}(?=\\b)/"
+NEW "regex"
+PUSHSRC
+
+LOADAX "slow"
+PUSHSRC
+
+LOADAX "the quick brown fox jumped over the lazy dog"
+
+CALL "replace"
+CALL "print"
+
+EXIT

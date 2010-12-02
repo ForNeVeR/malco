@@ -1,0 +1,33 @@
+JMP "start"
+
+CLASS "myclass"
+
+  VAR private "a"
+  
+  FUNC "set" 1 1
+    LOADAX SELF
+    LOADAX PROPERTY "a"
+    PUSHDST
+    ASSIGN
+    RETURN
+  END
+  
+  FUNC "get" 0 0
+    LOADAX SELF
+    LOADAX PROPERTY "a"
+    PUSHSRC
+    RETURN
+  END
+  
+END
+
+LABEL "start"
+
+NEW "myclass"
+LOADBX 1337
+CALL "set"
+
+CALL "get"
+CALL "print"
+
+EXIT

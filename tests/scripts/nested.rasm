@@ -1,0 +1,26 @@
+JMP "start"
+
+CLASS "core"
+
+  CLASS "sub"
+  
+    CLASS "caeks"
+  
+      FUNC static "testy" 0 0
+        LOADBX "test!"
+        CALL "print"
+        RETURN
+      END
+      
+    END
+      
+  END
+  
+END
+
+LABEL "start"
+
+NSP "core"
+NSP "sub"
+NSP "caeks"
+CALL "testy"

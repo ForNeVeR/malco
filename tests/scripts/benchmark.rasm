@@ -1,0 +1,27 @@
+JMP "start"
+
+FUNC static "iter" 1 1
+  POPSRC
+  LOADBX 2
+  MOD
+  RETURN
+END
+
+LABEL "start"
+
+LOADAX 1
+PUSHSRC
+LOADAX 10000
+PUSHSRC
+NEW "range"
+CALL "to_a"
+POPSRC
+
+LOADBX CONST "iter"
+CALL "select"
+POPSRC
+
+CALL "inspect"
+CALL "print"
+
+EXIT

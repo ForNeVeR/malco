@@ -1,0 +1,848 @@
+==============================
+=== Malco's inner workings ===
+==============================
+
+1. Overall description
+
+The basic principle behind Malco's Interpreter (codenamed Radix VM) is the
+extensive usage of tables. Radix VM processes compiled Malco scripts. They
+are present in the following form:
+
+  * RASM commands listing
+  * Data tables
+
+
+
+2. RASM Language
+
+2.1 Registers
+
+RVM works with both registers and stacks. It has the following built-in
+facilities:
+
+2.1.1 Primary register
+
+The primary register (called AX) is used as an intermediate place for most
+of the operations. Loading and saving data, invoking methods, pushing and
+popping with accumulators and stacks is usually performed with the object
+currently stored in AX. There are, however, two exceptions: LOADBX and SAVEBX,
+which actually push data into SRC[0] (which is logically supposed to be the
+second register, BX, thus the command name) without modifying AX.
+
+2.1.3 Accumulators
+
+RVM has two accumulators: SRC and DST. Together they implement a multiple
+assignment mechanism, which is used in, evidently, multiple assignment and
+function invokation. The SRC register stores actual values, and DST contains
+variable pointers in the corresponding order.
+
+2.1.4 Stacks
+
+RVM has several stacks made for different purposes:
+
+  * US       // Multipurpose user stack
+  * CS       // Call stack (stores return addresses)
+  * SS       // Safe zone addresses stack (try / catch)
+
+
+2.2 Commands
+
+Please note: RVM does little to no type checking when executing RASM commands.
+Malco compiler ensures command integrity, but if you attempt to code in RASM
+directly, that will be your problem is RVM hangs up or crashes!
+
+2.2.1 Command format
+
+The commands in RASM are 12-byte sequences. The following structure (C++)
+shows what they consist of:
+
+struct command
+{
+  unsigned char cmd;
+  unsigned char modifier;
+  union
+  {
+    unsigned long addr;
+    double val;
+  } param;
+}
+
+Parameter can be either an address of a variable in the specified table,
+or an integer / floating point value.
+
+Modifier specifies, what exactly to treat the parameter as: value, string
+from global string table, local or class variable, etc.
+
+
+2.2.2 Data transfer commands
+
+Data transfer commands are the most commonly used ones. No program can run
+without using them at all.
+
+  * LOADAX  mode  addr    // load object @ addr to AX
+  * LOADBX  mode  addr    // load object @ addr to BX
+  * SAVEAX  mode  addr    // save object from AX to addr
+  * SAVEBX  mode  addr    // save object from BX to addr
+  * LINKAX                // create a link to AX
+  * XCHG                  // exchange AX & BX
+  * ASSIGN  count         // process 'count' items from SRC and save them to DST
+  * UNSPLASSIGN  count    // unsplat any number of values into an array and save
+                             then to a single DST variable, leaving 'count' items
+                             in SRC (for further ASSIGN)
+
+
+2.2.3 Basic operations commands
+
+This list of commands performs basic operations on the variables. They all
+affect the object in AX by object in BX and store the pointer to result in BX.
+
+  * ADD     // BX = AX + BX
+  * SUB     // BX = AX - BX
+  * MUL     // BX = AX * BX
+  * DIV     // BX = AX / BX
+  * MOD     // BX = AX % BX
+  * POW     // BX = AX ** BX
+  * SHL     // BX = AX << BX
+  * SHR     // BX = AX >> BX
+  * AND     // BX = AX && BX
+  * OR      // BX = AX || BX
+  * XOR     // BX = AX ^^ BX
+  * BAND    // BX = AX & BX
+  * BOR     // BX = AX | BX
+  * BXOR    // BX = AX ^ BX
+  * INDEX   // SRC << AX[BX]
+  
+If the modifier specifies parameter as value, it will be used instead of
+BX object.
+
+The &&, || and ?: operators are short-circuit. It means they don't evaluate the
+right operand if the result is already clear from the left operand, therefore they
+are expressed in a serie of JTRUE/JFALSE commands rather than actual operators and
+cannot be overloaded. Read 2.2.5 about jump-related commands.
+
+
+2.2.4 Unary operations
+
+These commands affect only AX.
+
+  * INC   // AX++
+  * DEC   // AX--
+  * NEG   // BX = !AX
+
+
+2.2.5 Comparation and jumps
+
+These commands power the conditions and loops.
+
+  * EQ            // BX = AX == BX
+  * EQ_STRICT     // BX = AX === BX
+  * REL           // BX = AX ~= BX
+  * LESS          // BX = AX < BX
+  * LESS_EQ       // BX = AX <= BX
+  * GREATER       // BX = AX > BX
+  * GREATER_EQ    // BX = AX >= BX
+  * JTRUE   addr  // CP = addr if AX is true
+  * JFALSE  addr  // CP = addr if AX is false
+  * JMP     addr  // CP = addr
+
+
+Note that jump commands of this section also may recieve label-name (without
+quotes) as the argument. See section 2.4. This behaviour is part of RASM
+pseudo-code features, so in binary file this command will be converted into
+"GOTO addr".
+
+
+2.2.6 Stack commands
+
+These commands work with different kinds of stacks. They only accept values
+from AX register.
+
+  * PUSHUS        // push AX to user stack
+  * POPUS         // pop from user stack to AX
+  * PUSHSRC       // push AX to SRC accumulator
+  * POPSRC        // pop from SRC accumulator to AX
+  * PUSHDST       // push AX to DST
+  * POPDST        // pop from DST to AX
+  * SPLAT         // splat AX into SRC
+  * UNSPLAT       // unsplat from SRC to AX
+  * MOVESRC  num  // move num elements from SRÑ to DST
+  * MOVEDST  num  // move num elements from DST to SRC
+  * CLRSRC        // empty SRC 
+  * CLRDST        // empty DST
+
+
+2.2.7 Object manipulation
+
+The following commands perform structure-oriented or object-oriented actions.
+
+  * NEW         addr  // create object of BX type into AX
+  * CALL  mode  addr  // call method by name, statically if AX == null,
+                         dynamically otherwise
+  * RETURN            // return from function
+  * NSP         addr  // select a namespace for the next action
+
+
+2.2.8 Interpreter behavious modification
+
+These commands modify interpreter's behaviour:
+
+  * INCLUDE  mode  addr  // load and run file with name in AX
+  * REQUIRE  mode  addr  // INCLUDE or die
+  * GC       mode  addr  // verbosely collect garbage @ addr (for later usage)
+  * SETPTY         addr  // set various runtime properties (for later usage)
+  * SETFILE        addr  // tells interpreter current file for debug
+  * SETLINE        num   // tells interpreter current line
+  * THROW                // throw AX as exception string/object
+  * TRY            addr  // start safe section (addr points to catch block)
+  * TRIED                // end safe section
+  * EXIT                 // abruptly stop execution
+  
+  
+2.3. Modifiers
+
+Modifiers are applicable to many commands, allowing their behaviour to be
+tweaked to best satisfy the immediate needs. For example, the LOADAX command
+can either create a primitive object, load a variable or access an object's
+member value depending on the modifier. The list of modifiers is as follows:
+
+  * DEFAULT             // declares default behaviour of the command (if any)
+  * NULL                // register = NULL
+  * UNDEF               // register = undef
+  * TRUE                // register = true
+  * FALSE               // register = false
+  * INT                 // register = new int(command.mParam.addr)
+  * FLOAT               // register = new float(command.mParam.addr)
+  * STRING              // register = stringtable[command.mParam.addr]
+  * VAR                 // register = scope.variables[stringtable[command.mParam.addr]]
+  * PROPERTY            // register = register.members[stringtable[command.mParam.addr]]
+  * THIS                // register = $@
+  * NAMES               // passes arguments to function by names (read 4.1)
+
+
+2.4 Pseudo commands
+
+There are some pseudo commands that are only works in RASM sources.
+These commands implemented to do things that are impossible without
+them at low-level: table management and slightly coding improvements
+(such as LABEL command). They DO NOT count as real RASM commands and are
+more like preprocessor directives:
+
+  * LABEL         label-name   // makes a label, accessible from GOTO commands
+  * FUNC    mod   name min max // starts function or method definition
+  * CLASS   mod   classname parentname // starts class or namespace definition
+  * VAR     mod   var_name     // class field declaration
+  * END                        // ends class or namespace definition
+
+'mod' here is a modifier that can be one of these:
+
+  final ~ stub                        for classes
+  final | static | (private ~ public) for fields and methods
+  
+
+
+
+2.5 Code listing
+
+All generated code is stored in a global list. As RASM is a low-level
+language designed for fast execution, it contains only actual instructions
+and no sections or any other logical separation.
+
+Function code is stored alongside global code. However it's wrapped by JMP
+commands so that command flow cannot reach it occasionally without a direct
+jump by either CALL command or JMP (unlikely).
+
+Included files' code is also appended, as well as code found in eval()
+statements.
+
+Jump commands use lines in this global list as their parameters. As
+the table is global and unique, those jumps are always global, however in
+each logical namespace variable ids are local, so occasional jumps are
+possibly a context-unsafe operation.
+
+Because Malco's compiler is most likely to be rather slow, everything is to
+be cached if possible. Generated bytecode is saved into a file so that it can
+be run immediately without compilation if the cache is actual. The cache is
+automatically flushed if the source file is newer.
+
+The commands SETFILE and SETLINE are added to enable debugging. They are
+inserted into the RASM code by the compiler when each line and file is
+processed. When they are called, the interpreter gets to know which line in
+the original file is being executed so that it could produce sensible error
+and warning messages. SETLINE command is also unique because it uses it's
+'address' field as a casual integer. Storing all lines numbers in constant
+tables would be a total waste of memory, so instead it stores the data right
+in the command itself.
+
+
+
+3. Data tables
+
+Malco stores most if it's data in tables. There are four types of tables:
+constant, variable, object and definition ones. Each serve a specific
+purpose. Schematically it can be depicted in the following chart:
+
+
+  |-------------------------|                
+  |  global namespace       |                
+  |-------------------------|
+  |                         |
+  | |----------| |--------| |
+  | | variable | | object | |
+  | |----------| |--------| |
+  | | ...      | | ...    | |                |----------|
+  | |----------| |--------| |                |          V
+  |                         |                | |---------------|
+  | |---------------------| |                | | sub namespace |
+  | | definition          | |                | |---------------|
+  | |---------------------| |                | | ...           |---->...
+  | | ...class...         |-----> ...        | |---------------|
+  | | ...function         |-----------> ...  |
+  | | ...namespace...     |------------------|
+  | |---------------------| |
+  |                         |
+  |-------------------------|
+
+3.1 Constant strings
+
+As Malco commands are all equally sized, whileas strings can be of indefinite
+length, they should be stored in a global constant string table. When operating
+with strings, the command parameter defines the line in this table.
+
+However, for casual integers and floats things are far easier, as they can 
+fit into the command parameter directly. The following code is easy:
+
+$a = 1336 + 1;
+
+Whileas the following one is not:
+
+$a = "hello" << "word";
+
+As well, in the 'global namespace' table an entry for $a is also created.
+For more info on variables allocation, read #3.2.
+
+The generated RASM code for the first case will be as follows:
+
+LOADAX  INT  1336  // select 1336 into AX
+ADD     INT  1     // RES = AX + 1
+RESAX              // AX = RES
+SAVEAX  VAR  0     // save AX into variable #1 ($a)
+
+For the second case, the following table is used:
+
+  |----|---------|
+  | id | string  |
+  |----|---------|
+  | 0  | "hello" |
+  | 1  | "world" |
+  |----|---------|
+
+And the code will be as follows:
+
+LOADAX  STRING  0     // load string #1
+LOADBX  STRING  1     // load string #2
+SHL                   // call shift-left operator (redefined for strings as concat)
+RESAX                 // AX = RES
+SAVEAX  VAR     0     // save AX into variable #1 ($a)
+
+By default, two equal constant strings will each have a unique constant string
+id - this is done for speeding up the compilation, because no time will be
+spent searching for equal strings. If optimisation is enabled, strings will
+be stored just once in the table.
+
+
+3.2 Variable tables
+
+Variable tables contain records for local variables that exist in a scope. They
+are arrays of rc_var objects, which store miscelaneous variable-related info:
+lexical name, access restrictions and pointer to the actual object. Local variables
+are accessed by their ID in the array.
+
+Variable tables are constructed by either RASM or Malco Compiler during compile
+time and are not subject to change during runtime. The only thing that changes
+is the pointer to objects.
+
+Variable tables are also used for garbage collection: when a scope is being exited,
+all local variables are being checked for external links, and if none are found,
+they are safely removed from existence.
+
+
+3.3 Class tree
+
+Another distinctive data representation in Malco is the class tree. The root is
+the global scope, and each leaf \ subleaf is a class. Each class contains
+4 tables:
+
+  * Methods table
+  * Static variables table
+  * Dynamic variable names table
+  * Subclass table
+  
+Currently, these tables operate in read-only mode during execution, and are
+constructed by the compiler, however in later versions of Malco it will probably
+be possible to, for example, register a lambda as a class method.
+
+There's no such thing as 'namespace' in Malco, as any class is actually a namespace.
+Just mark your class as static and voila, it's a real namespace!
+ 
+
+
+4. Method objects
+
+A method object concept is similar to C's function pointers, although it is
+enhanced by Malco's metaprogramming features, such as retrieving number of
+arguments for a method in runtime. Method objects are often used as callback
+functions for functional style programming, such as array::select().
+
+
+4.1 Method invocation
+
+When a method is invoked, the parameters should have already been put into
+the SRC register by PUSHSRC / SPLAT command in RASM if they are needed. Function
+body starts with a serie of (UNSPL)ASSIGN commands that dump retrieved parameters
+into the method's local variable table.
+
+Method parameters can be transfered in two ways:
+
+ * By order: fx(1, 2, 3);
+ * By name: fx(a: 1, c: 3, b: 2);
+
+The first case is simple: arguments are pushed / splatted into SRC, and then
+the method is invoked.
+
+The second version is a bit different: values are added to an array with keys
+being parameter names, the array is pushed as the only argument to SRC, and then
+the method is invoked by CALL with NAMES modifier. This makes RVM detect method's
+parameter list and unpack the array's values in proper order. This makes sure
+one and the same method might be called either way.
+
+
+4.2 Return from method
+
+The last instructions in a method body are just the same as before method's
+invocation: in fact, these operations are equal, but the sides that give and
+get values are switched. The method body pushes or splats values into SRC,
+and then executes the RETURN command. The context is being restored from CS,
+and assignment instructions follow.
+
+
+
+
+5. Links
+
+Links are a special concept in Malco. They work similarly to pointers in such
+programming languages as C. They are not, however, adresses in memory, so no
+pointer arithmetics whatsoever is possible.
+
+One thing should be clarified from the very beginning. You might have expected
+links to work this way:
+
+  |------|       |----------|
+  | link |------>| variable |
+  |------|       |----------|
+                      |
+                      |
+                      V
+                 |----------|
+                 | object   |
+                 |----------|
+
+If so, you are wrong. Links get the address of the object rather than
+pointing to the variable itself:
+
+  |------|       |----------|
+  | link |       | variable |
+  |------|       |----------|
+      |               |
+      |---|    |------|
+          V    V
+       |----------|
+       | object   |
+       |----------|
+
+Links allow having several names for one and the same variable, or using the
+variable in different namespaces. The thing is, unlike many other languages,
+Malco creates copies of objects on assignment. Consider the following code:
+
+$a = 1;
+$b = $a;
+$a = 2;
+
+and the following:
+
+$a = new SomeObject();
+$a.SomeProperty = 1;
+$b = $a;
+$a.SomeProperty = 2;
+
+Malco doesn't distinguish between basic and complex types. This means that in
+both examples, $b will remain unmodified. This might be a bit strange if you
+have experience in other programming languages, but it is the most obvious
+way that comes to mind.
+
+To create a link instead of an object's copy, an & sign should prepend the
+variable at the right side. It's not possible to create links from constants
+because that doesn't make sense. The only special case is &undef, which works
+as a link remover:
+
+$a = 1;
+$b = &$a;
+$b = 2; // $a changes
+$b = &undef;
+$b = 3; // $a does not change
+
+Function are allowed to return links. Moreover, if the object created in the
+function is large, it's most likely you should rather use a link.
+
+5.1 Links and undefs
+
+Usually, when a variable is assigned an undef value, it's object is removed
+from the object table. However, this would not be done if an object had
+several links.
+
+$a = 1;
+$b = &$a;
+$a = undef;
+
+This way, a proper 'mcUndef' is to be stored in the object table, and $b will
+be a 'link to undef'. This is NOT like null pointer in C++, but rather a
+pointer to an integer containing 0 as it's value, therefore you can set it
+from any of the other links to whatever value.
+
+
+
+6. Garbage collection
+
+Garbage collection in RVM is based on generation garbage collection method.
+Basically it states that newly created object are most likely to be temporary.
+So, there can be two cases when garbage collector is invoked: generation
+space has been exceeded or when the execution flow leaves a visibility area.
+Those modes are called light and normal modes respectively. There is one
+more mode to be implemented later - the verbose mode.
+
+6.1 Light garbage collection
+
+RVM has three generations of variables. When a variable is just created, it
+belongs to generation 1, meaning it is still a virgin in terms of garbage
+collection. Once generation 1 grows up to some critical value (yet to be
+defined), garbage collection starts. It does the following actions:
+
+  * Check all values in generation 1
+  * Remove unlinked (if any)
+  * Determine if adding gen 1 to gen 2 will overflow the latter
+    * If so, perform pass on gen 2
+    * Mark gen 2 objects as gen 3
+  * Mark gen 1 object as gen 2
+
+Object that had survived 2 passes are considered long-term ones and are not
+checked anymore until the visibility area is left.
+
+
+6.2 Normal garbage collection
+
+Normal garbage collection occurs when a visibility area is being left. It
+attempts to find local values and remove them to free the memory.
+
+
+6.3 Verbose mode
+
+This garbage collection mode is the result of optimizer working at compile
+time. If the optimizer finds an object being no longer possibly used, it can
+put a GC command to remove it instantly from the data table. However, such
+check can be resource- and time-consuming itself, so it is by default turned
+off for eval().
+
+
+
+7. Coding standard
+
+All RASM code placed in .rasm file. There are some improvements
+compared to pure RVM bytecode.
+
+7.1 Constants
+
+All string constants find in file are placed into string constant table.
+When you use construction like 
+
+LOADAX "aaa"
+
+it'll be translated into
+
+LOADAX STR 0
+
+Variable names starting at '$' character are also replaced.
+
+
+7.2 Pseudo commands
+
+There is a set of pseudocommands that are never translated into RVM
+code. See section 2.3 of this manual.
+
+
+7.3 Comments
+
+One-line comments started from ';' symbol can be placed anywhere in RASM
+source file. Examples:
+
+; comment line
+    ; another comment line
+ LOADAX 100500;     this is also comment
+
+
+
+8. Examples of complex code translated manually
+
+The best way to prove that any Malco code can be translated to RASM is
+to try to translate tricky code yourself. First goes the Malco code,
+then the RASM code (with empty lines delimiting Malco's commands).
+
+8.1 Basic assignment
+
+$a = 1;
+
+-------
+
+LOADAX 1
+SAVEAX $a
+
+
+8.2 Array assignment
+
+$a = [1, 2, 3];
+
+-------
+
+LOADAX 1
+PUSHSRC
+LOADAX 2
+PUSHSRC
+LOADAX 3
+PUSHSRC
+UNSPLAT        // unsplats IN into an array and put a pointer to AX
+SAVEAX $a
+
+
+8.3 Condition
+
+if($a == 1) print("test");
+
+-------
+
+LOADAX  $a         // 1
+LOADBX  1          // 2
+EQ                 // 3
+JFALSE  7          // 4
+
+PUSHSRC "test"     // 5
+LOADAX  NULL       // 6
+CALL    "print"    // 7
+                   // 8
+
+
+8.4 Insane nested unsplatting
+
+$a = [0, 1];
+$b = ["a", "b", "c"];
+*$c[1, 2] = *$b[*$a];
+
+-------
+
+LOADAX    0
+PUSHSRC          // generate $a
+LOADAX    1
+PUSHSRC
+UNSPLAT
+SAVEAX    $a
+
+LOADAX    "a"    // generate $b
+PUSHSRC
+LOADAX    "b"
+PUSHSRC
+LOADAX    "c"
+PUSHSRC
+UNSPLAT
+SAVEAX     $b
+
+LOADAX     $a    // load $a
+SPLAT            // splat $a into SRC
+LOADAX     $b    // load $b
+INDEX            // index $b with $a (result in OUT)
+UNSPLAT          // AX = pointer to array of results
+PUSHUS           // push pointer to user stack
+LOADAX     1     // define left index values
+PUSHSRC
+LOADAX     2
+PUSHSRC
+LOADAX     $c    // select $c
+INDEX            // index $c with [1, 2], result in SRC
+CLRDST
+MOVESRC          // move all items from SRC to DST
+POPUS            // pop pointer from user stack
+SPLAT            // splat array of results into IN
+ASSIGN
+
+
+8.5 On-the-fly object creation and chaining
+
+$a = new MyObject("lol", 1).SomeMethod().data;
+
+-------
+
+LOADAX   "lol"
+PUSHSRC
+LOADAX   1
+PUSHSRC
+NEW      "MyObject"
+CALL     "SomeMethod"
+POPSRC                       // get returned object from OUT to AX
+PUSHUS                       // push AX into US not to lose the object when getting member
+LOADAX   PROPERTY  "data"    // request AX's member named DATA into AX
+SAVEAX   $a
+POPUS                        // object is not collected if it's members have links
+
+
+8.6 Subarray at leftside
+
+$a[1]['string'] = 2;
+
+-------
+
+LOADAX     1            // processing $a[1]
+PUSHIN
+LOADAX     $a
+INDEX                   // notice INDEX on leftside (we are just reading)
+POPOUT                  // get newly created item
+PUSHUS                  // temporarily save it in user stack
+LOADAX     2            // first goes assignment value
+PUSHIN
+LOADAX     "string"     // then goes index and all other
+PUSHIN
+POPUS                   // get item back to AX
+LINDEX                  // lindex (we have []=, it's a different op from [])
+
+
+8.7 Nested function call
+
+$a = fx1( fx2(1, 2), fx3(3, 4) );
+
+The tricky part is that we do not know how many values functions return.
+
+-------
+       
+LOADAX      3
+PUSHIN
+LOADAX      4
+PUSHIN
+LOADBX      "fx3"
+CALLF
+UNSPLATOUT           // pack OUT into a temporary array
+PUSHUS               // store it in user stack
+
+LOADAX      1
+PUSHIN
+LOADAX      2
+PUSHIN
+LOADBX      "fx2"
+CALLF
+UNSPLATOUT
+PUSHUS
+
+POPUS                // pop fx2 params
+SPLATIN              // splat them
+POPUS                // pop fx3 params
+SPLATIN              // splat them too
+LOADBX      "fx1"
+CALLF
+
+PXCHG                // move OUT to IN (prepare for PASG)
+
+LOADAX      $a       // select $a
+LINK                 // get link to it
+RESAX                // move link back to AX
+PUSHOUT              // put link to OUT
+
+PASG                 // parallelly assign results to $a
+
+
+8.8 Namespaces
+
+$a = nsp1::nested::fx(nsp2::$var, 42);
+
+-------
+
+NSP         "nsp2"
+LOADAX      $var
+PUSHIN
+LOADAX      42
+PUSHIN
+
+LOADBX      "fx"
+NSP         "nsp1::nested"
+CALLF
+
+LOADAX      $a       // select $a
+PUSHOUT              // put link to OUT
+
+PASG                 // parallelly assign results to $a
+
+
+9. Exceptions
+
+Exceptions in Malco work like they do in many other languages. At compile
+time, blocks with try and catch operators are marked with TRY and TRIED
+commands. The TRY command puts it's address into exception stack.
+
+When an exception is thrown, RVM immediately checks that stack. If it is
+empty, program exits with an error message. Otherwise, control is transfered
+to where stack top points. If the code at that point fails to catch the
+exception, it checks the new stack top and so on until either the exception
+is closed or the stack gets empty.
+
+Exceptions are represented by mcException class. It has three fields:
+
+  * file:     file, where the exception arises
+  * line:     line, where the exception arises
+  * message:  object containing detailed information about the exception
+  
+Message is usually a string, but it can actually be any object, if the
+user states so. It will be converted to string using to_s() though, if
+the exception is not handled and is to be printed.
+
+
+
+10. Malco Extensions
+
+Malco allows extending itself via DLLs which are loaded at when RVM starts.
+The list of enabled modules it defined in RVM config file, although in later
+versions of Malco it should be possible to load such libraries at runtime
+with the use of a special function or keyword.
+
+Extensions are mostly used to define classes and methods, which are later
+used by Malco programs as any other built-in or user-defined classes and
+methods. As they contain native code, their efficiency is much bigger than
+that of Malco programs, so resource-intensive code should rather be implemen-
+ted in extension form.
+
+Extensions can be written in any language, but the official SDK will be
+released for C++. An extension can define the following functions:
+
+  * Startup function:   autocalled when extension loads
+  * End function:       autocalled when extension unloads
+  * User functions:     called when the need arises
+
+All functions should be defined as void, recieving only one parameter - a
+pointer to RVM Core object, and they can call any method from RVM Core API,
+which wrap any functionality: register classes, set values to variables,
+execute Malco code and so on.
+
+As well, it is possible to create native C++ objects of Malco's built in
+types to access their functionality. This can also increase the speed of
+the extension, because there is no need to modify variable tables or invoke
+garbage collection routines.
+
+
+
+11. Upcoming changes
+
+There also needs to be a way to connect current operation to it's place in
+the source for debugging purposes. A way to handle that with 'eval' will
+be the most tricky concept.

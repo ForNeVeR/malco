@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "malco", "malco.vcxproj", "{262460FF-7720-49AE-B3BD-BA23DA480E0F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (compile)|Win32 = Debug (compile)|Win32
+		Debug (run)|Win32 = Debug (run)|Win32
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Debug (compile)|Win32.ActiveCfg = Debug (compile)|Win32
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Debug (compile)|Win32.Build.0 = Debug (compile)|Win32
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Debug (run)|Win32.ActiveCfg = Debug (run)|Win32
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Debug (run)|Win32.Build.0 = Debug (run)|Win32
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Debug|Win32.Build.0 = Debug|Win32
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Release|Win32.ActiveCfg = Release|Win32
+		{262460FF-7720-49AE-B3BD-BA23DA480E0F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

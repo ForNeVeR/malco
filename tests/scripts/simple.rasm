@@ -1,0 +1,9 @@
+LOADBX "result: "
+CALL "print"
+
+LOADAX 1
+LOADBX 2
+ADD
+CALL "print"
+
+EXIT

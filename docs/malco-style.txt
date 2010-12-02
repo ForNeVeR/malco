@@ -1,0 +1,153 @@
+=============================
+===  Malco style document ===
+=============================
+
+= 1. Class names =
+
+As Malco consists of many classes, they're subdivided into three groups for
+clarity:
+
+  * 'ic' group: Stands for 'internal class'. They provide underlying logics
+                for Malco's built-in classes, such as int, float, array
+                and such.
+
+  * 'sc' group: Stands for 'service class'. These classes are general-purpose
+                classes that perform various global tasks, such as storing
+                data in a specific format or calculating something (like MD5).
+
+  * 'rc' group: Stands for 'Radix class'. They are parts of Radix VM and are
+                used for parsing, executing and other ways to mess with code.
+
+There's an extra group used across Malco manual, the 'mc' group. It doesn't
+actually exist in Malco's source code, but means 'malco class' and means a
+built-in class. They exist only in scripts that Malco executes and are
+implemented as C++ functions, pointers and tables.
+
+
+
+= 2. Folder structure =
+
+Malco's folder structure is as follows:
+
+  root
+  |
+  |-- docs
+  |
+  |-- source
+  |   |
+  |   |-- classes (ic_*, mc_*, rc_* classes)
+  |   |
+  |   |-- external (other classes)
+  |   |
+  |   `-- methods (mc_* method implementations)
+  |
+  `-- tests
+
+= 3. Code style =
+
+== 3.1. General code ==
+
+Code is written in K & R style:
+
+function()
+{
+  code...
+}
+
+Keywords as 'if', 'while', 'for' and function names are not separated from
+braces. Tab width is 2, and spaces are used instead of tabs.
+
+
+== 3.2. Built-in classes naming conventions ==
+
+Classes are named in the following manner:
+
+  group _ classname
+
+Where group is 'ic', 'sc', 'rc' or maybe some new group that pops up later.
+
+Class members are named in Camel Case, with a prefix:
+
+ * 'm' prefix: Stands for 'member'. Members with this prefix belong to the
+               class and are to be taken care of (for instance, deallocated
+               from memory in the destructor). Most of the members have
+               this prefix.
+
+ * 'p' prefix: Stands for 'pointer'. Members with this prefix belong to
+               another object and are used as references. They should
+               never (!) be deleted as the owner class will do it eventually.
+
+Functions are named in lowercase, using underscore as word delimiter. It is
+preferred to use short names as long as they're descriptive enough.
+
+Local variables are named similarly to functions. They can possibly be
+abbreviations, such as 'idx', 'buf', 'cpc' and such, as long as it doesn't
+cause ambiguity. Don't call variables with a single letter, no matter what!
+
+
+== 3.3 Method naming conventions ==
+
+Methods of 'mc' classes are named according to the following pattern:
+
+  class [ "_op" ] _ method [ "_do" ]
+
+The '_do' is an optional suffix indicating the method is a modifier method.
+In Malco it will be represented as an exclamation mark after the method name,
+for example:
+
+  string_replace_do()  ->  $str.replace!(...)
+  
+The '_op' prefix indicates that the function is an operator, thus it cannot be
+invoked explicitly, but is called stealthly by Radix when needed. There is a
+limited set of overloadable operators, thus class_op_* can only take method names
+from that list. Refer to malco.txt, paragraph 3.4.16 for a complete list.
+
+
+== 3.4. Comments ==
+
+Each file, class, method, member and function should be prefixed with a
+Doxygen-style comment. Required info is as follows:
+
+  * file:      @file, @author, short description, normal description.
+  * class:     @class, short description, normal description.
+  * method:    @param, @return, description.
+  * function:  -- // --
+  * member:    description in postfix form ( char mBuf; /**< Buffer */ )
+  
+  
+== 3.5. Platform-dependent naming ==
+
+Some classes are platform-dependent - for example, ic_dir. Such classes should
+have the following versions of their files:
+
+ * classname.h      - main file that includes one of the following:
+ * classname.w32.h  - windows-specific file
+ * classname.nix.h  - linux-specific file
+ * classname.mac.h  - mac-specific file
+ 
+Once Malco is supported on other platforms, related platform-specific files
+should also be provided.
+
+
+== 3.6. Special requirements ==
+
+All classes should be declared at the start of classes.h and defined later on.
+
+First go friend classes, then private members, then public ones.
+
+Fields go before methods.
+
+Several class methods might reside within one file (like sc_list.h). They
+should be separated with a three-line comment:
+
+//----------------------------
+// class name
+//----------------------------
+
+Defines have no particular naming pattern, although words are separated by
+underscores. Common things should, as usual, have common prefixes to make
+intellisense easier.
+
+Commits to Malco SVN should always have comments about what has been changed
+or added, although "many small fixes" is quite appropriate. The only requirement
+is to check if new source compiles before committing it.

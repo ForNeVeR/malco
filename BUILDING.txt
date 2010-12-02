@@ -1,0 +1,17 @@
+= HOW TO BUILD MALCO =
+
+You have 2 options to build malco:
+
+- 1 (Windows only) - 
+Open malco.sln file with Microsoft Visual Studio 2008 (free Express edition must be ok). Building
+project will create directory `Debug` or `Release`, depending on selected configuration, with all of
+the needed binaries inside.
+
+- 2 (Cross-platform) -
+Download Boost Jam tool aka bjam (see http://www.boost.org for information), go to directory with
+this file and execute `bjam` command, for example:
+
+$ cd /home/megauser/malco
+$ bjam
+
+Binaries will go to `bin` subdirectory. Report any build problems to developers.

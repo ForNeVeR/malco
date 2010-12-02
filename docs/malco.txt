@@ -1,0 +1,1811 @@
+===============
+==== Malco ====
+===============
+
+
+= 1. General Information =
+
+== 1.1 What is Malco? ==
+
+Malco is a high-level interpreted programming language aimed at creating
+console- and web-based applications.
+
+== 1.2 Principles of architecture ==
+
+1) Unified approach: Logically similar parts should behave similarly.
+2) Law of least surprize: Things will usually work the way you expect them to.
+3) Standards: There should be only one obvious way of doing things.
+4) User knows what he is doing: Malco will never think it's smarter than you.
+5) Build it yourself: You enable features you need, not disable those which you don't.
+6) Everything is an object: Built-in types and user types are equal in power.
+7) Improvability: You can enhance built-in types with your own methods.
+8) Coding is fun: Code must always be beautiful, and, if possible, fast.
+
+== 1.3 How Malco works ==
+
+Basically, Malco compiles the source into bytecode and then runs it. The compiler
+and the virtual machine may cooperate between each other while the program runs.
+A program can be run directly from bytecode if it has been precompiled (for more
+efficiency).
+
+== 1.4 Reasons that drive us forward ==
+
+Malco is being developed mainly because we're not fully satisfied with existing
+programming languages. Some can't understand code constructions that we find quite
+useful and logical, some fail at unification and offer hard-to-learn unintuitive
+tools for performing basic tasks, and some just plainly suck.
+
+== 1.5 How is't going to be made ==
+
+We're developing Malco in Visual Studio because it provides best development
+experience we've found, however checking complete compatibility with GCC,
+MinGW and other platform-specific and cross-platform compilers.
+
+== 1.6 Future of Malco ==
+
+In the later stages of development, the main aim will be to implement additional
+features without breaking the language's main ideology. Things that may break the
+standardization or would require unique approaches should be avoided by all means.
+
+
+
+= 2. Language semantics =
+
+== 2.1 Basic info ==
+
+Malco is a curly-brace programming languages. Blocks are separated with { } and
+statements are terminated with ;.
+
+Malco inherits many traditional language constructions from it's "older curly brace brothers",
+such as:
+
+if( ... ) { ... } elseif( ) { ... } else { ... }
+for( ... ; ... ; ... ) { ... }
+while( ... ) { ... }
+switch( ... ) { case ... : ...; break; }
+try { ... } catch(...) { ... }
+for( ... in ... ) { ... }
+
+Each variable name, much like those in PHP, starts with a $ sign. Functions always
+have parentheses when called even if there are no parameters needed.
+
+Object's methods and properties can be accessed through the dot operator, like:
+
+$a.some_property = 1;
+$b.some_function();
+
+Everywhere a variable is possible, it can be replaced with an identical constant literal:
+(for the exception of modifier methods and assignment, discussed later)
+
+$a = "blabla";
+print($a.length());
+
+print("blabla".length());
+
+Block is actually a compound operator. You can define single-line conditions, loops,
+classes, methods, functions, namespaces and anything else that requires a block.
+Curly braces are only necessary when defining a lambda function.
+
+
+== 2.1 Data types == 
+
+Malco's variables are universal containers and can store whatever data type you
+put there. A 'duck typing' technique is employed.
+
+=== 2.1.1 undef ===
+
+Description: When a variable is used before it's initialization, it is considered an undef.
+You can also clear the variable by assigning it an undef value or break a link
+by assigning it a reference to undef.
+
+Literal: undef
+
+Example: print($val); // undef
+
+
+=== 2.1.2 bool ===
+
+Description: A class for logical values, true and false class.
+
+Literal: false | true
+
+Example:  $val = false;
+          $val = 1==1;
+
+
+=== 2.1.3 int ===
+
+Description: A class to store integer values.
+
+Literal: /-?[0-9]+/
+         /-?0x[0-9a-f]+/i
+         /-?0b[01]+/
+
+Example:  $val = 1;
+          $val = 1000000000000;
+          $val = 2 + 2;
+
+
+=== 2.1.4 float ===
+
+Description: A class to store floating point values.
+
+Literal: /-?[0-9]+\.[0-9]+(e(\+|-)[0-9]+)/
+
+Example:  $val = 1.0;
+          $val = 1.0e+4;
+          $val = 10 / 5; // division always returns a float
+
+
+=== 2.1.5 range ===
+
+Description: Stores a range between two integers.
+
+Literal:  /-?[0-9]+\.\.-?[0-9]+/
+
+Example:  $val = 1..10;
+          $val = $start..($start+10);
+
+
+=== 2.1.6 string ===
+
+Description: A class to store strings. They can be whatever lengthy as needed,
+even store whole files. A single character is also a string.
+
+Literal:  /"(.+?)"/
+          /'(.+?)'/
+
+Example:  $val = "string!";
+          $val = 'some input
+                  multi
+                  line';
+
+
+=== 2.1.7 lambda ===
+
+Description: A class to store anonymous functions. Those handy little bitches can
+be stored in a variable or transfered to a function like a callback.
+
+Literal:  [($val[, ...]) ]  [@]{ ... }
+
+Example:  $val = ($x) { print($x*2); };
+          $bla = ($val) { return $val*2; }.call(1);
+
+==== 2.1.7.1 Visibility ====
+
+By default, a lambda works in the namespace it was declared and has access to
+all the local variables that exist around it. This allows you, for instance, to
+perform complex manipulations with arrays easily using lambdas:
+
+$a = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+$b = [ ];
+$a.each( ($key, $val) { if($val%2==0) $b[ ] = $val; } );
+print($b); // [2, 4, 6, 8]
+
+There is a way to explicitly make the lambda create it's own namespace and
+run inside it, for example if there's a chance of variable overlapping. In this
+case, the lambda must be defined with an @ preceding it's opening curly brace.
+
+$a = 1;
+@{ $a = 2; }.call();
+print($a); // 1
+{ $a = 2; }.call();
+print($a); // 2
+
+
+=== 2.1.8 time ===
+
+Description: A class to store date\time information, perform calculations with
+it and provide formatted output.
+
+Literal:  (none)
+
+Example:  $val = new mcTime('2008-08-26 11:37:00');
+          $val += 2 * 3600;
+          print($val); // 2008-08-2006 13:37:00 
+
+
+=== 2.1.9 regexp ===
+
+Description: A class to store a regular expression and perform matches, replaces
+and other actions with it.
+
+Literal:  /\/(.+?)\/[ismx]*/
+
+Example:  $a = /[0-9]/i;
+          /[a-z]{10}/.match('abcdefghik');
+          
+          
+=== 2.1.10 match ===
+
+Description: A class to store information about a match.
+
+Literal: (none)
+
+Example: $match = $text ~ /[a-z]{2}/i;
+
+
+=== 2.1.11 array ===
+
+Description: a class to store arrays. Arrays can be of whatever size is needed
+(and possible in current memory size), and are dynamically resized depending on
+the number of elements you put inside. They can store any data type, including
+sub-arrays. Array index can be of string or integer type.
+
+Literal:  [ ... ]
+
+Example:  $a = [1, 2, 3];
+          $val = [1.2, 'test', [1, 2, 3], { print('zomg'); }];
+          
+          
+=== 2.1.12 exception ===          
+
+Description: a class to handle exceptions. Contains 4 fields - line, file, type
+and message. When the 'throw' instruction is executed, it is automatically
+created, filled and transfered to the 'catch' block or printed if none.
+Message can be string or any other object.
+
+Literal: (none)
+
+Example: throw "OMG WTF!";
+         throw ['type': 1, 'errorcode': 2];
+
+
+
+== 2.2 User data types ==
+
+=== 2.2.1 Basic info ===
+
+User can create his own data types by defining custom classes. The syntax is
+also quite casual:
+
+class userclass
+{
+  func foo()
+  {
+    print("foo");
+  }
+}
+
+Classes are not closed and can further be extended using 'extend' keyword:
+
+extend userclass
+{
+  func bar()
+  {
+    print("bar");
+  }
+}
+
+Or it is possible to define the function prefixing it's name with the class
+name, delimited by double colon:
+
+func userclass::bar()
+{
+  print("bar");
+}
+
+You can only add methods to classes using 'extend' keyword, not properties.
+Built-in classes can also be extended just like user classes.
+
+However, a few points should be noted here, as the extension mechanism has some
+limitations that might surprise the programmer:
+
+  * It is only possible to extend classes with methods. You cannot add new
+    fields to a class that has already been created.
+  * It is not possible to redefine methods for built-in classes. However, it is
+    possible to add new methods to any existing class.
+  * It is not possible to redefine methods inherited from mcObject in your
+    derivative classes.
+
+For user-defined objects (including those from the standart library), it is
+possible to override an already defined function with your own. In this case,
+however, the previous definition will be completely discarded.
+
+
+=== 2.2.2 Modifiers ===
+
+==== 2.2.2.1 Levels of access ====
+
+Literals:   'public', 'private', 'internal'
+Apply to:   methods, members
+Meaning:    Set levels of access. Public allows any access, private - only from
+            the current object, internal - from any object of the same class.
+            Public is considered the default.
+
+==== 2.2.2.2 Static ====
+
+Literal:   'static'
+Apply to:   methods, members, variables, classes
+Meaning:    For values, allows them to retain value between function calls. For
+            members and methods, attaches them to the class itself rather than
+            to a particular object. More info can be found in section 2.2.5.
+            Marking class as static instantly declares all it's methods and
+            members as static.
+            
+==== 2.2.2.3 Abstract ====
+
+Literal:   'stub'
+Apply to:   classes
+Meaning:    Makes a class abstract, preventing users from creating instances of
+            it. Can be used to implement interfaces in Malco.
+            
+==== 2.2.2.4 Final ====            
+
+Literal:   'final'
+Apply to:   methods, classes
+Meaning:    When a method is defined as final, it cannot be overridden any
+            more. However, in child classes the method isn't marked as final.
+            When a class is defined as final, it cannot be extended, overridden
+            or even used as source of inheritance.
+            Final classes cannot be marked as stub or contain undefined methods
+            inherited from stub classes.
+            
+==== 2.2.2.5 Once ====
+
+Literal:    'once'
+Apply to:   include and require statements
+Meaning:    Enables include check which prevents files from being included
+            several times.
+
+
+=== 2.2.3 Local access ===
+
+Variables which are prefixed by @ are considered properties of an object or
+static variables of the class. Simply $@ is the equivalent of 'this' pointer
+as known in C++ or Java.
+
+class userclass
+{
+  $val = 0;
+
+  func output()
+  {
+    print($@val);
+  }
+}
+
+
+=== 2.2.4 Inheritance ===
+
+Malco allows single inheritance only. Effect similar to multiple inheritance can
+be achieved using mixins.
+
+class myclass (mcInteger)
+{
+  func double()
+  {
+    print($@*2);       
+  }
+}
+
+A descendant class can call it's parent's methods by using parent classname and
+the :: operator, like:
+
+class myclass
+{
+  func foo()
+  {
+    print("foo");
+  }
+}
+
+class extra(myclass)
+{
+  func foo()
+  {
+    myclass::foo();
+    print("bar");
+  }
+}
+
+It could have also been called via parent::foo().
+
+
+=== 2.2.5 Static members ===
+
+A class can have static methods and properties that are spanned across all the
+objects of this class. They need to be accessed via @ prefix.
+
+class myclass(mcInteger)
+{
+  static $bla = 1;
+
+  static func test($val)
+  {
+    $@bla += $val;
+  }
+}
+
+Static members can be accessed via object instance or class name:
+
+myclass::$bla = 2;
+myclass::test(2);
+
+// or
+
+$foo = new myclass;
+$foo.bla = 2;
+$foo.test(4);
+
+Static methods obviously do not have the $@ variable defined.
+
+=== 2.2.6 Constructors & destructors ===
+
+In Malco, constructors and destructors are defined using the special operator
+syntax that's unified for all "stealth" actions Malco can perform with your
+custom objects:
+
+class foo
+{
+  op create() print("I'm a constructor!");
+  
+  op destroy() print("I'm a destructor!");
+}
+
+The 'create' and 'destroy' are the special operator names which specify the
+constructor and destructor functions respectively. More information about
+the 'op' keyword and the list of available operator functions can be found in
+section 3.4.16.
+
+Constructor can define a set of parameters, like a normal function.
+Destructor cannot have parameters because it's invoked stealthly and there's
+actually no logical way to pass them.
+
+
+== 2.3 User functions ==
+
+=== 2.3.1 Basic syntax ===
+
+User can define his own functions. The syntax is similar to method definition:
+
+func foo()
+{
+  print("bar");
+}
+
+Behind the curtains, defining functions actually IS method definition. If you
+define a method in global scope, it's registered as a method of "object" class,
+thus being visible from everywhere.
+
+
+=== 2.3.2 Variable transfering ===
+
+Malco lets the user pass any number of any arguments to a function. Besides
+obvious variable transfering, it is possible to assign an array that will
+collect the values if there's a variable number of arguments passed in. The
+collector array's name should be prefixed with a splat operator (*). For more
+info about this operator, read section 3.4.15.
+
+func foo($var1, *$var2)
+{
+  print($var1, *$var2);
+}
+
+foo(1, 2, 3, 4, 5); // prints them all ;)
+
+Indeed, function arguments can have default values.
+
+Also, arguments can be given by name, not only by position.
+
+func foo($text, $num)
+{
+  for($i in 1..$num)
+    print($text);
+}
+
+foo(num: 10, text: $blabla);
+
+It is possible to splat an array during function invocation. The example is
+as follows:
+
+$a = [2,"zomg"];
+foo(*$a);
+
+However, in case of an associative array Malco WILL NOT render keys as
+variable names, thus splatting the associative array is NOT like assigning
+function parameters by name. The values will just be dumped in the order
+of their keys.
+
+
+=== 2.3.3 Default values ===
+
+When defining a function, you can state the default value for omittable
+parameters. You can set the default value to any parameter, not necessary the
+last N parameters in list, but that way you will have to either transfer
+parameters by their names or put an undef where you would want the default
+value to appear:
+
+func foo($var1, $var2='test', $var3, $var4='zomg')
+{
+  print($var1 << ' ' << $var2 << ' ' << $var3 << ' ' << $var4);
+}
+
+foo('bla', undef, 'test'); // bla test test zomg
+foo(var1: 'bla', var3: 'wtf'); // bla test wtf zomg
+
+However, calling the function like foo('bla') will result in an error because
+$var3 has not been assigned any value.
+
+=== 2.3.4 Return ===
+
+Functions may return a value of any type, including an array of values. This
+is done via 'return' keyword. A function can have 0, 1 or more return statements.
+When a function exits without a return statement, it by default returns an
+undef value.
+
+func square($x)
+{
+  return $x**2;
+}
+
+func get_data()
+{
+  return 1, 2, 3, 42;
+}
+
+
+== 2.4 Links and variables ==
+
+=== 2.4.1 How Malco handles variables ===
+
+By default, every object is considered a value. The following code proves it:
+
+class foo
+{
+  $test = 1;
+  func bar()
+  {
+    $@test  = 2;
+  }
+}
+
+$a = new foo();
+$b = $a;
+$a.bar();
+print($a.test); // 2
+print($b.test); // 1
+
+So, when $a is assigned to $b, a _copy_ of what's in $a is created and put into
+$b. Not the same object.
+
+This always happens when something passes the '=' sign from right to left or is
+transfered into a function, unless you use the '&' modifier. It creates a link
+to the object and so you get the same object instead of it's copy.
+
+
+=== 2.4.2 Links ===
+
+A link is a variable of special data type. Basically, it stores a pointer to
+any other variable.
+
+There is no need to dereference a link. It's automatically dereferenced to
+whatever level needed, as shown in the example below:
+
+$a = 1;
+$b = &$a;
+$c = &$b;
+$d = &$c;
+
+$d = 2;
+print($a); // 2
+
+The only occasion when a link is not dereferenced is when you try to assign a
+new link.
+
+$a = 1;
+$b = 2;
+
+$c = &$a; // $c points to $a
+$c = &$b; // $c points to $b, $a is not affected
+
+Please note that you can only link to variables, not constants. There is,
+however, one exception:
+
+
+=== 2.4.3 Removing a link ===
+
+It is possible to clear a link out by assigning it a link to undef:
+
+$a = 1;
+$b = &$a;
+$b = &undef;
+$b = 2;
+print($a); // 1
+
+The &undef syntax is a special syntactic perk, thus it doesn't break the rule
+of not creating links to constants. It cannot be used in expressions or
+passed in/out of the function. Just think of it as an idiom in Malco.
+
+
+=== 2.4.5 Links in functions ===
+
+You select how a variable is transfered when you _call_ a function, not when
+you define it. This way it is more evident for the end programmer, which values
+may be altered and which are not.
+
+func foo($a, $b, $c)
+{
+  print($a << ', ' << $b << ', ' << $c);
+  $a++;       
+  $b++;
+  $c++;
+}
+
+$val1 = 1;
+$val2 = 2;
+$val3 = 3;
+
+foo($val1, $val2, $val3);     // 1, 2, 3
+foo(&$val1, &$val2, $val3);   // 1, 2, 3
+foo(&$val1, $val2, $val3);    // 2, 3, 3
+
+When you get something from a function, by default it's also returned as a value.
+You may use the & modifier as well:
+
+$a = get_something();
+$b = &get_something();
+
+
+== 2.5 String prefixes ==
+
+Malco provides a neat way to initialize objects that do not have a literal.
+It is performed via string prefixes. Consider the two following lines:
+
+$date = new date('10.11.2009');
+
+$date = d'10.11.2009';
+
+Considering they both do the same, the second is much shorter and quite as
+readable - what else that string could mean? Actually it's a syntaxic sugar,
+as these two strings produce equal bytecode. Similar prefixes are registered
+for files ('f') and sockets ('s'). User can also register custom prefixes by
+declaring a function / static method as follows:
+
+prefix(x) func bla($test) { ... }
+
+The 'x' should be replaced by desired prefix character (/^[a-z]$/i).
+
+
+= 3. Built-in functionality =
+
+== 3.1 Operators ==
+
+=== 3.1.1 Operator definitions ===
+
+==== 3.1.1.1 Arithmetic operators ====
+
+Malco has all the common operators you have seen in other programming languages:
+
+1) +  (addition)
+2) -  (subtraction)
+3) *  (multiplication)
+4) /  (division)
+5) %  (remainder)
+6) ** (power)
+7) ++ (increment)
+8) -- (decrement)
+
+The priorities are commonly placed.
+
+
+==== 3.1.1.2 Logic operators ====
+
+Logic operators are also well-known:
+
+1) && (and)
+2) || (or)
+
+
+==== 3.1.1.3 Binary operators ====
+
+1) &  (binary and)
+2) |  (binary or)
+3) ^  (binary xor)
+4) >> (right shift)
+4) << (left shift)
+
+
+==== 3.1.1.4 Comparison operators ====
+
+Malco features classic comparison operators as well as some new ones. Most of
+them return boolean values or an undef (if the values cannot be compared),
+unless it's stated otherwise:
+
+1)  ==   (equality)
+2)  !=   (inequality)
+3)  >    (greater)
+4)  >=   (greater or equal)
+5)  <    (less)
+6)  <=   (less or equal)
+7)  ===  (identity)
+8)  !==  (!identity)
+9)  <=>  ('spaceship' operator)
+10) ~    (relativity operator)
+
+The actions of the last two operators will be explained later.
+
+
+=== 3.1.1.5 Special operators ===
+
+There are some operators which are used in special places for special purposes.
+
+1) <<  (string concatenation)
+2) .   (access to object's properties and methods)
+3) ::  (access to class' properties and methods)
+4) &   (link creation)
+5) []  (array creation or indexing of existing array)
+6) {}  (lambda creation)
+7) *   (splat / unsplat operator)
+
+
+=== 3.1.1.6 Indexation operator ===
+
+The [] operator applied to an array is a very powerful tool that allows complex
+array manipulation be done easy.
+
+When specifying a positive integer or a string, it will return the corresponding
+item or an undef if there's no such item.
+
+A negative integer as the key will make Malco search from the end of the array.
+
+You can select several items simultaneously from the array using one of the
+following syntaxes. Please note that in this case an array of _links_ is
+returned, so affecting the values in the selection will affect the values
+themselves, unless you use a clone() method.
+
+===== 3.1.1.6.1 Selection via list of keys =====
+
+A list of keys can be specified, separated by commas:
+
+$a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+$b = $a[1, 2, 3]; // 2, 3, 4
+
+===== 3.1.1.6.2 Selection via regexp =====
+
+$a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+$b = $a[/(1|2|3)/]; // 2, 3, 4
+
+===== 3.1.1.6.3 Selection via lambda =====
+
+$a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+$b = $a[ ($key, $val){ if($key ~= 1..3) return true; } ]; // 2, 3, 4
+
+===== 3.1.1.6.4 Selection via range =====
+
+$a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+$b = $a[1..3]; // 2, 3, 4
+
+Please note that range values are applied to keys, not values.
+
+Also, please keep in mind, that if you want to allow multiple indexation in your
+custom objects (like $a[1, 2, 3]) it should be done manually, using splat operator.
+Malco will not call your indexer multiple times and pack returned values into an
+array on it's own, as some might expect.
+
+===== 3.1.1.6.5 What to do with the selections =====
+
+As the selection itself is an array too, it can be processed as an array too.
+For example, you can assign many values at once, output them or process
+using a the each() method with a lambda:
+
+$a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+*$a[1, 2, 3] = 10, 20, 30; // [1, 10, 20, 30, 5, 6, 7, 8, 9, 10]
+
+===== 3.1.1.6.6 Indexation operator with strings =====
+
+The same indexation operator works differently when invoked on a string object.
+It can do a lot of different tasks depending on where it is situated and what
+kind of object is transfered to the operator.
+
+$string = "A quick brown fox jumped over the lazy dog";
+
+$idx  = $string['quick'];      // finds substring location
+$idx2 = $string[/quick/];      // works with substrings too
+$str  = $string[8..13];        // returns a substring
+
+Assuming that a string is an array of characters, the construction like
+$string[10, 15] will NOT get a substring. It gets 2 characters.
+
+On the other hand, a string does not work completely like an array. It is
+not possible to create a link to a specific substring or characters, neither
+it is possible to modify the string via [ ] operator, so statements like
+
+$str[1..10] = "hello there";
+
+or
+
+$str[1..10].reverse();
+
+will not affect the string at all - a newly created substring will be
+overwritten or reversed and discarded immediately. You should rather do
+
+$str.sub_set(1, 10, $str[1..10].reverse());
+
+Other way is use the apply() method:
+
+$str.apply(1..10, ($x){ $x.reverse(); });
+
+For those who prefer functional style and see it's beauty, this is the way.
+
+
+==== 3.1.1.7 Indexation & assignment tricks ====
+
+Unlike some other languages (like Ruby, for example), there's no 'assign by
+index' operator in Malco. For the sake of complexity reduction and unification
+of approach, such constructions like
+
+$string[1..10] = "hello";
+
+are not allowed (however, the line will execute, but nothing will happen).
+Please note that you can only assign to a variable.
+
+Arrays are, however, a special case here. When indexed, they return a link
+to a variable, and it can be read or written easily. If you need your object
+to work similarly, you might implement the same behaviour, although it's best
+practice to rely on the built-in array.
+
+
+=== 3.1.2 Particular operator actions ===
+
+The tables below declare particular actions Malco performs when processing
+an operator, depending on the operand types that are given. The combinations
+not listed below are considered nonsensical and do not produce any action,
+with err_WTF being thrown.
+
+==== 3.1.2.1 Addition ====
+
+Left type      Right type      Action
+---------------------------------------------------------
+value          value           arithmetic sum
+array          array           merges two arrays
+time           int             get time with offset
+int            time            get time with offset
+
+If the operands have a to_f() (or to_i()) method, they will be called and the
+result will be a number.
+
+
+==== 3.1.2.2 Subtraction ====
+
+Left type      Right type      Action
+---------------------------------------------------------
+value          value           arithmetic subtraction
+array          array           removes items ov array2 from array1
+time           int             get time with offset
+int            time            get time with offset
+
+
+==== 3.1.2.3 Multiplication ====
+
+Left type      Right type      Action
+---------------------------------------------------------
+value          value           arithmetic multiplication
+array          integer         loops the array N times
+string         integer         loops the string N times
+bool           bool            logical AND
+
+
+==== 3.1.2.4 Division ====
+
+Left type      Right type      Action
+---------------------------------------------------------
+value          value           arithmetic division
+
+If any of the operands is a float, the result is also
+a float. If both operands are integer, the division is
+being carried out in integers.
+
+
+==== 3.1.2.5 Remainder ====
+
+Left type      Right type      Action
+---------------------------------------------------------
+value          integer         remainder retrieval
+string         array           variable substitution
+
+
+==== 3.1.2.6 Power ====
+
+Left type      Right type      Action
+---------------------------------------------------------
+value          value           takes value to power
+
+
+==== 3.1.2.7 Increment ====
+
+Type           Action
+---------------------------------------------------------
+value          increments the value by 1
+time           one second later
+
+
+==== 3.1.2.8 Decrement ====
+
+Type           Action
+---------------------------------------------------------
+value          decrements the value by 1
+time           one second before
+
+
+==== 3.1.2.9 Equality ====
+
+When comparing a float to an integer, the integer is converted to float
+like 1 => 1.0 and compared then.
+
+Empty string, empty array, false, 0 and undef are considered equal.
+
+Regexps are compared using their string representations.
+
+Arrays are equal when all their keys and values match.
+
+Lambdas are incomparable.
+
+
+==== 3.1.2.10 Inequality ====
+
+Works as an inverted equality operator.
+
+
+==== 3.1.1.11 Greater ====
+
+Strings are compared using char-by-char comparison from left to right.
+
+Array1 is bigger than array2 if it has all the keys and values array2 has,
+plus at least one key and value pair that is not found in array2. If their
+values or keys do not completely match, they are considered incomparable.
+
+Ranges are compared by their length value.
+
+True is greater than false.
+
+When values cannot be compared, an undef is returned.
+
+
+==== 3.1.1.12 Less ====
+
+Works like the Greater operator with operands replaced.
+
+
+==== 3.1.1.13 Greater or equal ====
+
+...
+
+
+==== 3.1.1.14 Lower or equal ====
+
+...
+
+
+==== 3.1.1.15 Identity ====
+
+Compares only objects of the same type. Returns false if they're of different
+type or they're not equal.
+
+If both of the operands is a lambda, returns an undef.
+(It has been proved by Alan Turing that a computer cannot test if two
+programs give equal results not depending on input values. He's the smart
+guy, we won't try to prove him wrong. If you _really_ need to compare two lambdas,
+which is less than likely, compare their id's explicitly.)
+
+
+==== 3.1.1.15 !Identity ====
+
+Compares only objects of the same type. Returns true if they're of different
+type or they're not equal.
+
+
+==== 3.1.1.16 Spaceship operator ====
+
+Works as a compound < , == and > operator. Returns -1 if the first operand
+is smaller, 1 if the right one is, 0 if they're equal and an undef if the
+operands cannot be compared.
+
+
+==== 3.1.1.17 Relativity operator ====
+
+Left type      Right type      Action
+---------------------------------------------------------
+(anything)     array           searches the array for the given value
+integer        range           checks the interval to contain the integer
+string         regexp          checks if string matches the regexp
+regexp         string          checks if string matches the regexp
+
+
+
+== 3.2 Default methods ==
+
+=== 3.2.1 mcObject methods ===
+
+The following methods are predefined in all objects, including user's custom
+objects.
+
+assert($type1, $type2, ...)     - tests if object is any of the given types
+class()                         - get the name of the class as a string
+class_name()                    - gets class name as a string
+exec($name, $var1, ...)         - call a method by name with parameters
+freeze!()                       - make the object frozen (unmodifiable)
+frozen()                        - check object for being frozen
+has_method($name)               - checks if the object has given method
+has_member($name)               - checks if the object has given member
+id()                            - returns an object's internal ID
+inspect()                       - prints out debug version of the object
+methods()                       - return an array of methods defined
+taint!()                        - taint an object
+tainted()                       - check object for being tainted
+untaint!()                      - mark an object as untainted
+unfreeze()                      - return an unfrozen copy of the object
+to_a()                          - converts object to array (stub)
+to_b()                          - converts object to bool (stub)
+to_f()                          - converts object to float (stub)
+to_i()                          - converts object to int (stub)
+to_s()                          - converts object to string (stub)
+
+Please note that these methods defined in mcObject, which is the base class for
+any other class, can NOT be redefined by the user. The user can, however, extend
+the mcObject class to add a method to all existing and future objects at once.
+
+
+=== 3.2.2 bool methods ===
+
+toggle!()                 - toggle value (equal to $a=!$a)
+to_i()                    - to integer (true = 1, false = 0)
+to_f()                    - to float (true = 1.0, false = 0.0)
+to_s()                    - to string
+
+
+=== 3.2.2 int methods ===
+
+char()                    - gets an ascii character with the index
+times($lambda)            - calls the function N times
+to($int, $lambda)         - works as a loop
+upto($int, $lambda)       - works as an ascending loop
+downto($int, $lambda)     - works as a descending loop
+to_b()                    - to bool
+to_f()                    - to float
+to_s()                    - to float
+
+
+=== 3.2.3 float methods ===
+
+ceil()                    - round to upper
+decimal()                 - gets the decimal value (after the dot)
+floor()                   - round to lower
+to_b()                    - to boolean
+to_i()                    - to integer
+to_s()                    - to string
+
+
+=== 3.2.4 range methods ===
+
+has()                     - checks if the range contains value
+length()                  - number of items
+each($func)               - calls $func for each item
+set($from, $to)           - sets the range's limits
+from($from)               - gets / sets starting value
+to($to)                   - gets / sets ending value
+to_a()                    - creates an array
+to_b()                    - to boolean
+to_i()                    - to integer (count items)
+to_f()                    - to float (count items)
+to_s()                    - to string
+
+
+=== 3.2.5 string methods ===
+
+apply($lambda)            - pass string to $lambda and return
+apply!($lambda)           - replace string by $lambda's output for it
+append($str)              - return a string with $str added to the end
+append!($str)             - add $str to the end
+case_down()               - return a lowercased string
+case_down!()              - convert a string to lowercase
+case_fix()                - return a string with fixed casing
+case_fix!()               - fix casing
+case_swap()               - return a string with swapped casing
+case_swap!()              - swap casing
+case_up()                 - return an uppercased string
+case_up!()                - convert string to uppercase
+chars()                   - return an array of characters
+gsub($s, $rep)            - replaces all occurencies of $s with $rep
+has($str)                 - checks if the string has a substring
+insert($str, $offset)     - returns a string with $str inserted at $offset 
+insert!($str, $offset)    - inserts $str at $offset
+is_alnum()                - check if the string has only alphanumerical characters
+is_alpha()                - checks if the string has only letters
+is_ascii()                - checks if the string only has ASCII characters
+is_digit()                - checks if the string only has digits
+is_print()                - checks if the string has only printable characters
+is_upper()                - checks if all characters are uppercase
+length()                  - gets string length
+lines()                   - return an array of lines
+ord()                     - gets ascii code of the first character
+prepend($str)             - return a string with $str added to the beginning
+prepend!($str)            - add $str to the beginning
+replace($str, $to, $max)  - return a string with $str replaced by $to up to $max times
+replace!($str, $to, $max) - replaces $str by $to up to $max times
+reverse()                 - returns a reversed string
+reverse!()                - reverses a string
+scan($str)                - returns an array of positions where $str is found
+split($delimiter)         - returns an array split by delimiter
+sub($offset, $len)        - returns a substring of $len length starting from $offset
+sub_count($str)           - counts substring occurences
+sub_first($str, $offset)  - finds first occurence of substring $str since $offset
+sub_last($str, $offset)   - finds last occurence of substring $str before $offset
+translate($from, $to)     - returns a string with $from translated to $to
+translate!($from, $to)    - translates all characters in $from to corresponding ones in $to
+trim()                    - returns a trimmed string
+trim!()                   - trims a string
+trim_left()               - returns a trimmed-from-left string
+trim_left!()              - trims a string from left
+trim_right()              - returns a trimmed-from-right string
+trim_right!()             - trims a string from right
+to_b()                    - to boolean
+to_f()                    - to float
+to_i()                    - to integer
+
+
+=== 3.2.6 time methods ===
+
+format($format)           - returns formatted string
+now!()                    - sets the string to current timestamp
+day_m()                   - gets day of month
+day_w()                   - gets day of week
+day_y()                   - gets day of year
+hour()                    - gets hour
+min()                     - gets minute
+month()                   - gets month
+sec()                     - gets second
+values()                  - returns an array of items
+year()                    - gets year
+to_b()                    - returns an array with date info
+to_f()                    - to float (timestamp)
+to_i()                    - to integer (returns a timestamp)
+to_s()                    - to string
+
+
+
+=== 3.2.7 regexp methods ===
+
+match()                   - perform match
+study!()                  - compile regexp for better matching
+to_b()                    - to boolean
+to_s()                    - to string
+
+
+=== 3.2.8 match methods ===
+
+to_s()                    - to string
+count()                   - number of matches
+bounds($id)               - return bounds of matched item as [$start, $end]
+text($id)                 - text of matched item
+
+
+=== 3.2.9 file methods ===
+
+open($mode)               - open the current file with given mode
+close()                   - close file
+read($length)             - read $length bytes from file (increments inner pointer)
+read_all()                - read all file as a single string
+read_lines()              - read all file as an array of lines
+write($str)               - write string to file
+seek($pos)                - seek position in file
+tell()                    - tell current position in file
+exists()                  - check if file exists
+copy($name)               - copy file to new name and location
+rename($name)             - rename file to new name and location
+remove()                  - remove file from system
+truncate($length)         - truncate file to $length
+info()                    - various file information
+length()                  - file's current length
+to_b()                    - to boolean (exists?)
+to_f()                    - to float
+to_i()                    - to integer (file size)
+to_s()                    - to string (file contents)
+
+
+=== 3.2.10 dir methods ===
+
+content()                 - get directory contents as array of names
+files()                   - get only files
+dirs()                    - get only dirs
+exists()                  - check if directory exists
+create()                  - create directory if it doesn't exist
+copy($name)               - copy directory to a new name and location
+rename($name)             - rename directory to a new name and location
+remove($really)           - remove directory from system (pass a 'true' for non-empty folders)
+to_b()                    - to boolean (exists?)
+to_f()                    - to float (number of items total)
+to_i()                    - to integer (number of items total)
+to_s()                    - to string (directory name)
+
+
+=== 3.2.11 socket methods ===
+
+open($mode)               - open socket with mode
+close()                   - close socket
+read()                    - read $length bytes from socket
+read_all()                - read all info as one string
+read_lines()              - read all info as array of lines
+write($str)               - write $str to socket
+length()                  - get data length in socket
+to_b()                    - to boolean (opened?)
+to_f()                    - to float (length)
+to_i()                    - to integer (length)
+to_s()                    - to string (all info as string)
+
+=== 3.2.12 array methods ===
+
+all($lambda)              - returns true if lambda returns true on all objects
+any($lambda)              - returns true if lambda returns true on any of the objects
+assert_all($class1, ...)  - asserts all objects belong to any of the class
+assert_any($class1, ...)  - asserts any object belongs to any of the class
+clear!()                  - remove all items from the array
+clone()                   - makes copies of items specified by links
+collect($start, $func)    - $start = $func.call($start, $curr) for all items
+count()                   - returns number of items in the array
+each($func)               - calls $func with each item
+each_key($func)           - calls $func with each key
+each_pair($func)          - calls $func with each item + key
+find($item)               - returns $item's key if it is in the array
+flatten()                 - returns a flattened copy of the array
+flatten!()                - flattens the array
+has($item)                - checks if array contains an item, returns the key or undef
+inflate($size)            - returns an inflated array (N-dimensional)
+inflate!($size)           - inflates the array
+join($str)                - returns a string of all items joined with $str as separator
+map($arr, $mode)          - maps $arr to array's items using $mode
+matches($exp)             - finds all items that match the regular expression
+max($func)                - returns array's maximal value (default comparison of function)
+min()                     - returns array's minimal value (default comparison of function)
+min_max()                 - returns array's minimal and maximal values as array
+mult()                    - arithmetically multiplies all items in the array
+next()                    - returns next item from the array
+next_key()                - returns next key from the array
+next_pair()               - returns next item + key pair from the array
+pop!()                    - pops the last item from array
+push!($item)              - pushes the item into array
+reindex()                 - reindexes the array
+reject($func)             - returns an array without items that return true on $func
+reject!($func)            - removes items that return true on $func
+remove()                  - removes array items independently
+reverse()                 - returns the reversed array
+reverse!()                - reverses the array
+rewind()                  - rewinds internal iterator
+select($func)             - returns an array of items that return true on $func
+select!($func)            - leaves only items that return true on $func
+sort()                    - returns a sorted copy of the array
+sort!()                   - sorts array using most appropriate algoritm
+sort_quick()              - returns quicksorted array
+sort_quick!()             - quicksorts array
+sort_shell()              - return shellsorted array
+sort_shell!()             - shellsorts array
+shuffle()                 - shuffles array indexes
+sum()                     - arithmetically sums all items in the array
+taint_all!()              - taints all objects in the array
+unique()                  - returns an array of unique items  
+unique!()                 - removes all duplicate items from array
+untaint_all!()            - untaints all objects in the array
+zip($array)               - returns an array with items zipped
+zip!($array)              - zips items into current array
+to_b()                    - to boolean (length > 0 ? true : false)
+to_f()                    - to float
+to_i()                    - to integer (length)
+to_s()                    - to string
+
+
+=== 3.2.13 method methods ===
+
+args()                    - returns an array of args
+args_max()                - maximum number of args (undef if splatted)
+args_min()                - minimum number of args
+call()                    - calls the method
+class()                   - returns the method's class
+to_s()                    - to string (method's name)
+
+
+=== 3.2.14 class methods ===
+
+count()                   - returns number of class' objects
+members()                 - an array of class' member names
+members_static()          - returns an array of class' static member names
+methods()                 - an array of class methods
+name()                    - class' name
+parent()                  - class' base class (undef if called on mcObject)
+to_s()                    - to string (name)
+
+
+=== 3.2.15 Method naming conventions ===
+
+Method names represent the action they perform or the value they return,
+depending on what is more important or descriptive. It's best to choose a
+short word and omit unneeded details, as long as it's still clear what the
+method does or returns, like "has()" - not "contains()" and not "has_value()".
+  
+Abbreviations are also possible, so that you can name your method "min" instead
+or "minimum" or "minimal". Another good guideline is to name similar methods
+with a common prefix, like "trim_left" and "trim_right" or "to_*()" convertors.
+
+Methods are named in lowercase with underscores between words.
+
+You are not enforced to follow this convention when naming your own methods,
+however this way it will look most natural.
+
+Methods might end with an exclamation mark. This naming style, adopted from
+Ruby, makes method's behaviour more clear. A method with a "!" at the end of
+it's name modifies the object it is called on, and it's twin without the "!"
+returns a modified copy instead. To comply to strict standards, all modifier
+methods in Malco have the trailing "!", even if there's no non-modifying copy
+of the method (for example, bool::toggle!()). This convention is also inobligatory,
+but rather suggested - Malco automatically checks if you attempt to call a
+modifier method on a frozen object and throws an exception.
+
+
+== 3.3 Static classes ==
+
+=== 3.3.1 Env class ===
+
+The Env class provides access to GET, POST, COOKIE, SERVER and SESSION data.
+
+=== 3.3.2 Template class ===
+
+The Template class provides a standard all-purpose Smarty-like templating engine.
+
+=== 3.3.3 DB class ===
+
+The DB class provides a standard interface for database communication. It can be
+enhanced using plugins to work with specific databases, and provides drivers to
+several most common database engines (MySQL, Postgres, MSSQL, Oracle?) right
+out of the box.
+
+=== 3.3.4 Image class ===
+
+The Image class provides objects and methods for dynamic image creation and
+manipulation. The images can be returned directly to the browser or saved as
+files on the hard disk.
+
+=== 3.3.5 Network class ===
+
+The Network class provides methods and objects for high-level network communication,
+building on top of the built-in 'socket' class.
+
+=== 3.3.6 Archive class ===
+
+The Archive class provides methods for archive manipulation.
+
+
+== 3.4 Language constructions ==
+
+=== 3.4.1 Conditional statement ===
+
+A common conditional statement that has 1 IF part, 0+ ELSEIF parts and
+0/1 ELSE part.
+
+if(...) ...; [elseif(...) ...;] [else ...;]
+
+
+=== 3.4.2 For statement ===
+
+A common loop statement containing initialization, condition and step
+expressions:
+
+for(...; ...; ...) ...; [else ...;]
+
+Most Malco constructs have an 'else' block appendable. For example, loops are
+usually used to find something in an array, and when something is found the
+loop is interrupted using the 'break' instruction. If the loop hasn't been
+'broken', the 'else' block will be executed. If the loop has been interrupted
+by 'break' statement, it will be skipped.
+
+Side note: Malco does not have a syntax for processing many operators as one
+with a comma. If you need to perform several actions on initialization or
+per step, use a lambda.
+
+The 'for' loop is also used for iteration over an iterable object, such as
+an array or a range. For that, an 'in' keyword is used:
+
+for(... in ...) ...;
+
+For example, compare two ways of making a 1-to-100 loop:
+
+for($idx = 1; $idx <= 100; $idx++) print($idx);
+for($idx in 1..100) print($idx);
+
+The second version is much more clear and short, so it's recommended for use
+when no crazy loop actions are required.
+
+
+=== 3.4.3 While statement ===
+
+The while statement is a pre-condition loop statement.
+
+while(...) ...; [else ...;]
+
+
+=== 3.4.4 Do while statemenent ===
+
+The while statement is a pre-condition loop statement.
+
+do ... while(...) [else ...];
+
+
+=== 3.4.5 Switch statement ===
+
+The switch statement applies a value to a set of values using the relativity
+operator and performs actions if they relate. Unlike C and similar languages,
+the control flow stops after it finds another 'case' statement and doesn't
+fall through. The only practical case we've seen being used is to make several
+cases do the same things, but it's done in a better way in Malco:
+
+switch(...) { case ..., ...: ...; case ...: ...;} [else ...]
+
+For example:
+switch($a)
+{
+  case 1, 2: do_something();
+  case 3: do_smth_else();
+}
+
+If no case has been matched, the 'else' block is invoked (like 'default' case in C).
+
+
+=== 3.4.6 Break statement ===
+
+The break statement exits the current block, loop, condition or switch.
+
+
+=== 3.4.7 Return statement ===
+
+Exits the function, possibly returning a value to where the function has been
+called from.
+
+
+=== 3.4.8 Short condition ===
+
+Tests a condition to be true and returns the first operand if true, or the
+second otherwise.
+
+(... ? ... : ...);
+
+
+=== 3.4.9 Value finder ===
+
+Returns the result of the leftmost expression specified that does not evaluate
+to null. Can be used to define the default value for a variable. The number of
+sub-expressions it up to the user:
+
+$a = ... ?: ... ?: ...;
+
+Value finder does not necessarily need to be in an assignment expression. For
+example, a common idiom for checking argument type also uses it:
+
+$a.assert('int', 'string') ?: throw 'Bad argument type';
+
+A short-circuit || can be also used in this case, but it returns a boolean
+rather than a real value, so the first example with assignment will not work.
+
+
+=== 3.4.10 Include statement ===
+
+Compiles and runs the code from the specified file.
+
+include ...;
+
+Malco keeps track of all included files and it is not possible to include one
+and the same file more than once. Please think of an architecture that would
+not require multiple inclusion of one file. Recursive inclusion is also
+impossible.
+
+If a file is not found, Malco will throw a warning.
+
+
+=== 3.4.11 Require statement ===
+
+Works the same way as include, but throws up a fatal error.
+
+require ...;
+
+
+=== 3.4.12 Comments ===
+
+There are two types of comments in Malco, which are identical to those found
+in C++:
+
+// single-line comment
+
+/* multi
+line
+comment */
+
+
+=== 3.4.13 Assignment ===
+
+The assignment operation (=) in Malco allows parallel assignment. You should
+specify a list of comma-separated reciever variables at the left and a similar
+list of values or constants at the right of the assignment sign. Of course, the
+values do not need to be of one type.
+
+$a, $b = 1, 2;
+
+If the number of items at the left side is larger, the ones that do not have a
+match will stay undefined. When there's more items at the right side, the extra
+ones are silently discarded.
+
+Parallel assignment is not expanded into multiple sequential assignments, so it
+is quite possible to swap variables with a construction like the following:
+
+$a, $b = $b, $a;
+
+
+=== 3.4.14 Splat operator ===
+
+The splat operator allows you to expand a compound data structure (such as an
+array) into several comma-separated values. This is useful for mapping an array
+to a number of different variables, or when invoking a function:
+
+$a, $b, $c = *[1, 2, 3];
+
+$d = [3, 2, 1];
+$a, $b, $c = *$d;
+
+Placed at the left side of the assignment operator, the splat operator works
+in a reversed way - it compacts the items from the right side into a single
+array.
+
+Several arrays may be unpacked at once, but only one can be packed. For example,
+you can merge arrays as follows:
+
+*$a = *$b, *$c;
+
+The splat operator can also be used in function definition and invocation using
+the same rules - multiple splats at invocation and only one at definition.
+
+
+=== 3.4.15 Method \ function definition ===
+
+A method or a function are defined using the 'func' keyword.
+
+func bar()
+{
+  print("bar");
+}
+
+Function's name should be a proper identificator, parenthesis are compulsory,
+whileas the curly brackets are not (if your function fits a single line).
+
+By default, functions are registered in the global namespace, unless they are
+nested into a class or the function name specifies that explicitly:
+
+func my_namespace::some_class::bla()
+  return "zomg";
+  
+It should be also noted that as Malco is completely object-oriented, the term
+'function' is more or less formal. Actually it's a static method defined in
+the Core class, where Malco script's main code is executed.
+  
+  
+=== 3.4.16 Operator redefinition ===
+
+To avoid confusion and name mixup, all the 'magic' functions that are stealthly
+called by Malco, such as user-defined operators, constructors, destructors and
+so on are defined using the 'op' keyword, not 'func'. They have literary names
+instead of operator signs, so that any method ever defined, magic or not, will
+still have a proper identificator name.
+
+add($obj)                    - (+) add $obj to self
+sub($obj)                    - (-) subtract $obj from self
+div($obj)                    - (/) divide self by $obj
+mult($obj)                   - (*) multiply self by $obj
+rem($obj)                    - (%) take remainder from division of self by $obj
+pow($obj)                    - (**) take self to power of $obj
+
+shl($val)                    - (<<) left binary shift
+shr($val)                    - (>>) right binary shift
+and($obj)                    - (&) binary conjunction
+or($obj)                     - (|) binary disjunction
+xor($obj)                    - (^) binary xor
+
+idx_get($idx, ...)           - ([...]) indexation
+idx_set($value, $idx, ...)   - ([...] =) index-assignment
+inc()                        - (++) increment
+dec()                        - (--) decrement
+
+cmp($obj)                    - (<=>) universal comparator
+equal($obj)                  - (==) compare for equality
+less($obj)                   - (<) compare for being less
+greater($obj)                - (>) compare for being greater
+
+create($val, ...)            - constructor
+destroy()                    - destructor
+
+Please note that all function defined as operator are 'magical' and may not be
+called by the user directly. They are only invoked by the interpreter itself
+when the need arises. This means that you may call your functions (defined with
+'func') the same names.
+
+There is a special trick about constructors and destructors. If you define a
+constructor outside of any class definition, it will be called before any other
+code is executed, serving as a global initialize function. A destructor can also
+be defined like this and will be called when the script ends, either because
+the end has been reached or a die() call has been made. This may sound unusual
+at first, but taking into consideration that Malco scripts run within the 'object'
+class, it is pretty logical to allow the user redefine it's operators as well.
+
+It's not possible to overload prefix and postfix increment operators independently.
+It will be one and the same operator, just the order of it's execution will differ.
+
+The main comparison operators are ==, < and >. All others (!=, <=, >= and <=>) are
+infered from them using logical predicates, however it's possible to overload <=>
+manually.
+
+Most operators are not locked to a special type they return, however comparison
+operators (equal, less, greater) should always return a boolean (or it's descendant),
+and create and destroy should return nothing. In other case an exception will be
+raised. The inc and dec operators also return the object itself, so you shouldn't
+return anything from them either.
+
+
+=== 3.4.17 Namespaces handling ===
+
+A namespace (as in C++) in Malco is just a class with methods and variables
+defined as static. The whole class can also be marked as static. The methods
+are called this way:
+
+namespace1::subnamespace::func($a, $b);
+
+Variables are accessed similarly:
+
+namespace1::subnamespace::$val = 1;
+
+
+=== 3.4.18 Exception handling ===
+
+Exceptions are a general way of error handling in Malco. They can be either
+thrown by RVM itself, in case something went wrong, or by the user. The special
+mcException class provides needed functionality.
+
+A mcException object contains four fields:
+
+  * line:     the line, at which the exception is thrown
+  * file:     the file, in which the exception occured
+  * type:     exception type for comparing
+  * message:  detailed information about what actually went wrong
+  
+Line is an integer, file and type are strings. Message usually is also a
+string, however it can be any other type of object, except for another instance
+of mcException - it's doubtful that such a need ever arises.
+
+When 'throw' recieves a mcException object, it throws it immediately. When the
+parameter is any other object, it is used as 'message'. The 'type' is then set
+to 'err_user'.
+
+The exception-handling construction is as follows:
+
+  try
+  {
+    // unsafe block
+  }
+  catch($except)
+  {
+    // exception handling code goes here
+  }
+  else
+  {
+    // no exception has occured
+  }
+  
+It is obviously possible to omit 'catch' and 'else' blocks and curly braces.
+  
+C++ and Java users should note that in Malco, there is only one catch block,
+as exceptions are not distinguished by class names.
+
+If an exception is thrown by RVM itself, it's 'type' and 'message' are filled
+with appropriate values as shown below in 3.4.19.1. If the exception, either
+user- or core-generated, is not catched, RVM stops and prints the information.
+If 'message' is not a mcString, the to_s() method will be called.
+
+==== 3.4.18.1 Exception types ====
+
+The exception types that might arise are as follows:
+
+  * err_args:        ^  built-in function arguments are of incorrect type
+  * err_internal:       something horrible has apparently happened
+  * err_io:          ^  input/output error (file can't be read/written, etc)
+  * err_loop:           an array is assigned to it's sub-element, or an
+                        object to it's member, either directly or not
+  * err_member:         the object doesn't have a member with such name
+  * err_method:         the object doesn't have a method with such name
+  * err_regexp:         regular expression syntax is incorrect (regexps are
+                        checked for validity only at runtime!)  
+  * err_script:         an included file or an evaluated string contains
+                        invalid Malco syntax               
+  * err_security:    ^  tainted data used in SQL statements or includes
+  * err_signal:         application recieved an interruption signal
+  * err_var_undef:   ^  variable or array item is used in an expression but
+                        it hasn't been yet assigned any value
+  * err_user:           user-thrown error
+  * err_wtf:         ^  expression doesn't make sense with current types of
+                        object it includes (eg. lambda multiplied by string)
+  * err_zero_div:    ^  something is divided by zero
+  
+The ^ sign states that these exceptions are thrown only in 'strict' mode.
+
+==== 3.4.18.2 Exception modes ====
+
+Malco can run a script in one of the following specified exception modes:
+
+  * silent:       This mode is to be used at production servers. No errors
+                  are ever printed, and if an exception arises, the script
+                  silently dies, leaving a message in the error log.
+                  The ^-marked exceptions are thrown.
+  * slick:        This mode is for those programmers, who are confident in
+                  their code and want to use Malco's perks to make the code
+                  witty and pleasing.
+                  The ^-marked exceptions are not thrown; senseless expressions
+                  and abused functions silently return an 'undef' value.
+  * strict:       This mode is used to test and debug Malco scripts.
+                  The ^-marked exceptions are thrown, notifications are
+                  printed to log file.
+ 
+
+ 
+= 4. Malco 2.0 =
+
+Whileas Malco 1.0 is still under heavy development and isn't yet even an alpha
+version, some worthy but big ideas already pop up. If we try to implement them
+in current version, we'll never release anything, but they're noted for future
+releases.
+
+== 4.1. Multithreading ==
+
+This is the most vital thing to make in Malco 2.0. It includes, first of all,
+the ability of Malco scripts to run several threads (for example, pass a lambda
+function to another thread and so on), as well as thread interaction and thread
+safety - mutexes, semaphores and so on.
+
+== 4.2. Continuations ==
+
+As subtraction is the opposite operation to addition, continuations are opposite
+to throwing an error. Consider the following code:
+
+$arr = 1..10.to_a();
+
+try
+  myfunc($arr);
+catch($exc)
+{
+  print $exc;
+  continue $exc;
+}
+
+func myfunc($array)
+{
+  foreach($item in $array)
+    throw "The value is" << $item << "!";
+}
+
+Using 'continue' the control is being returned to where the 'throw' statement
+was, keeping the context, thus allowing the 'foreach' loop to merrily run through
+all values of the array.
+
+This feature is rather obscure and might render the code hard to understand, however
+according to Malco's dogmate #4 the system should provide useful tools and it's up to
+the programmer whether to use them or not.
+
+== 4.3 Match ==
+
+Match is an alternative to switch keyword, originating from the fun land of functional
+programming. It provides a much more powerful syntax, being able to process lists:
+
+match($mark1, $mark2)
+{
+  case "5", "5": print("perfect");
+  case (_, 5) | (5, _): print("semiperfect");
+  default:  print("you suck");
+}
+
+== 4.4. Properties ==
+
+As seen in many programming languages, properties look like members but work like
+methods, allowing the user to execute a function when a member is requested or
+written. This is not currently possible in Malco, because it's more a syntactic
+sugar than a real language feature, but it's planned in future versions.

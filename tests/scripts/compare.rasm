@@ -1,0 +1,11 @@
+LOADAX "a"
+LOADBX "b"
+EQ
+JTRUE "testy"
+LOADBX "fail"
+JMP "end"
+  LABEL "testy"
+LOADBX "win"
+  LABEL "end"
+CALL "print"
+EXIT

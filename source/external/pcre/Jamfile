@@ -1,0 +1,8 @@
+project
+  : usage-requirements <include>include <define>PCRE_STATIC
+  ;
+
+lib pcre
+  : 
+  : <file>lib/pcre.lib <link>static
+  ;
