@@ -186,7 +186,7 @@ inline bool ic_array::to_b()
  */
 inline long ic_array::to_i()
 {
-  return mItems->length();
+  return length();
 }
 
 /**

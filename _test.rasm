@@ -11,14 +11,15 @@ LABEL "start"
 
 LOADAX 1
 PUSHSRC
-LOADAX 100
+LOADAX 50
 PUSHSRC
 NEW "range"
 CALL "to_a"
 POPSRC
 
-LOADBX CONST "iter"
-CALL "select"
+NSP "math"
+LOADBX CONST "even"
+CALL "select!"
 POPSRC
 
 CALL "inspect"

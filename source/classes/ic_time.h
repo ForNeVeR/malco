@@ -137,7 +137,7 @@ inline double ic_time::to_f()
  */
 inline long ic_time::to_i()
 {
-  return (long)mTimestamp;
+  return get();
 }
 
 /**
@@ -238,7 +238,7 @@ inline ic_time &ic_time::operator-(long right)
  */
 inline ic_time &ic_time::operator-(ic_time &right)
 {
-  set((long)right.mTimestamp + (long)mTimestamp);
+  set((long)right.mTimestamp - (long)mTimestamp);
   return *this;
 }
 
@@ -248,7 +248,7 @@ inline ic_time &ic_time::operator-(ic_time &right)
  */
 inline ic_time &ic_time::operator--()
 {
-  set((long)++mTimestamp);
+  set((long)--mTimestamp);
   return *this;
 }
 
@@ -258,7 +258,7 @@ inline ic_time &ic_time::operator--()
  */
 inline ic_time &ic_time::operator--(int wtf)
 {
-  set((long)++mTimestamp);
+  set((long)--mTimestamp);
   return *this;
 }
 
