@@ -1,4 +1,9 @@
-﻿# RASM artifacts
+/.vs/
+
+Debug/
+obj/
+
+# RASM artifacts
 *.rbc
 *.rdt
 *.rst
