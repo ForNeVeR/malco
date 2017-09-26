@@ -8,42 +8,6 @@
 #ifndef M_MATH_H
 #define M_MATH_H
 
-#if defined(__GNUC__)
-  #define ADVANCED_MATH
-#endif
-
-#ifndef ADVANCED_MATH
-/* Inverse hyperbolic functions and cubic root function are not part of the ISO C++ Standard but
-   they are part of some standard libraries implementations, so we have to define these functions
-   here for some compilers. */
-
-inline static double acosh(const double &arg)
-{
-  return log(arg + sqrt(arg * arg - 1.0));
-}
-
-inline static double asinh(const double &arg)
-{
-  return log(arg + sqrt(arg * arg + 1.0));
-}
-
-inline static double atanh(const double &arg)
-{
-  return 0.5 * log((1.0 + arg) / (1.0 - arg));
-}
-
-inline static double cbrt(const double &arg)
-{
-  return pow(arg, 1.0 / 3.0);
-}
-
-inline static double log2(const double &arg)
-{
-  return log(arg) / log(2.0);
-}
-
-#endif // ADVANCED_MATH
-
 /**
  * Returns an absolute value of the argument.
  */
