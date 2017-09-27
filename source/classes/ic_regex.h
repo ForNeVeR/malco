@@ -8,24 +8,14 @@
 #ifndef IC_REGEX_H
 #define IC_REGEX_H
 
-const unsigned char* ic_regex::mLocaleTables = NULL;
-
-/**
- * Initializes regex by creating tables (static).
- */
-void ic_regex::init()
-{
-  mLocaleTables = (const unsigned char*)pcre_maketables();
-}
+#include <memory>
+#include <regex>
 
 /**
  * ic_regex constructor.
  */
 ic_regex::ic_regex()
 {
-  if(!mLocaleTables) init();
-  mRegEx = NULL;
-  mExtra = NULL;
   mPattern = NULL;
   mErrorOffset = -1;
   mOptions = 0;
@@ -37,9 +27,6 @@ ic_regex::ic_regex()
  */
 ic_regex::ic_regex(const char *pattern)
 {
-  if(!mLocaleTables) init();
-  mRegEx = NULL;
-  mExtra = NULL;
   mPattern = NULL;
   mErrorOffset = -1;
   mOptions = 0;
@@ -53,9 +40,6 @@ ic_regex::ic_regex(const char *pattern)
  */
 ic_regex::ic_regex(ic_regex* regex)
 {
-  if(!mLocaleTables) init();
-  mRegEx = NULL;
-  mExtra = NULL;
   mPattern = NULL;
   mErrorOffset = -1;
   mOptions = 0;
@@ -68,8 +52,6 @@ ic_regex::ic_regex(ic_regex* regex)
  */
 ic_regex::~ic_regex()
 {
-  delete mRegEx;
-  delete mExtra;
 }
 
 /**
@@ -78,10 +60,19 @@ ic_regex::~ic_regex()
  */
 void ic_regex::set(const char *pattern)
 {
+  set(pattern, std::regex::flag_type{});
+}
+
+/**
+* Assigns a new regular expression.
+* @param pattern Pointer to source string to be compiled.
+* @param flags Initial flags of the regex.
+*/
+void ic_regex::set(const char *pattern, std::regex::flag_type flags)
+{
   // validate pattern
   register long idx;
   long new_len = strlen(pattern);
-  int options = 0;
   char chr;
   if(*pattern != '/')
   {
@@ -96,25 +87,13 @@ void ic_regex::set(const char *pattern)
     chr = *(pattern+idx);
     if(chr == 'i')
     {
-      options |= PCRE_CASELESS;
-      continue;
-    }
-
-    if(chr == 's')
-    {
-      options |= PCRE_DOTALL;
-      continue;
-    }
-
-    if(chr == 'm')
-    {
-      options |= PCRE_MULTILINE;
+      flags |= std::regex::icase;
       continue;
     }
 
     if(chr == 'x')
     {
-      options |= PCRE_EXTENDED;
+      flags |= std::regex::extended;
       continue;
     }
 
@@ -146,20 +125,16 @@ void ic_regex::set(const char *pattern)
   mPattern = new char[new_len+1];
   if(!mPattern) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   strcpy(mPattern, pattern);
-  mOptions = options;
+  mOptions = flags;
 
   // compile regular expression
-  delete mRegEx;
-  delete mExtra;
-  mExtra = NULL;
-
-  char *tmp_buf = new char[idx+1];
-  if(!tmp_buf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
-  strncpy(tmp_buf, pattern+1, idx-1);
-  tmp_buf[idx-1]='\0';
-  mRegEx = pcre_compile(tmp_buf, options, &pError, &mErrorOffset, mLocaleTables);
-  if(pError) ERROR(M_ERR_BAD_REGEXP, M_EMODE_ERROR);
-  delete [] tmp_buf;
+  const auto tmp_buf = std::string(pattern + 1, idx - 1);
+  try {
+    mRegEx = std::regex(tmp_buf, flags);
+  } catch (const std::regex_error &error) {
+    pError = error.what();
+    ERROR(M_ERR_BAD_REGEXP, M_EMODE_ERROR);
+  }
 }
 
 /**
@@ -171,24 +146,28 @@ void ic_regex::set(const char *pattern)
  */
 ic_match *ic_regex::match(const char *str, int offset, long len)
 {
-  if(!mRegEx)
+  if(mPattern == nullptr)
     ERROR(M_ERR_BAD_REGEXP, M_EMODE_ERROR);
 
   if(!len) len = strlen(str);
 
-  ic_match *match = new ic_match();
+  auto match = std::unique_ptr<ic_match>(new ic_match());
 
-  match->mCount = pcre_exec(mRegEx, mExtra, str, len, offset, 0, match->mMatches, REGEX_MAX_MATCHES*2);
-  if(match->mCount < 0)
+  auto search = std::cregex_iterator(str + offset, str + len, mRegEx);
+  auto end = std::cregex_iterator();
+  auto count = 0;
+  for(auto i = 0; i < REGEX_MAX_MATCHES && search != end; ++i, ++search)
   {
-    delete match;
-    return NULL;
+    ++count;
+    auto begin = offset + search->position();
+    auto end = begin + search->length();
+    match->mMatches[i * 2] = begin;
+    match->mMatches[i * 2 + 1] = end;
   }
-  else
-  {
-    match->pString = str;
-    return match;
-  }
+  
+  match->mCount = count;
+  match->pString = str;
+  return match.release();
 }
 
 /**
@@ -207,13 +186,11 @@ ic_match *ic_regex::match(ic_string *str, int offset)
  */
 inline void ic_regex::study()
 {
-  if(!mRegEx) return;
+  if(mPattern == nullptr) return;
 
-  if(!mExtra)
+  if(!(mRegEx.flags() & std::regex::optimize))
   {
-    const char *errptr;
-    mExtra = pcre_study(mRegEx, 0, &errptr);
-    if(errptr) mExtra = NULL;
+    set(mPattern, std::regex::optimize);
   }
 }
 
@@ -271,9 +248,6 @@ ic_regex &ic_regex::operator=(const char *right)
  */
 ic_regex &ic_regex::operator=(ic_regex &right)
 {
-  if(!mLocaleTables) init();
-  mRegEx = NULL;
-  mExtra = NULL;
   mPattern = NULL;
   pError = NULL;
   mErrorOffset = -1;

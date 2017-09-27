@@ -87,7 +87,7 @@ classes, methods, functions, namespaces and anything else that requires a block.
 Curly braces are only necessary when defining a lambda function.
 
 
-== 2.1 Data types == 
+== 2.1 Data types ==
 
 Malco's variables are universal containers and can store whatever data type you
 put there. A 'duck typing' technique is employed.
@@ -202,7 +202,7 @@ Literal:  (none)
 
 Example:  $val = new mcTime('2008-08-26 11:37:00');
           $val += 2 * 3600;
-          print($val); // 2008-08-2006 13:37:00 
+          print($val); // 2008-08-2006 13:37:00
 
 
 === 2.1.9 regexp ===
@@ -210,12 +210,12 @@ Example:  $val = new mcTime('2008-08-26 11:37:00');
 Description: A class to store a regular expression and perform matches, replaces
 and other actions with it.
 
-Literal:  /\/(.+?)\/[ismx]*/
+Literal:  /\/(.+?)\/[ix]*/
 
 Example:  $a = /[0-9]/i;
           /[a-z]{10}/.match('abcdefghik');
-          
-          
+
+
 === 2.1.10 match ===
 
 Description: A class to store information about a match.
@@ -236,9 +236,9 @@ Literal:  [ ... ]
 
 Example:  $a = [1, 2, 3];
           $val = [1.2, 'test', [1, 2, 3], { print('zomg'); }];
-          
-          
-=== 2.1.12 exception ===          
+
+
+=== 2.1.12 exception ===
 
 Description: a class to handle exceptions. Contains 4 fields - line, file, type
 and message. When the 'throw' instruction is executed, it is automatically
@@ -322,15 +322,15 @@ Meaning:    For values, allows them to retain value between function calls. For
             to a particular object. More info can be found in section 2.2.5.
             Marking class as static instantly declares all it's methods and
             members as static.
-            
+
 ==== 2.2.2.3 Abstract ====
 
 Literal:   'stub'
 Apply to:   classes
 Meaning:    Makes a class abstract, preventing users from creating instances of
             it. Can be used to implement interfaces in Malco.
-            
-==== 2.2.2.4 Final ====            
+
+==== 2.2.2.4 Final ====
 
 Literal:   'final'
 Apply to:   methods, classes
@@ -340,7 +340,7 @@ Meaning:    When a method is defined as final, it cannot be overridden any
             or even used as source of inheritance.
             Final classes cannot be marked as stub or contain undefined methods
             inherited from stub classes.
-            
+
 ==== 2.2.2.5 Once ====
 
 Literal:    'once'
@@ -375,7 +375,7 @@ class myclass (mcInteger)
 {
   func double()
   {
-    print($@*2);       
+    print($@*2);
   }
 }
 
@@ -439,7 +439,7 @@ custom objects:
 class foo
 {
   op create() print("I'm a constructor!");
-  
+
   op destroy() print("I'm a destructor!");
 }
 
@@ -627,7 +627,7 @@ may be altered and which are not.
 func foo($a, $b, $c)
 {
   print($a << ', ' << $b << ', ' << $c);
-  $a++;       
+  $a++;
   $b++;
   $c++;
 }
@@ -1108,7 +1108,7 @@ case_up!()                - convert string to uppercase
 chars()                   - return an array of characters
 gsub($s, $rep)            - replaces all occurencies of $s with $rep
 has($str)                 - checks if the string has a substring
-insert($str, $offset)     - returns a string with $str inserted at $offset 
+insert($str, $offset)     - returns a string with $str inserted at $offset
 insert!($str, $offset)    - inserts $str at $offset
 is_alnum()                - check if the string has only alphanumerical characters
 is_alpha()                - checks if the string has only letters
@@ -1282,7 +1282,7 @@ sort_shell!()             - shellsorts array
 shuffle()                 - shuffles array indexes
 sum()                     - arithmetically sums all items in the array
 taint_all!()              - taints all objects in the array
-unique()                  - returns an array of unique items  
+unique()                  - returns an array of unique items
 unique!()                 - removes all duplicate items from array
 untaint_all!()            - untaints all objects in the array
 zip($array)               - returns an array with items zipped
@@ -1320,7 +1320,7 @@ Method names represent the action they perform or the value they return,
 depending on what is more important or descriptive. It's best to choose a
 short word and omit unneeded details, as long as it's still clear what the
 method does or returns, like "has()" - not "contains()" and not "has_value()".
-  
+
 Abbreviations are also possible, so that you can name your method "min" instead
 or "minimum" or "minimal". Another good guideline is to name similar methods
 with a common prefix, like "trim_left" and "trim_right" or "to_*()" convertors.
@@ -1577,12 +1577,12 @@ nested into a class or the function name specifies that explicitly:
 
 func my_namespace::some_class::bla()
   return "zomg";
-  
+
 It should be also noted that as Malco is completely object-oriented, the term
 'function' is more or less formal. Actually it's a static method defined in
 the Core class, where Malco script's main code is executed.
-  
-  
+
+
 === 3.4.16 Operator redefinition ===
 
 To avoid confusion and name mixup, all the 'magic' functions that are stealthly
@@ -1669,7 +1669,7 @@ A mcException object contains four fields:
   * file:     the file, in which the exception occured
   * type:     exception type for comparing
   * message:  detailed information about what actually went wrong
-  
+
 Line is an integer, file and type are strings. Message usually is also a
 string, however it can be any other type of object, except for another instance
 of mcException - it's doubtful that such a need ever arises.
@@ -1692,9 +1692,9 @@ The exception-handling construction is as follows:
   {
     // no exception has occured
   }
-  
+
 It is obviously possible to omit 'catch' and 'else' blocks and curly braces.
-  
+
 C++ and Java users should note that in Malco, there is only one catch block,
 as exceptions are not distinguished by class names.
 
@@ -1715,9 +1715,9 @@ The exception types that might arise are as follows:
   * err_member:         the object doesn't have a member with such name
   * err_method:         the object doesn't have a method with such name
   * err_regexp:         regular expression syntax is incorrect (regexps are
-                        checked for validity only at runtime!)  
+                        checked for validity only at runtime!)
   * err_script:         an included file or an evaluated string contains
-                        invalid Malco syntax               
+                        invalid Malco syntax
   * err_security:    ^  tainted data used in SQL statements or includes
   * err_signal:         application recieved an interruption signal
   * err_var_undef:   ^  variable or array item is used in an expression but
@@ -1726,7 +1726,7 @@ The exception types that might arise are as follows:
   * err_wtf:         ^  expression doesn't make sense with current types of
                         object it includes (eg. lambda multiplied by string)
   * err_zero_div:    ^  something is divided by zero
-  
+
 The ^ sign states that these exceptions are thrown only in 'strict' mode.
 
 ==== 3.4.18.2 Exception modes ====
@@ -1745,9 +1745,9 @@ Malco can run a script in one of the following specified exception modes:
   * strict:       This mode is used to test and debug Malco scripts.
                   The ^-marked exceptions are thrown, notifications are
                   printed to log file.
- 
 
- 
+
+
 = 4. Malco 2.0 =
 
 Whileas Malco 1.0 is still under heavy development and isn't yet even an alpha

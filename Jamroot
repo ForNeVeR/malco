@@ -1,2 +1,2 @@
 # Main
-exe malco : source/main.cpp source/external/pcre//pcre ;
+exe malco : source/main.cpp ;
