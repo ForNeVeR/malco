@@ -2,8 +2,8 @@
 
 You have 2 options to build malco:
 
-- 1 (Windows only) - 
-Open malco.sln file with Microsoft Visual Studio 2008 (free Express edition must be ok). Building
+- 1 (Windows only) -
+Open malco.sln file with Microsoft Visual Studio 2013 (free Community edition must be ok). Building
 project will create directory `Debug` or `Release`, depending on selected configuration, with all of
 the needed binaries inside.
 
