@@ -1,9 +1,1 @@
-/.vs/
-
-Debug/
-obj/
-
-# RASM artifacts
-*.rbc
-*.rdt
-*.rst
+/build/
