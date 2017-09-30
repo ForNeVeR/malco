@@ -6,5 +6,5 @@ indent_style = space
 indent_size = 4
 insert_final_newline = true
 
-[*.{cpp,h}]
+[*.{cpp,h,yml}]
 indent_size = 2
