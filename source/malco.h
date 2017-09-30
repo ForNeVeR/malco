@@ -121,11 +121,21 @@
 #define M_CLASS_EXCEPTION                 15
 #define M_CLASS_OTHER                     42
 
+// platform
+#ifdef _WIN32
+#define MALCO_PLATFORM                    M_PLATF_WIN32
+#elif defined(__gnu_linux__)
+#define MALCO_PLATFORM                    M_PLATF_NIX
+#elif __APPLE__ && __MACH__
+#define MALCO_PLATFORM                    M_PLATF_MAC
+#else
+#define MALCO_PLATFORM                    M_PLATF_WTF
+#endif
+
 // misc info
 #define MALCO_VERSION                     "1.0"
 #define MALCO_RELEASE                     "0.0.1"
 #define MALCO_BUILD                       1
-#define MALCO_PLATFORM                    M_PLATF_WIN32
 #define MALCO_UNICODE                     0
 #define MALCO_DEBUG                       1
 #define MALCO_COPYRIGHT                   "(c) Impworks & ForNeVeR, 2006-#inf"
