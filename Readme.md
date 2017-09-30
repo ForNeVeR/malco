@@ -1,4 +1,4 @@
-Malco programming language [![Appveyor][badge-appveyor]][appveyor]
+Malco programming language [![Appveyor build][badge-appveyor]][appveyor] [![Travis build][badge-travis]][travis]
 ==========================
 
 Malco is a high-level interpreted programming language aimed at creating
@@ -42,5 +42,7 @@ Check out the [docs folder][docs].
 [cmake]: https://cmake.org/
 [fornever]: https://github.com/ForNeVeR/
 [impworks]: https://github.com/impworks/
+[travis]: https://travis-ci.org/ForNeVeR/malco
 
 [badge-appveyor]: https://ci.appveyor.com/api/projects/status/mngu2ri0wwr09vfn/branch/master?svg=true
+[badge-travis]: https://travis-ci.org/ForNeVeR/malco.svg?branch=master
