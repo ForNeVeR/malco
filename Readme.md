@@ -26,6 +26,11 @@ $ cmake .. # -G "Visual Studio 15 2017 Win64" or another supported generator
 $ cmake --build .
 ```
 
+### Note for Visual Studio users
+
+You may also open a folder with `CMakeLists.txt` directly in Visual Studio 2017
+(using menu item File → Open → Folder…).
+
 Documentation
 -------------
 
