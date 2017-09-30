@@ -60,7 +60,7 @@ void sc_md5::init()
  * @param buf Pointer to string buffer
  * @param len Length of string buffer
  */
-void sc_md5::update (const char *buf, int len)
+void sc_md5::update (const unsigned char *buf, int len)
 {
   uint32_t in[16];
   int mdi;
@@ -97,7 +97,7 @@ void sc_md5::update (const char *buf, int len)
  */
 void sc_md5::finish()
 {
-  char PADDING[64] = {
+  unsigned char PADDING[64] = {
     0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -267,7 +267,7 @@ char *sc_md5::string(const char *str, int len = 0)
 {
   if(!len) len = strlen(str);
   init();
-  update(str, len);
+  update(reinterpret_cast<const unsigned char *>(str), len);
   finish();
 
   return make_readable();

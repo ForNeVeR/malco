@@ -52,11 +52,9 @@ const char *ic_int::to_s()
 {
   delete mStrBuf;
 
-  if(mValue < 999999)
-    mStrBuf = new char[7];
-  else
-    mStrBuf = new char[11];
-  ltoa(mValue, mStrBuf, 10);
+  auto val = std::to_string(mValue);
+  mStrBuf = new char[val.size() + 1];
+  std::strncpy(mStrBuf, val.c_str(), val.size());
   return mStrBuf;
 }
 

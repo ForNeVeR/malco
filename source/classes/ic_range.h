@@ -149,14 +149,16 @@ const char *ic_range::to_s()
   if(!mStrBuf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
 
   // convert first number
-  ltoa(mStart, mStrBuf, 10);
+  auto number = std::to_string(mStart);
+  std::strncpy(mStrBuf, number.c_str(), 10);
 
   // add dots
   for(idx=0; idx<20; idx++)
     if(*(mStrBuf+idx) == '\0') break;
   strcpy(mStrBuf + idx, "..");
 
-  ltoa(mEnd, mStrBuf+idx+2, 10);
+  number = std::to_string(mEnd);
+  std::strncpy(mStrBuf + idx + 2, number.c_str(), 10);
 
   return mStrBuf;
 }

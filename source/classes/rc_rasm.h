@@ -8,6 +8,8 @@
 #ifndef RC_RASM_H
 #define RC_RASM_H
 
+#include <cstdint>
+
 // TODO: Add static command parameters checking.
 
 /**
@@ -57,7 +59,7 @@ void rc_rasm::assemble(const ic_string *path)
   sc_voidarray *lines = mCode.split("\n");
   int lineIndex = 0;
   int command_counter = 0;
-  
+
   // Label processing loop:
   for(lineIndex = 0; lineIndex < lines->length(); ++lineIndex)
   {
@@ -140,7 +142,7 @@ ic_string *rc_rasm::get_error_filename()
 void rc_rasm::process_line(ic_string *line)
 {
   ic_string *command_name = extract_command_name(line);
-  
+
   // Pseudo commands:
   if(*command_name == "LABEL")
   {
@@ -155,7 +157,7 @@ void rc_rasm::process_line(ic_string *line)
       ic_string *current_class = get_current_class();
       ic_string *error_msg = ic_string::format(M_ERR_RASM_NESTED_METHOD,
         func_name->get(), current_class->get());
-      
+
       delete command_name;
       delete func_name;
       delete current_class;
@@ -167,21 +169,22 @@ void rc_rasm::process_line(ic_string *line)
     int min_args = extract_int_parameter(line, 1);
     bool splat = !has_parameter(line, 2);
     int max_args = splat ? min_args : extract_int_parameter(line, 2);
-    
+
     if((modifiers & !M_PROP_FINAL & !M_PROP_STATIC & !M_PROP_PRIVATE &
       !M_PROP_PUBLIC) != 0)
     {
       ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD,
         func_name->get());
-      
+
       delete command_name;
       ERROR(error_msg, M_EMODE_COMPILE);
     }
 
     ic_string *current_class = get_current_class();
 
+    auto names = sc_voidarray();
     mDefTable.add_method(func_name->get(), current_class->get(), modifiers,
-      mTape.length(), min_args, max_args, splat, &sc_voidarray());
+      mTape.length(), min_args, max_args, splat, &names);
 
     delete current_class;
   }
@@ -194,7 +197,7 @@ void rc_rasm::process_line(ic_string *line)
     {
       ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD,
         class_name->get());
-      
+
       delete command_name;
       ERROR(error_msg, M_EMODE_COMPILE);
     }
@@ -213,7 +216,7 @@ void rc_rasm::process_line(ic_string *line)
     mDefTable.add_class(class_name->get(), parent_name->get(), modifiers,
       current_class->get());
     delete current_class;
-    
+
     char *class_name_cstr = new char[class_name->length() + 1];
     std::strcpy(class_name_cstr, class_name->get());
     mClassNameStack.add(class_name_cstr);
@@ -231,7 +234,7 @@ void rc_rasm::process_line(ic_string *line)
     {
       ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD,
         var_name->get());
-      
+
       delete command_name;
       ERROR(error_msg, M_EMODE_COMPILE);
     }
@@ -255,7 +258,7 @@ void rc_rasm::process_line(ic_string *line)
       {
         delete[] (char *)mVariables[0];
         mVariables.del(0);
-      }      
+      }
     }
     else
     {
@@ -275,7 +278,7 @@ void rc_rasm::process_line(ic_string *line)
     {
       ic_string *msg = ic_string::format(M_ERR_RASM_UNKNOWN_CMD,
         command_name->get());
-      
+
       delete command_name;
       ERROR(msg, M_EMODE_COMPILE);
     }
@@ -290,13 +293,13 @@ void rc_rasm::process_line(ic_string *line)
       ic_string *label_name = extract_string_parameter(line);
       if(mLabelMap.find(label_name->get()))
       {
-        cmd.mParam.addr = (int)mLabelMap[label_name];
+        cmd.mParam.addr = reinterpret_cast<intptr_t>(mLabelMap[label_name]);
       }
       else
       {
         ic_string *msg = ic_string::format(M_ERR_RASM_BAD_LABEL_NAME,
           label_name->get());
-        
+
         delete command_name;
         delete label_name;
         ERROR(msg, M_EMODE_COMPILE);
@@ -367,7 +370,7 @@ void rc_rasm::process_line(ic_string *line)
       else
       {
         ic_string *msg = ic_string::format(M_ERR_RASM_BAD_LINE, line->get());
-        
+
         delete command_name;
         ERROR(msg, M_EMODE_COMPILE);
       }
@@ -460,10 +463,10 @@ int rc_rasm::get_command_code(ic_string *command)
   // data transfer
   COMMAND_FIRST(LOADAX)
   COMMAND(LOADBX)
-  COMMAND(SAVEAX)     
-  COMMAND(SAVEBX)     
-  COMMAND(XCHG)       
-  COMMAND(ASSIGN)     
+  COMMAND(SAVEAX)
+  COMMAND(SAVEBX)
+  COMMAND(XCHG)
+  COMMAND(ASSIGN)
   COMMAND(UNSPLASSIGN)
 
   // basic operations
@@ -625,8 +628,9 @@ ic_string *rc_rasm::extract_command_name(ic_string *line)
 short rc_rasm::extract_modifiers(ic_string *line)
 {
   short modifiers = 0;
-  sc_voidarray *words = line->split(&ic_regex("/\\s+/"));
-  
+  auto regex = ic_regex("/\\s+/");
+  sc_voidarray *words = line->split(&regex);
+
   // First word is command name, so we start parsing from second.
   for(int i = 1; i < words->length(); ++i)
   {
@@ -705,7 +709,7 @@ ic_string *rc_rasm::extract_raw_parameter(ic_string *line, int index)
   {
     parameter = (ic_string *)words[absolute_parameter_index];
   }
-  
+
   // Delete all ic_string objects except returning one.
   for(int i = 0; i < words.length(); ++i)
   {

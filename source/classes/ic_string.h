@@ -8,6 +8,8 @@
 #ifndef IC_STRING_H
 #define IC_STRING_H
 
+#include <cstdint>
+
 //--------------------------------
 // ic_strbuffer
 //--------------------------------
@@ -574,7 +576,7 @@ long ic_string::replace(ic_regex *from, ic_string *to, long max)
 
       // append back reference
       if(idx < indexes->mLength)
-        append(found->get((int)indexes->mPtr[idx]));
+        append(found->get(reinterpret_cast<intptr_t>(indexes->mPtr[idx])));
     }
 
     offset = bounds[1];

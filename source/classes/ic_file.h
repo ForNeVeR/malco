@@ -130,12 +130,12 @@ void ic_file::close()
 /**
  * Reads bytes from file into ic_string and returns it.
  * @param size Number of bytes to read from file.
- * @return Flag indicating success of the operation.
+ * @return Data loaded from file or nullptr.
  */
 ic_string *ic_file::read(long size)
 {
   // is file open and readable?
-  if(!(mMode && IO_READ)) return false;
+  if(!(mMode && IO_READ)) return nullptr;
 
   // detect actual file size
   long tmpseek = ftell(mFile);

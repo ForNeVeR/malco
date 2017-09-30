@@ -1140,7 +1140,7 @@ class sc_md5
   char mReadable[33];           /**< Human-readable MD5 digest. */
 
   void init();
-  void update(const char *buf, int len);
+  void update(const unsigned char *buf, int len);
   void transform(uint32_t *buf, uint32_t *in);
   void finish();
   char *make_readable();
