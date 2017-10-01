@@ -662,6 +662,7 @@ class sc_exception
 
   sc_exception(const char *msg, int type, const char *file = NULL, long line = 0);
   sc_exception(ic_string *msg, int type, const char *file = NULL, long line = 0);
+  sc_exception(const sc_exception &original);
   ~sc_exception();
 };
 

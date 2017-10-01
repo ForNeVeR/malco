@@ -39,6 +39,18 @@ sc_exception::sc_exception(ic_string *msg, int type, const char *file, long line
 }
 
 /**
+ * sc_exception copy constructor.
+ * @param original The original object to copy.
+ */
+sc_exception::sc_exception(const sc_exception &original)
+{
+  mErrorMsg = new ic_string(*original.mErrorMsg);
+  mErrorType = original.mErrorType;
+  mFile = original.mFile;
+  mLine = original.mLine;
+}
+
+/**
  * sc_exception destructor.
  */
 sc_exception::~sc_exception()
