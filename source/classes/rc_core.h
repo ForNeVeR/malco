@@ -56,7 +56,7 @@ rc_core::~rc_core()
  */
 void rc_core::init()
 {
-  setlocale(LC_ALL, "Ñ");
+  setlocale(LC_ALL, "C");
 
   mState = M_STATE_INIT;
   mErrorMode = M_EMODE_DEFAULT;
