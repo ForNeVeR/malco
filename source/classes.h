@@ -1220,7 +1220,6 @@ class rc_core
   sc_ini *mSetup;               /**< Configuration. */
   rc_parser *mParser;           /**< Source code parser pointer. */
   rc_compiler *mCompiler;       /**< Compiler pointer. */
-  rc_rasm *mRasm;               /**< Radix assembler pointer. */
 
   ic_string *mSource;           /**< Source script. */
   rc_head *mHead;               /**< Execution head. */

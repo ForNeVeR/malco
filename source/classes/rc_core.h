@@ -8,6 +8,8 @@
 #ifndef RC_CORE_H
 #define RC_CORE_H
 
+#include <memory>
+
 /**
  * rc_core constructor.
  */
@@ -16,7 +18,6 @@ rc_core::rc_core()
   mSetup = NULL;
   mParser = NULL;
   mCompiler = NULL;
-  mRasm = NULL;
 
   mFile = NULL;
 
@@ -40,7 +41,6 @@ rc_core::~rc_core()
   delete mSetup;
   delete mParser;
   delete mCompiler;
-  delete mRasm;
 
   delete mSource;
   delete mHead;
@@ -581,6 +581,7 @@ int rc_core::task_run(const char *file)
 /**
  * Compiles current script into bytecode.
  * @todo implement.
+ * @returns 0 on success, 1 on error.
  */
 int rc_core::task_compile(const char *file)
 {
@@ -592,25 +593,30 @@ int rc_core::task_compile(const char *file)
   ic_string filename = file;
 
   // first check whether we compile .mlc or .rasm file.
-  ic_string *ext = filename.substr_get(filename.substr_last(".")+1);
+  auto ext = std::unique_ptr<ic_string>(filename.substr_get(filename.substr_last(".")+1));
   if(!ext->compare("rasm"))
   {
-    mRasm = new rc_rasm(this, mSource, mFile->get());
+    rc_rasm rasm(this, mSource, mFile->get());
 
     printf("Assembling file '%s'...\n", mFile->get());
     try
     {
-      mRasm->assemble(mFile);
+      rasm.assemble(mFile);
     }
     catch(const sc_exception &ex)
     {
-      printf("Exception in file '%s', line %d:\n%s",
-        mRasm->get_error_filename()->get(), mRasm->get_error_line_number(),
-        ex.mErrorMsg->get());
+      switch(ex.mErrorType)
+      {
+      case M_EMODE_COMPILE:
+      case M_EMODE_PARSE:
+        printf("Exception in file '%s', line %d:\n%s",
+          rasm.get_error_filename()->get(), rasm.get_error_line_number(),
+          ex.mErrorMsg->get());
+        return 1;
+      default: // critical error
+        throw;
+      }
     }
-
-    delete mRasm;
-    mRasm = NULL;
   }
   else
   {
