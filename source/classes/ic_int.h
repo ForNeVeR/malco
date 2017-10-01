@@ -54,7 +54,7 @@ const char *ic_int::to_s()
 
   auto val = std::to_string(mValue);
   mStrBuf = new char[val.size() + 1];
-  std::strncpy(mStrBuf, val.c_str(), val.size());
+  std::strncpy(mStrBuf, val.c_str(), val.size() + 1);
   return mStrBuf;
 }
 
