@@ -95,7 +95,7 @@ void rc_rasm::assemble(const ic_string *path)
       delete cleaned_line;
     }
   }
-  catch(sc_exception *)
+  catch(const sc_exception&)
   {
     // Set data for error condition:
     mLineNumber = lineIndex + 1;

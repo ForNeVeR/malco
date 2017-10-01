@@ -28,9 +28,9 @@ int main(int argc, char *argv[])
     int res = malco.process(argc, argv);
     return res;
   }
-  catch(sc_exception *ex)
+  catch(const sc_exception &ex)
   {
-    malco.error(*ex);
+    malco.error(ex);
     return -1;
   }
 

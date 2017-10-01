@@ -23,7 +23,7 @@ rc_core::rc_core()
   mSource = NULL;
   mHead = NULL;
   mTape = NULL;
-  
+
   mPlugins = NULL;
 
   mStrTable = NULL;
@@ -47,7 +47,7 @@ rc_core::~rc_core()
   delete mTape;
 
   delete mStrTable;
-  
+
   delete mPlugins;
 }
 
@@ -65,11 +65,10 @@ void rc_core::init()
   {
     mSetup = new sc_ini("malco.ini");
   }
-  catch(sc_exception *ex)
+  catch(const sc_exception &ex)
   {
-    if(!ex->mErrorMsg->compare(M_ERR_IO_NO_FILE))
+    if(!ex.mErrorMsg->compare(M_ERR_IO_NO_FILE))
     {
-      delete ex;
       ERROR(M_ERR_NO_SETUP, M_EMODE_INIT);
     }
     else
@@ -82,7 +81,7 @@ void rc_core::init()
   mHead = new rc_head(this);
 
   mStrTable = new rc_strtable();
-  
+
   mPlugins = new sc_voidmap();
 
   sc_random::seed(time(NULL));
@@ -571,9 +570,9 @@ int rc_core::task_run(const char *file)
     equip();
     printf("Processing file %s...", mFile);
   }
-  catch(sc_exception *ex)
+  catch(const sc_exception &ex)
   {
-    error_any(ex->mErrorMsg, ex->mErrorType);
+    error_any(ex.mErrorMsg, ex.mErrorType);
   }
 
   return 0;
@@ -603,12 +602,11 @@ int rc_core::task_compile(const char *file)
     {
       mRasm->assemble(mFile);
     }
-    catch(sc_exception *ex)
+    catch(const sc_exception &ex)
     {
       printf("Exception in file '%s', line %d:\n%s",
         mRasm->get_error_filename()->get(), mRasm->get_error_line_number(),
-        ex->mErrorMsg->get());
-      delete ex;
+        ex.mErrorMsg->get());
     }
 
     delete mRasm;
@@ -978,7 +976,7 @@ inline void rc_core::error(ic_string *msg)
  * Processes an internal error.
  * @param msg Error message.
  */
-inline void rc_core::error(sc_exception ex)
+inline void rc_core::error(const sc_exception &ex)
 {
   ic_string *str;
 

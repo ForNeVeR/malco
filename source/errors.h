@@ -16,9 +16,9 @@
 #endif
 
 #if MALCO_DEBUG == 1
-#define ERROR(msg, level) throw new sc_exception(msg, level, __FILE__, __LINE__)
+#define ERROR(msg, level) throw sc_exception(msg, level, __FILE__, __LINE__)
 #else
-#define ERROR(msg, level) throw new sc_exception(msg, level)
+#define ERROR(msg, level) throw sc_exception(msg, level)
 #endif
 
 /*

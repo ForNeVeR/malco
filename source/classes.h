@@ -1274,7 +1274,7 @@ class rc_core
   // error reporting
   void error(const char *msg);
   void error(ic_string *msg);
-  void error(sc_exception ex);
+  void error(const sc_exception &ex);
   void error(const char *msg, int mode, rc_head *head);
   void error_any(ic_string *msg, int mode);
 
