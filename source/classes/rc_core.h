@@ -72,7 +72,7 @@ void rc_core::init()
       ERROR(M_ERR_NO_SETUP, M_EMODE_INIT);
     }
     else
-      throw ex;
+      throw;
   }
 
   mFile = new ic_string();
@@ -630,7 +630,6 @@ int rc_core::task_compile(const char *file)
     mCompiler = NULL;
   }
 
-  delete ext;
   return 0;
 }
 
