@@ -18,12 +18,6 @@
 
 #include "malco.h"
 
-int test()
-{
-  int a = (1, 2, 3);
-  return a;
-}
-
 int main(int argc, char *argv[])
 {
   rc_core malco;
