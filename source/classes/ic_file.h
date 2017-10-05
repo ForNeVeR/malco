@@ -135,7 +135,7 @@ void ic_file::close()
 ic_string *ic_file::read(long size)
 {
   // is file open and readable?
-  if(!(mMode && IO_READ)) return nullptr;
+  if(!(mMode & IO_READ)) return nullptr;
 
   // detect actual file size
   long tmpseek = ftell(mFile);
@@ -160,7 +160,7 @@ ic_string *ic_file::read(long size)
 bool ic_file::write(const char *data, long size)
 {
   // is file open and writable?
-  if(!(mMode && IO_WRITE)) return false;
+  if(!(mMode & IO_WRITE)) return false;
 
   // detect filesize
   if(!size) size = strlen(data);
@@ -178,7 +178,7 @@ bool ic_file::write(const char *data, long size)
 bool ic_file::write(ic_string *data, long size)
 {
   // is file open and writable?
-  if(!(mMode && IO_WRITE)) return false;
+  if(!(mMode & IO_WRITE)) return false;
 
   // detect filesize
   if(!size) size = data->length();
