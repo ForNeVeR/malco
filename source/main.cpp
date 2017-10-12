@@ -33,6 +33,4 @@ int main(int argc, char *argv[])
     malco.error(ex);
     return -1;
   }
-
-  return 0;
 }

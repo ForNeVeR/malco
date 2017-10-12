@@ -986,13 +986,13 @@ inline void rc_core::error(const sc_exception &ex)
   ic_string *str;
 
 #if MALCO_DEBUG == 1
-  str = ic_string::format("Internal error: %s [file: %s, line %i]", ex.mErrorMsg->get(), ex.mFile, ex.mLine);
+  str = ic_string::format("Internal error: %s [file: %s, line %i]\n", ex.mErrorMsg->get(), ex.mFile, ex.mLine);
 #else
-  str = ic_string::format("Internal error: %s", ex.mErrorMsg->get());
+  str = ic_string::format("Internal error: %s\n", ex.mErrorMsg->get());
 #endif
 
   error_any(str, M_EMODE_ERROR);
-  //delete str;
+  delete str;
 }
 
 /**
