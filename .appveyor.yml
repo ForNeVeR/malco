@@ -13,6 +13,9 @@ before_build:
 build_script:
   - cmake --build . --config Release
 
+test_script:
+  - ps: ../scripts/test.ps1
+
 artifacts:
   - path: 'build/Release/*.exe'
     name: malco
