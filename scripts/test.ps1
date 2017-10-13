@@ -22,6 +22,7 @@ function Run-Test($test) {
     }
 }
 
+Set-Location $Root
 Get-ChildItem $TestScripts/*.rasm | ForEach-Object { Run-Test $_ }
 
 if (!$success) {
