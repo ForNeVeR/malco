@@ -15,7 +15,7 @@
 ic_time::ic_time(long tstamp)
 {
   mTimestamp = (time_t)tstamp;
-  mStrBuf = NULL;
+  mStrBuf    = NULL;
   memset(&mTime, 0, sizeof(struct tm));
 }
 
@@ -24,7 +24,7 @@ ic_time::ic_time(long tstamp)
  */
 ic_time::~ic_time()
 {
-  delete [] mStrBuf;
+  delete[] mStrBuf;
 }
 
 /**
@@ -33,7 +33,7 @@ ic_time::~ic_time()
 inline void ic_time::current()
 {
   mTimestamp = time(NULL);
-  mTime = *localtime(&mTimestamp);
+  mTime      = *localtime(&mTimestamp);
 }
 
 /**
@@ -43,7 +43,7 @@ inline void ic_time::current()
 inline void ic_time::set(long tstamp)
 {
   mTimestamp = (time_t)tstamp;
-  mTime = *localtime(&mTimestamp);
+  mTime      = *localtime(&mTimestamp);
 }
 
 /**
@@ -65,7 +65,7 @@ const char *ic_time::format(const char *format)
   long bufsize = 0, idx = 0;
   while(1)
   {
-    const char *curr = format+idx, *next = curr+1;
+    const char *curr = format + idx, *next = curr + 1;
     if(*curr == '\0') break;
 
     if(*curr == '%')
@@ -74,28 +74,28 @@ const char *ic_time::format(const char *format)
       // i doubt there's a better way tho'
       switch(*next)
       {
-        case 'a': bufsize += 3;   break;
-        case 'A': bufsize += 9;   break;
-        case 'b': bufsize += 3;   break;
-        case 'B': bufsize += 9;   break;
-        case 'c': bufsize += 24;  break;
-        case 'd': bufsize += 2;   break;
-        case 'H': bufsize += 2;   break;
-        case 'I': bufsize += 2;   break;
-        case 'j': bufsize += 3;   break;
-        case 'm': bufsize += 2;   break;
-        case 'M': bufsize += 2;   break;
-        case 'p': bufsize += 2;   break;
-        case 'S': bufsize += 2;   break;
-        case 'U': bufsize += 2;   break;
-        case 'w': bufsize ++;     break;
-        case 'W': bufsize += 2;   break;
-        case 'x': bufsize += 8;   break;
-        case 'X': bufsize += 8;   break;
-        case 'y': bufsize += 2;   break;
-        case 'Y': bufsize += 4;   break;
-        case 'z': bufsize += 3;   break;
-        case '%': bufsize ++;     break;
+        case 'a': bufsize += 3; break;
+        case 'A': bufsize += 9; break;
+        case 'b': bufsize += 3; break;
+        case 'B': bufsize += 9; break;
+        case 'c': bufsize += 24; break;
+        case 'd': bufsize += 2; break;
+        case 'H': bufsize += 2; break;
+        case 'I': bufsize += 2; break;
+        case 'j': bufsize += 3; break;
+        case 'm': bufsize += 2; break;
+        case 'M': bufsize += 2; break;
+        case 'p': bufsize += 2; break;
+        case 'S': bufsize += 2; break;
+        case 'U': bufsize += 2; break;
+        case 'w': bufsize++; break;
+        case 'W': bufsize += 2; break;
+        case 'x': bufsize += 8; break;
+        case 'X': bufsize += 8; break;
+        case 'y': bufsize += 2; break;
+        case 'Y': bufsize += 4; break;
+        case 'z': bufsize += 3; break;
+        case '%': bufsize++; break;
       }
       idx++;
     }
@@ -107,9 +107,9 @@ const char *ic_time::format(const char *format)
 
   delete mStrBuf;
 
-  mStrBuf = new char[bufsize+2];
+  mStrBuf = new char[bufsize + 2];
   if(!mStrBuf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
-  strftime(mStrBuf, bufsize+1, format, &mTime);
+  strftime(mStrBuf, bufsize + 1, format, &mTime);
   return mStrBuf;
 }
 
@@ -174,7 +174,7 @@ inline ic_time &ic_time::operator=(long right)
 inline ic_time &ic_time::operator=(ic_time &right)
 {
   mTimestamp = right.mTimestamp;
-  mTime = right.mTime;
+  mTime      = right.mTime;
   return *this;
 }
 
@@ -185,7 +185,7 @@ inline ic_time &ic_time::operator=(ic_time &right)
  */
 inline ic_time &ic_time::operator+(long right)
 {
-  set((long)mTimestamp+right);
+  set((long)mTimestamp + right);
   return *this;
 }
 
@@ -227,7 +227,7 @@ inline ic_time &ic_time::operator++(int wtf)
  */
 inline ic_time &ic_time::operator-(long right)
 {
-  set((long)mTimestamp-right);
+  set((long)mTimestamp - right);
   return *this;
 }
 

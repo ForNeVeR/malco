@@ -100,11 +100,10 @@ ic_string *ic_dir::iter_next()
 {
   return NULL;
 }
- 
+
 /**
  * Rewinds the directory iterator,
  */
 void ic_dir::iter_rewind()
 {
-
 }

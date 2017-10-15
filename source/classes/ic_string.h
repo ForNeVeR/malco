@@ -20,10 +20,10 @@
  */
 ic_strbuffer::ic_strbuffer(long cpc)
 {
-  mBuf = new char[cpc+1];
+  mBuf = new char[cpc + 1];
   if(!mBuf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
-  *mBuf = '\0';
-  mLength = 0;
+  *mBuf     = '\0';
+  mLength   = 0;
   mCapacity = cpc;
   pPrev = pNext = NULL;
 }
@@ -33,14 +33,14 @@ ic_strbuffer::ic_strbuffer(long cpc)
  */
 inline ic_strbuffer::~ic_strbuffer()
 {
-  delete [] mBuf;
+  delete[] mBuf;
 }
 
 //--------------------------------
 // ic_string
 //--------------------------------
 
-char* ic_string::whitespace = " \t\n\r";
+char *ic_string::whitespace = " \t\n\r";
 
 /**
  * ic_string default constructor.
@@ -49,10 +49,10 @@ ic_string::ic_string()
 {
   mFirst = new ic_strbuffer(STR_MIN_CPC);
   if(!mFirst) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
-  mLast = mFirst;
+  mLast       = mFirst;
   mNumBuffers = 1;
-  mLength = 0;
-  mCapacity = STR_MIN_CPC;
+  mLength     = 0;
+  mCapacity   = STR_MIN_CPC;
 }
 
 /**
@@ -62,10 +62,10 @@ ic_string::ic_string(long cpc)
 {
   mFirst = new ic_strbuffer(cpc);
   if(!mFirst) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
-  mLast = mFirst;
+  mLast       = mFirst;
   mNumBuffers = 1;
-  mLength = 0;
-  mCapacity = cpc;
+  mLength     = 0;
+  mCapacity   = cpc;
 }
 
 /**
@@ -84,10 +84,10 @@ ic_string::ic_string(const char *str, long new_len)
 
   mLast = mFirst;
   strncpy(mFirst->mBuf, str, new_len);
-  *(mFirst->mBuf+new_len) = '\0';
+  *(mFirst->mBuf + new_len) = '\0';
   mFirst->mLength = mLength = new_len;
   mCapacity = mFirst->mCapacity = new_cpc;
-  mNumBuffers = 1;
+  mNumBuffers                   = 1;
 }
 
 /**
@@ -98,7 +98,7 @@ ic_string::ic_string(const ic_string &str)
 {
   mFirst = new ic_strbuffer(str.capacity());
   if(!mFirst) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
-  mLast = mFirst;
+  mLast       = mFirst;
   mNumBuffers = 1;
   set(&str);
 }
@@ -108,8 +108,8 @@ ic_string::ic_string(const ic_string &str)
  */
 ic_string::~ic_string()
 {
-  ic_strbuffer *tmp, *curr=mFirst;
-  for(int idx=0; idx<mNumBuffers; idx++)
+  ic_strbuffer *tmp, *curr = mFirst;
+  for(int idx = 0; idx < mNumBuffers; idx++)
   {
     if(curr)
     {
@@ -122,7 +122,8 @@ ic_string::~ic_string()
 
 /**
  * ic_string -> char* converter.
- * Flattens the string into a single buffer and returns pointer to it's first char.
+ * Flattens the string into a single buffer and returns pointer to it's first
+ * char.
  * @return Pointer to first buffer (continious char*).
  */
 char *ic_string::get()
@@ -133,30 +134,31 @@ char *ic_string::get()
   {
     // create new buffer
     register long new_cpc = STR_MIN_CPC;
-    while(new_cpc < mLength) new_cpc <<= 1;
-    char *buf = new char [new_cpc+1];
+    while(new_cpc < mLength)
+      new_cpc <<= 1;
+    char *buf = new char[new_cpc + 1];
     if(!buf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
     if(buf)
     {
       ic_strbuffer *curr = mFirst, *tmp;
-      long new_len = 0;
-      for(register int idx=0; idx<mNumBuffers; idx++)
+      long new_len       = 0;
+      for(register int idx = 0; idx < mNumBuffers; idx++)
       {
         // copy old data to buffer and release it
-        strncpy(buf+new_len, curr->mBuf, curr->mLength);
+        strncpy(buf + new_len, curr->mBuf, curr->mLength);
         new_len += curr->mLength;
         tmp = curr->pNext;
         if(idx == 0)
-          delete [] curr->mBuf;
+          delete[] curr->mBuf;
         else
           delete curr;
         curr = tmp;
       }
-      buf[mLength] = '\0';
-      mFirst->mBuf = buf;
-      mFirst->mLength = mLength;
+      buf[mLength]      = '\0';
+      mFirst->mBuf      = buf;
+      mFirst->mLength   = mLength;
       mFirst->mCapacity = mCapacity = new_cpc;
-      mNumBuffers = 1;
+      mNumBuffers                   = 1;
     }
     mLast = mFirst;
   }
@@ -176,7 +178,7 @@ void ic_string::empty(long cpc)
   {
     // remove buffers
     ic_strbuffer *curr = mFirst->pNext, *tmp;
-    for(int idx=1; idx<mNumBuffers; idx++)
+    for(int idx = 1; idx < mNumBuffers; idx++)
     {
       tmp = curr->pNext;
       delete curr;
@@ -197,7 +199,7 @@ void ic_string::empty(long cpc)
   }
 
   mCapacity = cpc;
-  mLength = 0;
+  mLength   = 0;
 }
 
 /**
@@ -211,12 +213,13 @@ void ic_string::set(const char *src, long new_len)
   if(!new_len) return;
 
   register long new_cpc = STR_MIN_CPC;
-  while(new_cpc < new_len) new_cpc <<= 1;
+  while(new_cpc < new_len)
+    new_cpc <<= 1;
   empty(new_cpc);
   strncpy(mFirst->mBuf, src, new_len);
-  *(mFirst->mBuf+new_len) = '\0';
-  mFirst->mLength = new_len;
-  mLength = new_len;
+  *(mFirst->mBuf + new_len) = '\0';
+  mFirst->mLength           = new_len;
+  mLength                   = new_len;
 }
 
 /**
@@ -237,37 +240,37 @@ void ic_string::set(const ic_string *src, long new_len)
  */
 void ic_string::append(const char *src, long new_len)
 {
-  register long new_cpc = mLast->mCapacity << 1, idx=0, idx2=0;
-  while(*(src+idx2) != '\0')
+  register long new_cpc = mLast->mCapacity << 1, idx = 0, idx2 = 0;
+  while(*(src + idx2) != '\0')
   {
     if(new_len != 0 && idx2 == new_len) break;
 
-    if(mLast->mLength+idx == mLast->mCapacity-1)
+    if(mLast->mLength + idx == mLast->mCapacity - 1)
     {
       // Finish up old buffer
-      mLast->mLength = mLast->mCapacity-1;
-      *(mLast->mBuf+mLast->mLength) = '\0';
+      mLast->mLength                  = mLast->mCapacity - 1;
+      *(mLast->mBuf + mLast->mLength) = '\0';
 
       // Create a new buffer
       ic_strbuffer *new_buf = new ic_strbuffer(new_cpc);
       if(!new_buf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
       mNumBuffers++;
       new_cpc <<= 1;
-      mLast->pNext = new_buf;
+      mLast->pNext   = new_buf;
       new_buf->pPrev = mLast;
-      mLast = new_buf;
+      mLast          = new_buf;
 
       // Reset buffer offset
-      idx=0;
+      idx = 0;
     }
 
-    *(mLast->mBuf+mLast->mLength+idx) = *(src+idx2);
+    *(mLast->mBuf + mLast->mLength + idx) = *(src + idx2);
     idx++;
     idx2++;
   }
 
   mLast->mLength += idx;
-  *(mLast->mBuf+mLast->mLength) = '\0';
+  *(mLast->mBuf + mLast->mLength) = '\0';
   mLength += idx2;
 }
 
@@ -313,18 +316,19 @@ void ic_string::prepend(const char *str, long new_len)
   if(mFirst->mLength + new_len < mFirst->mCapacity)
   {
     // string can be fitted into existing buffer
-    memmove(mFirst->mBuf + new_len, mFirst->mBuf, mFirst->mLength+1);
+    memmove(mFirst->mBuf + new_len, mFirst->mBuf, mFirst->mLength + 1);
     memcpy(mFirst->mBuf, str, new_len);
   }
   else
   {
     long new_cpc = STR_MIN_CPC;
-    while(new_cpc < new_len) new_cpc <<= 1;
+    while(new_cpc < new_len)
+      new_cpc <<= 1;
     ic_strbuffer *buf = new ic_strbuffer(new_cpc);
     memcpy(buf->mBuf, str, new_len);
-    buf->pNext = mFirst;
+    buf->pNext    = mFirst;
     mFirst->pPrev = buf;
-    mFirst = buf;
+    mFirst        = buf;
   }
 }
 
@@ -356,32 +360,32 @@ void ic_string::prepend(char src)
  */
 void ic_string::reverse()
 {
-  register long first_char=0, last_char=mLast->mLength-1;
-  ic_strbuffer *first_buf=mFirst, *last_buf=mLast;
+  register long first_char = 0, last_char = mLast->mLength - 1;
+  ic_strbuffer *first_buf = mFirst, *last_buf = mLast;
   long half_len = mLength >> 1;
   char tmp;
-  for(long idx=0; idx<half_len; idx++)
+  for(long idx = 0; idx < half_len; idx++)
   {
     // swap Nth from beginning and from end
-    tmp = *(first_buf->mBuf + first_char);
+    tmp                             = *(first_buf->mBuf + first_char);
     *(first_buf->mBuf + first_char) = *(last_buf->mBuf + last_char);
-    *(last_buf->mBuf + last_char) = tmp;
+    *(last_buf->mBuf + last_char)   = tmp;
 
     first_char++;
     last_char--;
 
     // move beginning buffer forward
-    if(first_char == first_buf->mLength-1)
+    if(first_char == first_buf->mLength - 1)
     {
       first_char = 0;
-      first_buf = first_buf->pNext;
+      first_buf  = first_buf->pNext;
     }
 
     // move ending buffer backward
     if(last_char == -1)
     {
-      last_buf = last_buf->pPrev;
-      last_char = last_buf->mLength-1;
+      last_buf  = last_buf->pPrev;
+      last_char = last_buf->mLength - 1;
     }
   }
 }
@@ -397,8 +401,8 @@ long ic_string::replace(const char *from, char *to, long max)
 {
   bool found_flag = false;
   long from_len = strlen(from), to_len = strlen(to);
-  register long idx, count = 0;
-  long piece_offset=0, found_offset=0, found_len=0, final_len=0;
+  register long idx, count             = 0;
+  long piece_offset = 0, found_offset = 0, found_len = 0, final_len = 0;
 
   // test for idiotic cases
   if(max < 0) max = 0;
@@ -409,14 +413,14 @@ long ic_string::replace(const char *from, char *to, long max)
   if(from_len == to_len)
   {
     // no need to reallocate memory, work directly in mFirst->mBuf
-    for(idx=0; idx<mLength; idx++)
+    for(idx = 0; idx < mLength; idx++)
     {
-      if(*(mFirst->mBuf+idx) == *(from+found_len))
+      if(*(mFirst->mBuf + idx) == *(from + found_len))
       {
         if(!found_flag)
         {
           found_offset = idx;
-          found_flag = true;
+          found_flag   = true;
         }
         found_len++;
       }
@@ -424,15 +428,15 @@ long ic_string::replace(const char *from, char *to, long max)
       {
         if(found_len)
         {
-          found_len = 0;
+          found_len  = 0;
           found_flag = false;
         }
       }
 
       if(found_len == from_len)
       {
-        strncpy(mFirst->mBuf+found_offset, to, to_len);
-        found_len = 0;
+        strncpy(mFirst->mBuf + found_offset, to, to_len);
+        found_len  = 0;
         found_flag = false;
         count++;
         // count becomes 1 right before check, thus max = 0
@@ -444,20 +448,21 @@ long ic_string::replace(const char *from, char *to, long max)
   else
   {
     // reallocate memory
-    long new_len = mLength-from_len*max+to_len*max+1, new_cpc = STR_MIN_CPC;
-    while(new_cpc < new_len) new_cpc <<= 1;
-    char *new_buf = new char[new_cpc+1];
+    long new_len = mLength - from_len * max + to_len * max + 1, new_cpc = STR_MIN_CPC;
+    while(new_cpc < new_len)
+      new_cpc <<= 1;
+    char *new_buf = new char[new_cpc + 1];
     if(!new_buf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
 
-    for(idx=0; idx<mLength; idx++)
+    for(idx = 0; idx < mLength; idx++)
     {
       // check another character
-      if(*(mFirst->mBuf+idx) == *(from+found_len))
+      if(*(mFirst->mBuf + idx) == *(from + found_len))
       {
         if(!found_flag)
         {
           found_offset = idx;
-          found_flag = true;
+          found_flag   = true;
         }
         found_len++;
       }
@@ -465,7 +470,7 @@ long ic_string::replace(const char *from, char *to, long max)
       {
         if(found_len)
         {
-          found_len = 0;
+          found_len  = 0;
           found_flag = false;
         }
       }
@@ -473,14 +478,14 @@ long ic_string::replace(const char *from, char *to, long max)
       // match found
       if(found_len == from_len)
       {
-        strncpy(new_buf+final_len, mFirst->mBuf+piece_offset, (found_offset-piece_offset));
-        final_len += (found_offset-piece_offset);
-        strcpy(new_buf+final_len, to);
+        strncpy(new_buf + final_len, mFirst->mBuf + piece_offset, (found_offset - piece_offset));
+        final_len += (found_offset - piece_offset);
+        strcpy(new_buf + final_len, to);
         final_len += to_len;
 
-        piece_offset = idx+1;
-        found_len = 0;
-        found_flag = false;
+        piece_offset = idx + 1;
+        found_len    = 0;
+        found_flag   = false;
         count++;
         if(count == max) break;
       }
@@ -488,14 +493,14 @@ long ic_string::replace(const char *from, char *to, long max)
 
     if(piece_offset < mLength)
     {
-      strcpy(new_buf+final_len, mFirst->mBuf+piece_offset);
+      strcpy(new_buf + final_len, mFirst->mBuf + piece_offset);
       final_len = new_len;
     }
 
-    *(new_buf+final_len) = '\0';
+    *(new_buf + final_len) = '\0';
     mLength = mFirst->mLength = new_len;
     mCapacity = mFirst->mCapacity = new_cpc;
-    delete [] mFirst->mBuf;
+    delete[] mFirst->mBuf;
     mFirst->mBuf = new_buf;
   }
 
@@ -524,7 +529,7 @@ long ic_string::replace(ic_string *from, ic_string *to, long max)
 long ic_string::replace(ic_regex *from, ic_string *to, long max)
 {
   register long idx;
-  long from_len = length(), to_len = to->length(), count=0, offset=0, to_offset, to_pos;
+  long from_len = length(), to_len = to->length(), count = 0, offset = 0, to_offset, to_pos;
   long bounds[2];
   ic_match *found;
   char *from_buf, *to_buf;
@@ -532,13 +537,13 @@ long ic_string::replace(ic_regex *from, ic_string *to, long max)
   // compile to-string into an array of anchors (string ends) and indexes (\\i)
   sc_voidlist anchor_list, index_list;
   to_buf = to->get();
-  for(idx=0; idx<to_len-1; idx++)
+  for(idx = 0; idx < to_len - 1; idx++)
   {
-    if(*(to_buf+idx) == '\\' && *(to_buf+idx+1) >= '0' && *(to_buf+idx+1) <= '9')
+    if(*(to_buf + idx) == '\\' && *(to_buf + idx + 1) >= '0' && *(to_buf + idx + 1) <= '9')
     {
       // current symbol is \ and is followed by a number
       anchor_list.add((void *)idx);
-      index_list.add((void*)(*(to_buf+idx+1)-48));
+      index_list.add((void *)(*(to_buf + idx + 1) - 48));
     }
   }
   anchor_list.add((void *)to_len);
@@ -560,23 +565,20 @@ long ic_string::replace(ic_regex *from, ic_string *to, long max)
 
     // append 'piece' (everything before match)
     found->bounds(0, bounds);
-    if(offset != bounds[0])
-      append(from_buf+offset, bounds[0]-offset);
+    if(offset != bounds[0]) append(from_buf + offset, bounds[0] - offset);
 
     // append interpolated string
     to_offset = 0;
-    for(idx=0; idx<anchors->mLength; idx++)
+    for(idx = 0; idx < anchors->mLength; idx++)
     {
       // append to-string's piece
       to_pos = (long)anchors->mPtr[idx];
-      if(to_pos - to_offset > 0)
-        append(to_buf + to_offset, to_pos - to_offset);
+      if(to_pos - to_offset > 0) append(to_buf + to_offset, to_pos - to_offset);
       // set offset to start of next string (\i = 2 bytes)
-      to_offset = to_pos+2;
+      to_offset = to_pos + 2;
 
       // append back reference
-      if(idx < indexes->mLength)
-        append(found->get(reinterpret_cast<intptr_t>(indexes->mPtr[idx])));
+      if(idx < indexes->mLength) append(found->get(reinterpret_cast<intptr_t>(indexes->mPtr[idx])));
     }
 
     offset = bounds[1];
@@ -586,8 +588,7 @@ long ic_string::replace(ic_regex *from, ic_string *to, long max)
     if(count == max) break;
   }
 
-  if(offset < from_len)
-    append(from_buf+offset, from_len-offset);
+  if(offset < from_len) append(from_buf + offset, from_len - offset);
 
   delete base;
   delete anchors;
@@ -602,7 +603,7 @@ long ic_string::replace(ic_regex *from, ic_string *to, long max)
  */
 void ic_string::translate(char *from, char *to, long fromlen, long tolen)
 {
-  register long idx, idx2, buf_offset=0;
+  register long idx, idx2, buf_offset = 0;
   ic_strbuffer *curr = mFirst;
   if(!fromlen) fromlen = strlen(from);
   if(!tolen) tolen = strlen(to);
@@ -611,32 +612,31 @@ void ic_string::translate(char *from, char *to, long fromlen, long tolen)
   if(!fromlen) return;
 
   // scan string
-  for(idx=0; idx<mLength; idx++, buf_offset++)
+  for(idx = 0; idx < mLength; idx++, buf_offset++)
   {
     // buffer overflows
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
     }
 
     char *currchar = curr->mBuf + buf_offset;
 
     // scan substring
-    for(idx2=0; idx2<fromlen; idx2++)
+    for(idx2 = 0; idx2 < fromlen; idx2++)
     {
-      if(*currchar == *(from + idx2))
-        *currchar = *(to + MIN(idx2, tolen-1));
+      if(*currchar == *(from + idx2)) *currchar = *(to + MIN(idx2, tolen - 1));
     }
   }
 }
 
 /**
-* Translates characters in the string.
-* @param from Source characters string.
-* @param to Destination characters string.
-* @todo Rewrite so that it doesn't require get().
-*/
+ * Translates characters in the string.
+ * @param from Source characters string.
+ * @param to Destination characters string.
+ * @todo Rewrite so that it doesn't require get().
+ */
 void ic_string::translate(ic_string *from, ic_string *to)
 {
   translate(from->get(), to->get(), from->length(), to->length());
@@ -647,18 +647,18 @@ void ic_string::translate(ic_string *from, ic_string *to)
  */
 void ic_string::case_up()
 {
-  register long idx, buf_offset=0;
+  register long idx, buf_offset = 0;
   ic_strbuffer *curr = mFirst;
-  for(idx=0; idx<mLength; idx++, buf_offset++)
+  for(idx = 0; idx < mLength; idx++, buf_offset++)
   {
     // buffer overflows
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
     }
 
-    *(curr->mBuf+buf_offset) = toupper(*(curr->mBuf+buf_offset));
+    *(curr->mBuf + buf_offset) = toupper(*(curr->mBuf + buf_offset));
   }
 }
 
@@ -667,18 +667,18 @@ void ic_string::case_up()
  */
 void ic_string::case_down()
 {
-  register long idx, buf_offset=0;
+  register long idx, buf_offset = 0;
   ic_strbuffer *curr = mFirst;
-  for(idx=0; idx<mLength; idx++, buf_offset++)
+  for(idx = 0; idx < mLength; idx++, buf_offset++)
   {
     // buffer overflows
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
     }
 
-    *(curr->mBuf+buf_offset) = tolower(*(curr->mBuf+buf_offset));
+    *(curr->mBuf + buf_offset) = tolower(*(curr->mBuf + buf_offset));
   }
 }
 
@@ -687,18 +687,18 @@ void ic_string::case_down()
  */
 void ic_string::case_swap()
 {
-  register long idx, buf_offset=0;
+  register long idx, buf_offset = 0;
   ic_strbuffer *curr = mFirst;
-  for(idx=0; idx<mLength; idx++, buf_offset++)
+  for(idx = 0; idx < mLength; idx++, buf_offset++)
   {
     // buffer overflows
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
     }
 
-    char *ch = curr->mBuf+buf_offset;
+    char *ch = curr->mBuf + buf_offset;
     if(isupper(*ch))
       *ch = tolower(*ch);
     else
@@ -714,33 +714,29 @@ void ic_string::case_swap()
  */
 int ic_string::compare(const char *str, long len)
 {
-  register long idx, buf_offset=0;
+  register long idx, buf_offset = 0;
   ic_strbuffer *curr = mFirst;
   if(!len) len = mLength;
 
-  for(idx=0; idx<len; idx++, buf_offset++)
+  for(idx = 0; idx < len; idx++, buf_offset++)
   {
     // buffer overflows
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
     }
 
     // casual case
-    if((*(curr->mBuf+buf_offset) < *(str+idx)))
-      return 1;
+    if((*(curr->mBuf + buf_offset) < *(str + idx))) return 1;
 
     // second string is smaller
-    if(*(str+idx) == '\0')
-      return 1;
+    if(*(str + idx) == '\0') return 1;
 
-    if((*(curr->mBuf+buf_offset) > *(str+idx)))
-      return -1;
+    if((*(curr->mBuf + buf_offset) > *(str + idx))) return -1;
   }
 
-  if(*(str+idx) != '\0')
-    return -1;
+  if(*(str + idx) != '\0') return -1;
 
   return 0;
 }
@@ -753,31 +749,31 @@ int ic_string::compare(const char *str, long len)
  */
 int ic_string::compare(ic_string *str, long len)
 {
-  long str_len = MIN(mLength, str->length());
+  long str_len  = MIN(mLength, str->length());
   long done_len = 0, cmp_len = 0, offset1 = 0, offset2 = 0;
   ic_strbuffer *buf1 = mFirst, *buf2 = str->mFirst;
 
   while(done_len < str_len)
   {
     // attempt to compare minimum size of buffers
-    cmp_len = MIN(buf1->mLength-offset1, buf2->mLength-offset2);
+    cmp_len = MIN(buf1->mLength - offset1, buf2->mLength - offset2);
     if(len > 0 && done_len + cmp_len > len) cmp_len = done_len - len;
     int result = memcmp(buf1->mBuf, buf2->mBuf, cmp_len);
     if(result != 0) return -result;
 
     // wrap first buffer if needed
-    if(offset1+cmp_len == buf1->mLength)
+    if(offset1 + cmp_len == buf1->mLength)
     {
-      buf1 = buf1->pNext;
+      buf1    = buf1->pNext;
       offset1 = 0;
     }
     else
       offset1 += cmp_len;
 
     // wrap second buffer if needed
-    if(offset2+cmp_len == buf2->mLength)
+    if(offset2 + cmp_len == buf2->mLength)
     {
-      buf2 = buf2->pNext;
+      buf2    = buf2->pNext;
       offset2 = 0;
     }
     else
@@ -800,13 +796,13 @@ int ic_string::compare(ic_string *str, long len)
 char &ic_string::char_at(long pos) const
 {
   ic_strbuffer *curr = mFirst;
-  register long idx=pos;
+  register long idx  = pos;
   while(idx > curr->mLength)
   {
     idx -= curr->mLength;
     curr = curr->pNext;
   }
-  return *(curr->mBuf+idx);
+  return *(curr->mBuf + idx);
 }
 
 /**
@@ -815,11 +811,11 @@ char &ic_string::char_at(long pos) const
  * @param len The length of the substring.
  * @return Resulting substring.
  */
-ic_string* ic_string::substr_get(long start, long len)
+ic_string *ic_string::substr_get(long start, long len)
 {
   ic_strbuffer *curr = mFirst;
   if(start < 0) start += mLength;
-  if(len == 0) len = mLength-start;
+  if(len == 0) len = mLength - start;
 
   // test for idiotic cases
   if(start < 0) start = 0;
@@ -841,7 +837,7 @@ ic_string* ic_string::substr_get(long start, long len)
     str->append(curr->mBuf + start, read_len);
     len -= read_len;
     start = 0;
-    curr = curr->pNext;
+    curr  = curr->pNext;
   }
 
   return str;
@@ -857,10 +853,9 @@ void ic_string::substr_set(long start, long len, const char *to)
 {
   long to_len = strlen(to), to_offset = 0;
   ic_strbuffer *curr = mFirst;
-  register long idx, buf_offset=start;
+  register long idx, buf_offset = start;
 
-  if(start < 0)
-    start += mLength;
+  if(start < 0) start += mLength;
 
   // test for idiotic cases
   if(to == NULL) return;
@@ -876,33 +871,34 @@ void ic_string::substr_set(long start, long len, const char *to)
       curr = curr->pNext;
     }
 
-    for(idx=0; idx<len; idx++)
+    for(idx = 0; idx < len; idx++)
     {
       // buffer overflow
       if(buf_offset == curr->mLength)
       {
         buf_offset = 0;
-        curr = curr->pNext;
+        curr       = curr->pNext;
       }
 
-      *(curr->mBuf+buf_offset) = *(to+to_offset);
+      *(curr->mBuf + buf_offset) = *(to + to_offset);
       to_offset++;
       buf_offset++;
     }
   }
   else
   {
-    long new_len = mLength-len+to_len, new_cpc = STR_MIN_CPC;
-    while(new_cpc < new_len) new_cpc <<= 1;
+    long new_len = mLength - len + to_len, new_cpc = STR_MIN_CPC;
+    while(new_cpc < new_len)
+      new_cpc <<= 1;
 
     get();
-    char *new_buf = new char[new_cpc+1];
+    char *new_buf = new char[new_cpc + 1];
     if(!new_buf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
     strncpy(new_buf, mFirst->mBuf, start);
-    strcpy(new_buf+start, to);
-    strncpy(new_buf+start+to_len, mFirst->mBuf+start+len, mLength-len);
-    *(new_buf+new_len) = '\0';
-    delete [] mFirst->mBuf;
+    strcpy(new_buf + start, to);
+    strncpy(new_buf + start + to_len, mFirst->mBuf + start + len, mLength - len);
+    *(new_buf + new_len) = '\0';
+    delete[] mFirst->mBuf;
     mFirst->mBuf = new_buf;
 
     mFirst->mLength = mLength = new_len;
@@ -946,23 +942,23 @@ long ic_string::substr_first(const char *str, long offset)
     curr = curr->pNext;
   }
 
-  for(idx=offset; idx<mLength; idx++, buf_offset++)
+  for(idx = offset; idx < mLength; idx++, buf_offset++)
   {
     // buffer has ended
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
     }
 
     // test for match
-    if(*(curr->mBuf+buf_offset) == *(str+sub_offset))
+    if(*(curr->mBuf + buf_offset) == *(str + sub_offset))
     {
       // if first char matches, store starting point
       if(!found_flag)
       {
         found_offset = idx;
-        found_flag = true;
+        found_flag   = true;
       }
       sub_offset++;
     }
@@ -1018,17 +1014,17 @@ long ic_string::substr_last(const char *str, long offset)
     curr = curr->pPrev;
   }
 
-  for(idx=mLength-offset; idx>=0; idx--, buf_offset++)
+  for(idx = mLength - offset; idx >= 0; idx--, buf_offset++)
   {
     // buffer has ended
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pPrev;
+      curr       = curr->pPrev;
     }
 
     // test for match
-    if(*(curr->mBuf+curr->mLength-buf_offset-1) == *(str+sub_len-sub_offset-1))
+    if(*(curr->mBuf + curr->mLength - buf_offset - 1) == *(str + sub_len - sub_offset - 1))
     {
       sub_offset++;
     }
@@ -1038,7 +1034,7 @@ long ic_string::substr_last(const char *str, long offset)
     }
 
     // match completed
-    if(sub_offset == sub_len) return idx-1;
+    if(sub_offset == sub_len) return idx - 1;
   }
 
   return -1;
@@ -1070,17 +1066,17 @@ long ic_string::substr_count(const char *str) const
   if(str == NULL) return 0;
   if(!sub_len || !mLength) return 0;
 
-  for(idx=0; idx<mLength; idx++, buf_offset++)
+  for(idx = 0; idx < mLength; idx++, buf_offset++)
   {
     // buffer has ended
     if(buf_offset == curr->mLength)
     {
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
     }
 
     // test for match
-    if(*(curr->mBuf+buf_offset) == *(str+sub_offset))
+    if(*(curr->mBuf + buf_offset) == *(str + sub_offset))
     {
       sub_offset++;
     }
@@ -1120,30 +1116,31 @@ void ic_string::ltrim()
   long tmp_len = mLength, new_len, new_cpc = STR_MIN_CPC;
   char chr;
 
-  for(idx=0; idx<tmp_len; idx++, buf_offset++)
+  for(idx = 0; idx < tmp_len; idx++, buf_offset++)
   {
     if(buf_offset == curr->mLength)
     {
       mLength -= curr->mLength;
       mCapacity -= curr->mCapacity;
-      mNumBuffers --;
+      mNumBuffers--;
 
       buf_offset = 0;
-      curr = curr->pNext;
+      curr       = curr->pNext;
       delete curr->pPrev;
       curr->pPrev = NULL;
     }
 
-    chr = *(curr->mBuf+buf_offset);
+    chr = *(curr->mBuf + buf_offset);
     if(!strchr(whitespace, chr)) break;
   }
 
-  new_len = curr->mLength-buf_offset;
-  while(new_cpc < new_len) new_cpc <<= 1;
+  new_len = curr->mLength - buf_offset;
+  while(new_cpc < new_len)
+    new_cpc <<= 1;
   new_buf = new ic_strbuffer(new_cpc);
   if(!new_buf) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   new_buf->mLength = new_len;
-  strcpy(new_buf->mBuf, curr->mBuf+buf_offset);
+  strcpy(new_buf->mBuf, curr->mBuf + buf_offset);
   mLength -= buf_offset;
   mCapacity = mCapacity - curr->mCapacity + new_cpc;
 
@@ -1151,7 +1148,7 @@ void ic_string::ltrim()
   if(curr->pNext)
   {
     curr->pNext->pPrev = new_buf;
-    new_buf->pNext = curr->pNext;
+    new_buf->pNext     = curr->pNext;
   }
   delete curr;
   if(mFirst == mLast)
@@ -1166,15 +1163,15 @@ void ic_string::ltrim()
 void ic_string::rtrim()
 {
   ic_strbuffer *curr = mLast;
-  long tmp_len = mLength;
+  long tmp_len       = mLength;
   register long idx, buf_offset = mLast->mLength;
   char chr;
 
-  for(idx=0; idx<tmp_len; idx++, buf_offset--)
+  for(idx = 0; idx < tmp_len; idx++, buf_offset--)
   {
     if(buf_offset == -1)
     {
-      curr = curr->pPrev;
+      curr       = curr->pPrev;
       buf_offset = curr->mLength;
 
       // remove block
@@ -1185,14 +1182,14 @@ void ic_string::rtrim()
       curr->pNext = NULL;
     }
 
-    chr = *(curr->mBuf+buf_offset);
+    chr = *(curr->mBuf + buf_offset);
     if(!strchr(whitespace, chr)) break;
   }
 
   buf_offset++;
-  mLength = mLength-curr->mLength+buf_offset;
-  curr->mLength = buf_offset;
-  *(curr->mBuf+buf_offset) = '\0';
+  mLength                    = mLength - curr->mLength + buf_offset;
+  curr->mLength              = buf_offset;
+  *(curr->mBuf + buf_offset) = '\0';
   if(mFirst == mLast)
     mFirst = mLast = curr;
   else
@@ -1218,20 +1215,20 @@ sc_voidarray *ic_string::split(const char *delimiter, long max)
 {
   bool found_flag = false;
   register long idx;
-  long piece_offset=0, piece_len = 0, found_offset=0, found_len=0, delim_len = strlen(delimiter), found_count = 0;
+  long piece_offset = 0, piece_len = 0, found_offset = 0, found_len = 0, delim_len = strlen(delimiter), found_count = 0;
   sc_voidlist items;
   ic_string *new_str;
 
   get();
 
-  for(idx=0; idx<mLength; idx++)
+  for(idx = 0; idx < mLength; idx++)
   {
-    if(*(mFirst->mBuf+idx) == *(delimiter+found_len))
+    if(*(mFirst->mBuf + idx) == *(delimiter + found_len))
     {
       if(!found_flag)
       {
         found_offset = idx;
-        found_flag = true;
+        found_flag   = true;
       }
       found_len++;
     }
@@ -1240,7 +1237,7 @@ sc_voidarray *ic_string::split(const char *delimiter, long max)
       if(found_len)
       {
         piece_len += found_len;
-        found_len = 0;
+        found_len  = 0;
         found_flag = false;
       }
       piece_len++;
@@ -1249,15 +1246,15 @@ sc_voidarray *ic_string::split(const char *delimiter, long max)
     if(found_len == delim_len)
     {
       if(piece_len)
-        new_str = new ic_string(mFirst->mBuf+piece_offset, piece_len);
+        new_str = new ic_string(mFirst->mBuf + piece_offset, piece_len);
       else
         new_str = new ic_string("");
 
       items.add((void *)new_str);
-      piece_offset = idx+1;
-      piece_len = 0;
-      found_len = 0;
-      found_flag = false;
+      piece_offset = idx + 1;
+      piece_len    = 0;
+      found_len    = 0;
+      found_flag   = false;
       found_count++;
     }
 
@@ -1272,7 +1269,7 @@ sc_voidarray *ic_string::split(const char *delimiter, long max)
   {
     // string after last delimiter
     if(piece_len)
-      new_str = new ic_string(mFirst->mBuf+piece_offset, piece_len);
+      new_str = new ic_string(mFirst->mBuf + piece_offset, piece_len);
     else
       new_str = new ic_string("");
   }
@@ -1306,7 +1303,7 @@ sc_voidarray *ic_string::split(ic_string *delimiter, long max)
  */
 sc_voidarray *ic_string::split(ic_regex *delimiter, long max)
 {
-  long offset=0, count=0;
+  long offset = 0, count = 0;
   long bounds[2];
   ic_string *new_str;
   ic_match *found;
@@ -1323,7 +1320,7 @@ sc_voidarray *ic_string::split(ic_regex *delimiter, long max)
 
     found->bounds(0, bounds);
     if(bounds[0] > offset)
-      new_str = new ic_string(mFirst->mBuf+offset, bounds[0]-offset);
+      new_str = new ic_string(mFirst->mBuf + offset, bounds[0] - offset);
     else
       new_str = new ic_string();
 
@@ -1338,12 +1335,12 @@ sc_voidarray *ic_string::split(ic_regex *delimiter, long max)
 
   if(offset > 0)
   {
-    new_str = new ic_string(mFirst->mBuf+offset, mLength-offset);
-    items.add((void*)new_str);
+    new_str = new ic_string(mFirst->mBuf + offset, mLength - offset);
+    items.add((void *)new_str);
   }
   else
   {
-    items.add((void*)this);
+    items.add((void *)this);
   }
 
   return items.pack();
@@ -1364,25 +1361,26 @@ void ic_string::format(sc_voidarray strings)
 
   // assume the worst case: all values from array are substituted
   lengths.resize(strings.length());
-  for(idx=0; idx < strings.length(); idx++)
+  for(idx = 0; idx < strings.length(); idx++)
   {
     long len = strlen((char *)strings[idx]);
     lengths.set(idx, (void *)len);
     new_cpc += len - 2;
   }
 
-  while(new_cpc < STR_MIN_CPC) new_cpc <<= 1;
-  char *buf = new char[new_cpc+1], next;
+  while(new_cpc < STR_MIN_CPC)
+    new_cpc <<= 1;
+  char *buf = new char[new_cpc + 1], next;
 
-  for(idx=0; idx < mLength; idx++)
+  for(idx = 0; idx < mLength; idx++)
   {
     if(*(mFirst->mBuf + idx) == '%')
     {
       next = *(mFirst->mBuf + idx + 1);
       if(next == 's')
       {
-        strcpy(mFirst->mBuf+idx, (char *)strings[stridx]);
-        bufidx+=(long)lengths[stridx];
+        strcpy(mFirst->mBuf + idx, (char *)strings[stridx]);
+        bufidx += (long)lengths[stridx];
         stridx++;
         idx++;
       }
@@ -1402,7 +1400,7 @@ void ic_string::format(sc_voidarray strings)
 
   mLength = mFirst->mLength = bufidx;
   mCapacity = mFirst->mCapacity = new_cpc;
-  delete [] mFirst->mBuf;
+  delete[] mFirst->mBuf;
   mFirst->mBuf = buf;
 }
 
@@ -1427,9 +1425,9 @@ inline ic_string *ic_string::format(const char *str, ...)
 ic_string *ic_string::format_list(const char *str, va_list args)
 {
   ic_string *newstr = new ic_string(str);
-  ic_int *num = new ic_int();
-  ic_float *fl = new ic_float();
-  long pos = 0;
+  ic_int *num       = new ic_int();
+  ic_float *fl      = new ic_float();
+  long pos          = 0;
   bool todo;
 
   newstr->get();
@@ -1437,32 +1435,31 @@ ic_string *ic_string::format_list(const char *str, va_list args)
   do
   {
     todo = false;
-    pos = newstr->substr_first("%", pos);
+    pos  = newstr->substr_first("%", pos);
     if(pos != -1)
     {
       // found a string
-      if(newstr->char_at(pos+1) == 's')
+      if(newstr->char_at(pos + 1) == 's')
       {
-        newstr->substr_set(pos, 2, va_arg(args, const char*));
+        newstr->substr_set(pos, 2, va_arg(args, const char *));
         todo = true;
       }
       // found an integer
-      else if(newstr->char_at(pos+1) == 'i')
+      else if(newstr->char_at(pos + 1) == 'i')
       {
         num->mValue = va_arg(args, long);
         newstr->substr_set(pos, 2, num->to_s());
         todo = true;
       }
       // found a float
-      else if(newstr->char_at(pos+1) == 'f')
+      else if(newstr->char_at(pos + 1) == 'f')
       {
         fl->mValue = va_arg(args, double);
         newstr->substr_set(pos, 2, fl->to_s());
         todo = true;
       }
     }
-  }
-  while(todo);
+  } while(todo);
 
   delete num;
   delete fl;
@@ -1476,13 +1473,14 @@ ic_string *ic_string::format_list(const char *str, va_list args)
 void ic_string::file_load(const char *name)
 {
   register long new_cpc = STR_MIN_CPC;
-  FILE *f = fopen(name, "rb");
+  FILE *f               = fopen(name, "rb");
   if(f)
   {
     // determine file length
     fseek(f, 0, SEEK_END);
     long file_len = ftell(f);
-    while(new_cpc < file_len) new_cpc <<= 1;
+    while(new_cpc < file_len)
+      new_cpc <<= 1;
 
     // load data
     empty(new_cpc);
@@ -1491,9 +1489,9 @@ void ic_string::file_load(const char *name)
     fclose(f);
 
     // clean up
-    *(mFirst->mBuf+file_len) = '\0';
+    *(mFirst->mBuf + file_len) = '\0';
     mFirst->mLength = mLength = file_len;
-    mCapacity = new_cpc;
+    mCapacity                 = new_cpc;
   }
   else
     ERROR(M_ERR_IO_NO_FILE, M_EMODE_ERROR);
@@ -1511,7 +1509,7 @@ void ic_string::file_save(const char *name, char mode)
   if(f)
   {
     ic_strbuffer *curr = mFirst;
-    for(idx=0; idx<mNumBuffers; idx++)
+    for(idx = 0; idx < mNumBuffers; idx++)
     {
       fwrite(curr->mBuf, curr->mLength, 1, f);
       curr = curr->pNext;
@@ -1528,8 +1526,10 @@ void ic_string::file_save(const char *name, char mode)
  */
 inline long ic_string::to_i()
 {
-  if(this->mLength <= 16) return atol(get());
-  else return 0;
+  if(this->mLength <= 16)
+    return atol(get());
+  else
+    return 0;
 }
 
 /**
@@ -1538,8 +1538,10 @@ inline long ic_string::to_i()
  */
 inline double ic_string::to_f()
 {
-  if(this->mLength <= 16) return atof(get());
-  else return 0;
+  if(this->mLength <= 16)
+    return atof(get());
+  else
+    return 0;
 }
 
 /**
@@ -1658,7 +1660,7 @@ inline bool ic_string::operator!=(const char *right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator> (ic_string &right)
+inline bool ic_string::operator>(ic_string &right)
 {
   return compare(&right) > 0;
 }
@@ -1668,7 +1670,7 @@ inline bool ic_string::operator> (ic_string &right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator> (const char *right)
+inline bool ic_string::operator>(const char *right)
 {
   return compare(right) > 0;
 }
@@ -1678,7 +1680,7 @@ inline bool ic_string::operator> (const char *right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator>= (ic_string &right)
+inline bool ic_string::operator>=(ic_string &right)
 {
   return compare(&right) >= 0;
 }
@@ -1688,7 +1690,7 @@ inline bool ic_string::operator>= (ic_string &right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator>= (const char *right)
+inline bool ic_string::operator>=(const char *right)
 {
   return compare(right) >= 0;
 }
@@ -1698,7 +1700,7 @@ inline bool ic_string::operator>= (const char *right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator< (ic_string &right)
+inline bool ic_string::operator<(ic_string &right)
 {
   return compare(&right) < 0;
 }
@@ -1708,7 +1710,7 @@ inline bool ic_string::operator< (ic_string &right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator< (const char *right)
+inline bool ic_string::operator<(const char *right)
 {
   return compare(right) < 0;
 }
@@ -1718,7 +1720,7 @@ inline bool ic_string::operator< (const char *right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator<= (ic_string &right)
+inline bool ic_string::operator<=(ic_string &right)
 {
   return compare(&right) <= 0;
 }
@@ -1728,7 +1730,7 @@ inline bool ic_string::operator<= (ic_string &right)
  * @param right String to be compared.
  * @return bool
  */
-inline bool ic_string::operator<= (const char *right)
+inline bool ic_string::operator<=(const char *right)
 {
   return compare(right) <= 0;
 }
@@ -1738,7 +1740,7 @@ inline bool ic_string::operator<= (const char *right)
  * @param pos Position of char in string.
  * @return Link to char at specified position.
  */
-inline char& ic_string::operator[](long pos)
+inline char &ic_string::operator[](long pos)
 {
   return char_at(pos);
 }
@@ -1759,7 +1761,7 @@ ic_string::operator char *()
 void ic_string::debug()
 {
   ic_strbuffer *curr = mFirst;
-  for(int idx=0; idx<mNumBuffers; idx++)
+  for(int idx = 0; idx < mNumBuffers; idx++)
   {
     printf("buf %i: [%s] (%li/%li)\n\n", idx, curr->mBuf, curr->mLength, curr->mCapacity);
     curr = curr->pNext;

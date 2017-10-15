@@ -13,9 +13,9 @@
  */
 void time_op_create(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = (item_var ? item_var->get() : NULL);
+  ic_object *item  = (item_var ? item_var->get() : NULL);
 
   if(item)
   {
@@ -41,11 +41,11 @@ void time_op_create(rc_head *head)
  */
 void time_op_add_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  long currtime = ((ic_time *)obj->mData)->mTimestamp;
-  long bonustime = ((ic_int *)item->mData)->mValue;
+  ic_object *item  = item_var->get();
+  long currtime    = ((ic_time *)obj->mData)->mTimestamp;
+  long bonustime   = ((ic_int *)item->mData)->mValue;
   ic_time *newtime = new ic_time(currtime + bonustime);
   head->rSRC.push(head->new_time(newtime));
   head->obj_unlink(item_var);
@@ -56,11 +56,11 @@ void time_op_add_int(rc_head *head)
  */
 void time_op_add_time(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  long currtime = ((ic_time *)obj->mData)->mTimestamp;
-  long bonustime = ((ic_time *)item->mData)->mTimestamp;
+  ic_object *item  = item_var->get();
+  long currtime    = ((ic_time *)obj->mData)->mTimestamp;
+  long bonustime   = ((ic_time *)item->mData)->mTimestamp;
   ic_time *newtime = new ic_time(currtime + bonustime);
   head->rSRC.push(head->new_time(newtime));
   head->obj_unlink(item_var);
@@ -71,11 +71,11 @@ void time_op_add_time(rc_head *head)
  */
 void time_op_sub_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  long currtime = ((ic_time *)obj->mData)->mTimestamp;
-  long bonustime = ((ic_int *)item->mData)->mValue;
+  ic_object *item  = item_var->get();
+  long currtime    = ((ic_time *)obj->mData)->mTimestamp;
+  long bonustime   = ((ic_int *)item->mData)->mValue;
   ic_time *newtime = new ic_time(currtime - bonustime);
   head->rSRC.push(head->new_time(newtime));
   head->obj_unlink(item_var);
@@ -86,11 +86,11 @@ void time_op_sub_int(rc_head *head)
  */
 void time_op_sub_time(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  long currtime = ((ic_time *)obj->mData)->mTimestamp;
-  long bonustime = ((ic_time *)item->mData)->mTimestamp;
+  ic_object *item  = item_var->get();
+  long currtime    = ((ic_time *)obj->mData)->mTimestamp;
+  long bonustime   = ((ic_time *)item->mData)->mTimestamp;
   ic_time *newtime = new ic_time(currtime - bonustime);
   head->rSRC.push(head->new_time(newtime));
   head->obj_unlink(item_var);
@@ -101,11 +101,11 @@ void time_op_sub_time(rc_head *head)
  */
 void time_op_mul_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  long currtime = ((ic_time *)obj->mData)->mTimestamp;
-  long bonustime = ((ic_int *)item->mData)->mValue;
+  ic_object *item  = item_var->get();
+  long currtime    = ((ic_time *)obj->mData)->mTimestamp;
+  long bonustime   = ((ic_int *)item->mData)->mValue;
   ic_time *newtime = new ic_time(currtime * bonustime);
   head->rSRC.push(head->new_time(newtime));
   head->obj_unlink(item_var);
@@ -116,11 +116,11 @@ void time_op_mul_int(rc_head *head)
  */
 void time_op_div_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  long currtime = ((ic_time *)obj->mData)->mTimestamp;
-  long bonustime = ((ic_int *)item->mData)->mValue;
+  ic_object *item  = item_var->get();
+  long currtime    = ((ic_time *)obj->mData)->mTimestamp;
+  long bonustime   = ((ic_int *)item->mData)->mValue;
   ic_time *newtime = new ic_time(currtime / bonustime);
   head->rSRC.push(head->new_time(newtime));
   head->obj_unlink(item_var);
@@ -132,7 +132,7 @@ void time_op_div_int(rc_head *head)
 void time_op_inc(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time &time = *(ic_time *)obj->mData;
+  ic_time &time  = *(ic_time *)obj->mData;
   time++;
   head->pCurrObj->mLinks++;
   head->rSRC.push(head->pCurrObj);
@@ -144,7 +144,7 @@ void time_op_inc(rc_head *head)
 void time_op_dec(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time &time = *(ic_time *)obj->mData;
+  ic_time &time  = *(ic_time *)obj->mData;
   time--;
   head->pCurrObj->mLinks++;
   head->rSRC.push(head->pCurrObj);
@@ -155,9 +155,9 @@ void time_op_dec(rc_head *head)
  */
 void time_op_cmp_time(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   long left = ((ic_time *)obj->mData)->mTimestamp, right = ((ic_time *)item->mData)->mTimestamp;
   char result = (left == right ? 0 : (left > right ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -169,9 +169,9 @@ void time_op_cmp_time(rc_head *head)
  */
 void time_op_cmp_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   long left = ((ic_time *)obj->mData)->mTimestamp, right = ((ic_int *)item->mData)->mValue;
   char result = (left == right ? 0 : (left > right ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -183,9 +183,9 @@ void time_op_cmp_int(rc_head *head)
  */
 void time_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool left = ((ic_time *)obj->mData)->mTimestamp != 0, right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : (left ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -197,10 +197,10 @@ void time_op_cmp_bool(rc_head *head)
  */
 void time_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  const char *str = ((ic_time *)obj->mData)->to_s();
+  ic_object *item  = item_var->get();
+  const char *str  = ((ic_time *)obj->mData)->to_s();
   // note the -1 part to reverse values, as item is at rightside
   char result = ((ic_string *)item->mData)->compare(str) * (-1);
   head->rSRC.push(head->new_int(result));
@@ -225,7 +225,7 @@ void time_now_do(rc_head *head)
 void time_year(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_year + 1900, obj->mTainted));
 }
 
@@ -235,7 +235,7 @@ void time_year(rc_head *head)
 void time_month(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_mon, obj->mTainted));
 }
 
@@ -245,7 +245,7 @@ void time_month(rc_head *head)
 void time_day_y(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_yday, obj->mTainted));
 }
 
@@ -255,7 +255,7 @@ void time_day_y(rc_head *head)
 void time_day_m(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_mday, obj->mTainted));
 }
 
@@ -265,7 +265,7 @@ void time_day_m(rc_head *head)
 void time_day_w(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_wday, obj->mTainted));
 }
 
@@ -275,7 +275,7 @@ void time_day_w(rc_head *head)
 void time_hour(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_hour, obj->mTainted));
 }
 
@@ -285,7 +285,7 @@ void time_hour(rc_head *head)
 void time_min(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_min, obj->mTainted));
 }
 
@@ -295,7 +295,7 @@ void time_min(rc_head *head)
 void time_sec(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_time *time = (ic_time *)obj->mData;
+  ic_time *time  = (ic_time *)obj->mData;
   head->rSRC.push(head->new_int(time->mTime.tm_sec, obj->mTainted));
 }
 
@@ -304,11 +304,11 @@ void time_sec(rc_head *head)
  */
 void time_values(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *flag_var = head->rSRC.pop();
-  ic_object *flag = flag_var->get();
-  ic_time *time = (ic_time *)obj->mData;
-  bool value = false;
+  ic_object *flag  = flag_var->get();
+  ic_time *time    = (ic_time *)obj->mData;
+  bool value       = false;
 
   if(flag)
   {
@@ -353,10 +353,10 @@ void time_values(rc_head *head)
  */
 void time_format(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
-  
+  ic_object *str  = str_var->get();
+
   if(head->pCore->class_type(str->pClass) == M_CLASS_STRING)
   {
     const char *formatted = ((ic_time *)obj->mData)->format(((ic_string *)str->mData)->get());
@@ -374,7 +374,7 @@ void time_format(rc_head *head)
 void time_to_b(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  bool val = ((ic_time *)obj->mData)->to_b();
+  bool val       = ((ic_time *)obj->mData)->to_b();
   head->rSRC.push(head->new_bool(val, obj->mTainted));
 }
 
@@ -384,7 +384,7 @@ void time_to_b(rc_head *head)
 void time_to_f(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  double val = ((ic_time *)obj->mData)->to_f();
+  double val     = ((ic_time *)obj->mData)->to_f();
   head->rSRC.push(head->new_float(val, obj->mTainted));
 }
 
@@ -394,7 +394,7 @@ void time_to_f(rc_head *head)
 void time_to_i(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long val = ((ic_time *)obj->mData)->to_i();
+  long val       = ((ic_time *)obj->mData)->to_i();
   head->rSRC.push(head->new_int(val, obj->mTainted));
 }
 
@@ -403,7 +403,7 @@ void time_to_i(rc_head *head)
  */
 void time_to_s(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   const char *str = ((ic_time *)obj->mData)->to_s();
   head->rSRC.push(head->new_string(str, obj->mTainted));
 }

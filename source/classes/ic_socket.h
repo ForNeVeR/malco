@@ -22,7 +22,7 @@ ic_socket::ic_socket()
 #endif
 
 #if MALCO_PLATFORM == M_PLATF_NIX
-#include "ic_socket.nix.h""
+#include "ic_socket.nix.h"
 #endif
 
 #endif

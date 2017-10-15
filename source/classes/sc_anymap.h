@@ -9,5 +9,4 @@
 #define SC_ANYMAP_H
 
 
-
 #endif

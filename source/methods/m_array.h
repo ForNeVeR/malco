@@ -14,7 +14,7 @@
 void array_op_create(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   while(head->rSRC.mLength)
     arr->append(head->rSRC.pop());
 }
@@ -25,13 +25,13 @@ void array_op_create(rc_head *head)
  */
 void array_op_idx(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
   if(item_var)
   {
-    ic_array *arr = (ic_array *)obj->mData;
+    ic_array *arr   = (ic_array *)obj->mData;
     ic_object *item = item_var->get();
-    char cls = head->pCore->class_type(item->pClass);
+    char cls        = head->pCore->class_type(item->pClass);
     if(cls == M_CLASS_STRING)
     {
       // trivial case: key is string
@@ -70,7 +70,7 @@ void array_op_idx(rc_head *head)
       rg->iter_rewind();
       while(!rg->mFinished)
       {
-        key.mValue = rg->iter_next();
+        key.mValue     = rg->iter_next();
         rc_var *result = arr->get(key.to_s());
         if(result)
         {
@@ -91,9 +91,9 @@ void array_op_idx(rc_head *head)
  */
 void array_op_add_array(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   ic_array *left = (ic_array *)obj->mData, *right = (ic_array *)item->mData;
   ic_array *newarr = new ic_array();
@@ -144,9 +144,9 @@ void array_op_shl_object(rc_head *head)
  */
 void array_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool left = ((ic_array *)obj->mData)->length() != 0, right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : (left ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -158,9 +158,9 @@ void array_op_cmp_bool(rc_head *head)
  */
 void array_op_cmp_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   long left = ((ic_array *)obj->mData)->length(), right = ((ic_int *)item->mData)->mValue;
   char result = (left == right ? 0 : (left > right ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -172,10 +172,10 @@ void array_op_cmp_int(rc_head *head)
  */
 void array_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  const char *str = "array";
+  ic_object *item  = item_var->get();
+  const char *str  = "array";
   // note the -1 part to reverse values, as item is at rightside
   char result = ((ic_string *)item->mData)->compare(str) * (-1);
   head->rSRC.push(head->new_int(result));
@@ -184,9 +184,9 @@ void array_op_cmp_string(rc_head *head)
 
 void array_op_cmp_array(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   ic_array *left = (ic_array *)obj->mData, *right = (ic_array *)item->mData;
 
   if(left->length() == right->length())
@@ -221,7 +221,7 @@ void array_op_cmp_array(rc_head *head)
 void array_op_splat(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   arr->iter_rewind();
   sc_voidmapitem *curr;
 
@@ -267,7 +267,7 @@ void array_mark_tainted_r(rc_head *head, ic_array *arr, bool flag, bool *error)
 void array_taint_all_do(rc_head *head)
 {
   bool error = false;
-  array_mark_tainted_r(head, (ic_array*)head->pCurrObj->get()->mData, true, &error);
+  array_mark_tainted_r(head, (ic_array *)head->pCurrObj->get()->mData, true, &error);
   head->pCurrObj->mLinks++;
   head->rSRC.push(head->pCurrObj);
 }
@@ -278,7 +278,7 @@ void array_taint_all_do(rc_head *head)
 void array_untaint_all_do(rc_head *head)
 {
   bool error = false;
-  array_mark_tainted_r(head, (ic_array*)head->pCurrObj->get()->mData, false, &error);
+  array_mark_tainted_r(head, (ic_array *)head->pCurrObj->get()->mData, false, &error);
   head->pCurrObj->mLinks++;
   head->rSRC.push(head->pCurrObj);
 }
@@ -298,7 +298,7 @@ void array_assert_all(rc_head *head)
   while(head->rSRC.mLength > 0)
   {
     rc_var *curr_var = head->rSRC.pop();
-    char cls = head->pCore->class_type(curr_var->get()->pClass);
+    char cls         = head->pCore->class_type(curr_var->get()->pClass);
     if(cls == M_CLASS_CLASS)
       classes.append(curr_var, false);
     else if(cls == M_CLASS_STRING)
@@ -316,7 +316,7 @@ void array_assert_all(rc_head *head)
       for(idx = 0; idx < classes.length(); idx++)
         head->obj_unlink((rc_var *)classes.iter_next()->mValue);
 
-      head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, idx+1, "string or class", "assert_all"), M_EXC_ARGS);
+      head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, idx + 1, "string or class", "assert_all"), M_EXC_ARGS);
     }
   }
 
@@ -328,12 +328,12 @@ void array_assert_all(rc_head *head)
   {
     classes.iter_rewind();
     found = false;
-    idx = 0;
+    idx   = 0;
     // iterate possible classes
     while(curr2 = classes.iter_next())
     {
       idx++;
-      ic_object *obj = (ic_object *)curr1->mValue;
+      ic_object *obj     = (ic_object *)curr1->mValue;
       rc_class *objclass = ((rc_var *)curr2->mValue)->get()->pClass;
 
       if(!head->pCore->class_is_heir(obj->pClass, objclass))
@@ -343,8 +343,7 @@ void array_assert_all(rc_head *head)
       }
     }
 
-    if(found)
-      break;
+    if(found) break;
   }
 
 
@@ -369,7 +368,7 @@ void array_assert_any(rc_head *head)
   while(head->rSRC.mLength > 0)
   {
     rc_var *curr_var = head->rSRC.pop();
-    char cls = head->pCore->class_type(curr_var->get()->pClass);
+    char cls         = head->pCore->class_type(curr_var->get()->pClass);
     if(cls == M_CLASS_CLASS)
       classes.append(curr_var, false);
     else if(cls == M_CLASS_STRING)
@@ -387,7 +386,7 @@ void array_assert_any(rc_head *head)
       for(idx = 0; idx < classes.length(); idx++)
         head->obj_unlink((rc_var *)classes.iter_next()->mValue);
 
-      head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, idx+1, "string or class", "assert_all"), M_EXC_ARGS);
+      head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, idx + 1, "string or class", "assert_all"), M_EXC_ARGS);
     }
   }
 
@@ -399,12 +398,12 @@ void array_assert_any(rc_head *head)
   {
     classes.iter_rewind();
     found = false;
-    idx = 0;
+    idx   = 0;
     // iterate possible classes
     while(curr2 = classes.iter_next())
     {
       idx++;
-      ic_object *obj = (ic_object *)curr1->mValue;
+      ic_object *obj     = (ic_object *)curr1->mValue;
       rc_class *objclass = ((rc_var *)curr2->mValue)->get()->pClass;
 
       if(head->pCore->class_is_heir(obj->pClass, objclass))
@@ -414,8 +413,7 @@ void array_assert_any(rc_head *head)
       }
     }
 
-    if(found)
-      break;
+    if(found) break;
   }
 
 
@@ -431,9 +429,9 @@ void array_assert_any(rc_head *head)
 void array_any(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -447,10 +445,10 @@ void array_any(rc_head *head)
       currobj->mLinks++;
       head->rSRC.push(currobj);
       head->method_invoke((rc_method *)fx->mData);
-      
+
       // validate results
       rc_var *result = head->rSRC.pop();
-      bool is_value = head->sub_value(result);
+      bool is_value  = head->sub_value(result);
       head->obj_unlink(result);
       if(is_value)
       {
@@ -474,9 +472,9 @@ void array_any(rc_head *head)
 void array_all(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -493,7 +491,7 @@ void array_all(rc_head *head)
 
       // validate results
       rc_var *result = head->rSRC.pop();
-      bool is_value = head->sub_value(result);
+      bool is_value  = head->sub_value(result);
       head->obj_unlink(result);
       if(!is_value)
       {
@@ -517,17 +515,17 @@ void array_all(rc_head *head)
  */
 void array_has(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj     = head->pCurrObj->get();
   rc_var *search_var = head->rSRC.pop();
-  ic_object *search = search_var->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_object *search  = search_var->get();
+  ic_array *arr      = (ic_array *)obj->mData;
   sc_voidmapitem *curr;
 
   // save to-find object in AX,
   // current object in rSRC[0]
   arr->iter_rewind();
   rc_var *tmp = head->rAX;
-  head->rAX = search_var;
+  head->rAX   = search_var;
   while(curr = arr->iter_next())
   {
     rc_var *item = (rc_var *)curr->mValue;
@@ -561,9 +559,9 @@ void array_has(rc_head *head)
 void array_each(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -592,9 +590,9 @@ void array_each(rc_head *head)
 void array_each_key(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -621,9 +619,9 @@ void array_each_key(rc_head *head)
 void array_each_pair(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -651,9 +649,9 @@ void array_each_pair(rc_head *head)
  */
 void array_next(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj       = head->pCurrObj->get();
   sc_voidmapitem *pair = ((ic_array *)obj->mData)->iter_next();
-  rc_var *curr = (rc_var *)pair->mValue;
+  rc_var *curr         = (rc_var *)pair->mValue;
   curr->mLinks++;
   head->rSRC.push(curr);
 }
@@ -663,7 +661,7 @@ void array_next(rc_head *head)
  */
 void array_next_key(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj       = head->pCurrObj->get();
   sc_voidmapitem *pair = ((ic_array *)obj->mData)->iter_next();
   head->rSRC.push(head->new_string(pair->mKey, obj->mTainted));
 }
@@ -673,7 +671,7 @@ void array_next_key(rc_head *head)
  */
 void array_next_pair(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj       = head->pCurrObj->get();
   sc_voidmapitem *pair = ((ic_array *)obj->mData)->iter_next();
   ((rc_var *)pair->mValue)->mLinks++;
   ic_array *arr = new ic_array();
@@ -697,13 +695,13 @@ void array_rewind(rc_head *head)
  */
 void array_find(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj     = head->pCurrObj->get();
   rc_var *needle_var = head->rSRC.pop();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr      = (ic_array *)obj->mData;
   sc_voidmapitem *curr;
 
   rc_var *tmp = head->rAX;
-  head->rAX = needle_var;
+  head->rAX   = needle_var;
   arr->iter_rewind();
   while(curr = arr->iter_next())
   {
@@ -737,20 +735,19 @@ void array_find(rc_head *head)
  */
 void array_flip(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_object *obj    = head->pCurrObj->get();
+  ic_array *arr     = (ic_array *)obj->mData;
   ic_array *new_arr = new ic_array();
   sc_voidmapitem *curr;
 
   arr->iter_rewind();
   while(curr = arr->iter_next())
   {
-    rc_var *tmp = head->convert_string((rc_var *)curr->mValue);
+    rc_var *tmp    = head->convert_string((rc_var *)curr->mValue);
     ic_string *key = (ic_string *)tmp->get()->mData;
 
     // issue a warning if key already exists
-    if(new_arr->get(key))
-      head->warning(M_WARN_DUPLICATE_KEY, key->get());
+    if(new_arr->get(key)) head->warning(M_WARN_DUPLICATE_KEY, key->get());
 
     new_arr->set(key, head->new_string(curr->mKey));
 
@@ -765,20 +762,19 @@ void array_flip(rc_head *head)
  */
 void array_flip_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_object *obj    = head->pCurrObj->get();
+  ic_array *arr     = (ic_array *)obj->mData;
   ic_array *new_arr = new ic_array();
   sc_voidmapitem *curr;
 
   arr->iter_rewind();
   while(curr = arr->iter_next())
   {
-    rc_var *tmp = head->convert_string((rc_var *)curr->mValue);
+    rc_var *tmp    = head->convert_string((rc_var *)curr->mValue);
     ic_string *key = (ic_string *)tmp->get()->mData;
 
     // issue a warning if key already exists
-    if(new_arr->get(key))
-      head->warning(M_WARN_DUPLICATE_KEY, key->get());
+    if(new_arr->get(key)) head->warning(M_WARN_DUPLICATE_KEY, key->get());
 
     new_arr->set(key, head->new_string(curr->mKey));
 
@@ -814,27 +810,27 @@ void array_sort_quick_r(rc_head *head, sc_voidmapitem **arr, long start, long en
 
   do
   {
-    while (head->sub_compare((rc_var *)arr[idx]->mValue, curr) == -1) idx++;
-    while (head->sub_compare((rc_var *)arr[idx2]->mValue, curr) == 1) idx2--;
+    while(head->sub_compare((rc_var *)arr[idx]->mValue, curr) == -1)
+      idx++;
+    while(head->sub_compare((rc_var *)arr[idx2]->mValue, curr) == 1)
+      idx2--;
 
     if(idx <= idx2)
     {
-      if (idx < idx2)
+      if(idx < idx2)
       {
         sc_voidmapitem *tmp = arr[idx];
-        arr[idx] = arr[idx2];
-        arr[idx2] = tmp;
+        arr[idx]            = arr[idx2];
+        arr[idx2]           = tmp;
       }
       idx++;
       idx2--;
     }
-  } while (idx <= idx2);
+  } while(idx <= idx2);
 
-  if (idx < end)
-    array_sort_quick_r(head, arr, idx, end);
+  if(idx < end) array_sort_quick_r(head, arr, idx, end);
 
-  if (start < idx2)
-    array_sort_quick_r(head, arr, start, idx2);
+  if(start < idx2) array_sort_quick_r(head, arr, start, idx2);
 }
 
 /**
@@ -844,13 +840,13 @@ void array_sort_quick_r(rc_head *head, sc_voidmapitem **arr, long start, long en
 void array_sort_quick(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
-  long idx = 0;
+  ic_array *arr  = (ic_array *)obj->mData;
+  long idx       = 0;
   sc_voidmapitem *curr;
 
   // create temp array of pointers
   arr->iter_rewind();
-  sc_voidmapitem **tmparr = new sc_voidmapitem*[arr->length()];
+  sc_voidmapitem **tmparr = new sc_voidmapitem *[arr->length()];
   while(curr = arr->iter_next())
   {
     tmparr[idx] = curr;
@@ -858,14 +854,14 @@ void array_sort_quick(rc_head *head)
   }
 
   // sort array
-  array_sort_quick_r(head, tmparr, 0, idx-1);
+  array_sort_quick_r(head, tmparr, 0, idx - 1);
 
   // create new ic_array from temp array
   ic_array *newarr = new ic_array();
   for(idx = 0; idx < arr->length(); idx++)
     newarr->set(tmparr[idx]->mKey, (rc_var *)tmparr[idx]->mValue);
 
-  delete [] tmparr;
+  delete[] tmparr;
 
   head->rSRC.push(head->new_array(newarr, obj->mTainted));
 }
@@ -877,13 +873,13 @@ void array_sort_quick(rc_head *head)
 void array_sort_shell(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
-  long idx = 0, idx2;
+  ic_array *arr  = (ic_array *)obj->mData;
+  long idx       = 0, idx2;
   sc_voidmapitem *curr;
 
   // create temp array of pointers
   arr->iter_rewind();
-  sc_voidmapitem **tmparr = new sc_voidmapitem*[arr->length()];
+  sc_voidmapitem **tmparr = new sc_voidmapitem *[arr->length()];
   while(curr = arr->iter_next())
   {
     tmparr[idx] = curr;
@@ -892,13 +888,14 @@ void array_sort_shell(rc_head *head)
 
   // sort array
   long step = arr->length() / 2;
-  while (step > 0)
+  while(step > 0)
   {
-    for (idx = step; idx < arr->length(); idx2++)
+    for(idx = step; idx < arr->length(); idx2++)
     {
       sc_voidmapitem *value = tmparr[idx];
 
-      for (idx2 = idx - step; (idx2 >= 0) && (head->sub_compare((rc_var *)tmparr[idx2]->mValue, (rc_var *)value->mValue) > 0); idx2 -= step)
+      for(idx2 = idx - step;
+          (idx2 >= 0) && (head->sub_compare((rc_var *)tmparr[idx2]->mValue, (rc_var *)value->mValue) > 0); idx2 -= step)
         tmparr[idx2 + step] = tmparr[idx2];
 
       tmparr[idx2 + step] = value;
@@ -911,7 +908,7 @@ void array_sort_shell(rc_head *head)
   for(idx = 0; idx < arr->length(); idx++)
     newarr->set(tmparr[idx]->mKey, (rc_var *)tmparr[idx]->mValue);
 
-  delete [] tmparr;
+  delete[] tmparr;
 
   head->rSRC.push(head->new_array(newarr, obj->mTainted));
 }
@@ -937,13 +934,13 @@ void array_sort_do(rc_head *head)
 void array_sort_quick_do(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
-  long idx = 0;
+  ic_array *arr  = (ic_array *)obj->mData;
+  long idx       = 0;
   sc_voidmapitem *curr;
 
   // create temp array of pointers
   arr->iter_rewind();
-  sc_voidmapitem **tmparr = new sc_voidmapitem*[arr->length()];
+  sc_voidmapitem **tmparr = new sc_voidmapitem *[arr->length()];
   while(curr = arr->iter_next())
   {
     tmparr[idx] = curr;
@@ -951,7 +948,7 @@ void array_sort_quick_do(rc_head *head)
   }
 
   // sort array
-  array_sort_quick_r(head, tmparr, 0, idx-1);
+  array_sort_quick_r(head, tmparr, 0, idx - 1);
 
   // create new ic_array from temp array
   ic_array *newarr = new ic_array();
@@ -960,7 +957,7 @@ void array_sort_quick_do(rc_head *head)
 
   head->var_save(head->pCurrObj, head->new_array(newarr));
 
-  delete [] tmparr;
+  delete[] tmparr;
 
   head->rSRC.push(head->pCurrObj);
 }
@@ -972,15 +969,15 @@ void array_sort_quick_do(rc_head *head)
 void array_sort_shell_do(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
-  long idx = 0, idx2;
+  ic_array *arr  = (ic_array *)obj->mData;
+  long idx       = 0, idx2;
   sc_voidmapitem *curr;
 
   if(!obj->mFrozen)
   {
     // create temp array of pointers
     arr->iter_rewind();
-    sc_voidmapitem **tmparr = new sc_voidmapitem*[arr->length()];
+    sc_voidmapitem **tmparr = new sc_voidmapitem *[arr->length()];
     while(curr = arr->iter_next())
     {
       tmparr[idx] = curr;
@@ -989,13 +986,15 @@ void array_sort_shell_do(rc_head *head)
 
     // sort array
     long step = arr->length() / 2;
-    while (step > 0)
+    while(step > 0)
     {
-      for (idx = step; idx < arr->length(); idx2++)
+      for(idx = step; idx < arr->length(); idx2++)
       {
         sc_voidmapitem *value = tmparr[idx];
 
-        for (idx2 = idx - step; (idx2 >= 0) && (head->sub_compare((rc_var *)tmparr[idx2]->mValue, (rc_var *)value->mValue) > 0); idx2 -= step)
+        for(idx2 = idx - step;
+            (idx2 >= 0) && (head->sub_compare((rc_var *)tmparr[idx2]->mValue, (rc_var *)value->mValue) > 0);
+            idx2 -= step)
           tmparr[idx2 + step] = tmparr[idx2];
 
         tmparr[idx2 + step] = value;
@@ -1010,7 +1009,7 @@ void array_sort_shell_do(rc_head *head)
 
     head->var_save(head->pCurrObj, head->new_array(newarr, obj->mTainted));
 
-    delete [] tmparr;
+    delete[] tmparr;
 
     head->pCurrObj->mLinks++;
     head->rSRC.push(head->pCurrObj);
@@ -1025,7 +1024,6 @@ void array_sort_shell_do(rc_head *head)
  */
 void array_sort_by(rc_head *head)
 {
-
 }
 
 /**
@@ -1034,7 +1032,6 @@ void array_sort_by(rc_head *head)
  */
 void array_sort_by_do(rc_head *head)
 {
-
 }
 
 /**
@@ -1056,7 +1053,7 @@ void array_shuffle(rc_head *head)
   rc_method *shuf = new rc_method();
   shuf->setup(1, 1, false, "item");
   shuf->mProperties = M_PROP_STATIC | M_PROP_PUBLIC;
-  shuf->pClass = head->pCore->mClassCache.pObject;
+  shuf->pClass      = head->pCore->mClassCache.pObject;
 
   head->rSRC.push(head->new_method(shuf));
   array_sort_by(head);
@@ -1071,7 +1068,7 @@ void array_shuffle_do(rc_head *head)
   rc_method *shuf = new rc_method();
   shuf->setup(1, 1, false, "item");
   shuf->mProperties = M_PROP_STATIC | M_PROP_PUBLIC;
-  shuf->pClass = head->pCore->mClassCache.pObject;
+  shuf->pClass      = head->pCore->mClassCache.pObject;
 
   head->rSRC.push(head->new_method(shuf));
   array_sort_by_do(head);
@@ -1084,9 +1081,9 @@ void array_map_do(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   sc_voidmapitem *curr, *curr2;
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr    = (ic_array *)obj->mData;
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   if(head->pCore->class_type(item->pClass) == M_CLASS_ARRAY)
   {
@@ -1156,10 +1153,10 @@ void array_mul(rc_head *head)
  */
 void array_join(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_object *obj    = head->pCurrObj->get();
+  ic_array *arr     = (ic_array *)obj->mData;
   rc_var *delim_var = head->rSRC.pop();
-  ic_object *delim = (delim_var ? delim_var->get() : NULL);
+  ic_object *delim  = (delim_var ? delim_var->get() : NULL);
 
   // check delimiter for being a string
   if(delim)
@@ -1179,7 +1176,7 @@ void array_join(rc_head *head)
     sc_voidmapitem *curr;
 
     // append first element
-    curr = arr->iter_next();
+    curr         = arr->iter_next();
     rc_var *item = head->convert_string((rc_var *)curr->mValue);
     str->append((ic_string *)item->get()->mData);
     head->obj_unlink(item);
@@ -1187,8 +1184,7 @@ void array_join(rc_head *head)
     while(curr = arr->iter_next())
     {
       // append delimiter
-      if(delim)
-        str->append((ic_string *)delim->mData);
+      if(delim) str->append((ic_string *)delim->mData);
 
       // append next string
       item = head->convert_string((rc_var *)curr->mValue);
@@ -1205,10 +1201,10 @@ void array_join(rc_head *head)
  */
 void array_pop_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *count_var = head->rSRC.pop();
-  ic_object *count = (count_var ? count_var->get() : NULL);
-  long idx = 1;
+  ic_object *count  = (count_var ? count_var->get() : NULL);
+  long idx          = 1;
 
   if(count)
   {
@@ -1228,7 +1224,7 @@ void array_pop_do(rc_head *head)
 
   sc_voidmapitem *item;
   ic_array *arr = (ic_array *)obj->mData;
-  while(idx --> 0)
+  while(idx-- > 0)
   {
     item = arr->iter_last();
     head->rSRC.push((rc_var *)item->mValue);
@@ -1260,7 +1256,8 @@ void array_push_do(rc_head *head)
 }
 
 /**
- * Returns the same array with indexes changed to start from 0 and continue in numerical fashion.
+ * Returns the same array with indexes changed to start from 0 and continue in
+ * numerical fashion.
  */
 void array_reindex(rc_head *head)
 {
@@ -1284,7 +1281,7 @@ void array_reindex(rc_head *head)
 void array_reindex_do(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   if(!obj->mFrozen)
   {
     ic_int *idx = new ic_int();
@@ -1334,7 +1331,7 @@ void array_flatten_r(rc_head *head, ic_array *from, ic_array *to)
 void array_flatten(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *to = new ic_array();
+  ic_array *to   = new ic_array();
   array_flatten_r(head, (ic_array *)obj->mData, to);
   head->rSRC.push(head->new_array(to, obj->mTainted));
 }
@@ -1344,15 +1341,15 @@ void array_flatten(rc_head *head)
  */
 void array_inflate(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *size_var = head->rSRC.pop();
-  ic_object *size = size_var->get();
+  ic_object *size  = size_var->get();
   if(head->pCore->class_type(size->pClass) == M_CLASS_INT)
   {
     // size of each piece at max
     long count = ((ic_int *)size->mData)->mValue;
     // size of current piece
-    long tmpsize = 0;
+    long tmpsize  = 0;
     ic_array *arr = (ic_array *)obj->mData;
     // newarr = [tmparr = [item, ...], tmparr = [item, ...], ...]
     ic_array *newarr = new ic_array(), *tmparr = new ic_array();
@@ -1371,13 +1368,12 @@ void array_inflate(rc_head *head)
       {
         newarr->append(head->new_array(tmparr, obj->mTainted), false);
         tmpsize = 0;
-        tmparr = new ic_array();
+        tmparr  = new ic_array();
       }
     }
 
     // last box may not be full, but anyway
-    if(tmpsize > 0)
-      newarr->append(head->new_array(tmparr, obj->mTainted), false);
+    if(tmpsize > 0) newarr->append(head->new_array(tmparr, obj->mTainted), false);
 
     head->rSRC.push(head->new_array(newarr, obj->mTainted));
   }
@@ -1392,8 +1388,8 @@ void array_inflate(rc_head *head)
  */
 void array_unique(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_object *obj    = head->pCurrObj->get();
+  ic_array *arr     = (ic_array *)obj->mData;
   ic_array *new_arr = new ic_array();
   sc_voidmapitem *curr, *curr2;
 
@@ -1414,8 +1410,7 @@ void array_unique(rc_head *head)
     }
 
     // append the item if it has not been found in the array
-    if(!found)
-      new_arr->append((rc_var *)curr->mValue);
+    if(!found) new_arr->append((rc_var *)curr->mValue);
   }
 
   head->rSRC.push(head->new_array(new_arr, obj->mTainted));
@@ -1428,7 +1423,7 @@ void array_select(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -1440,8 +1435,7 @@ void array_select(rc_head *head)
     {
       head->rSRC.push((rc_var *)curr->mValue);
       head->method_invoke((rc_method *)fx->mData);
-      if(head->sub_value(head->rSRC.get(0)))
-        newarr->set(curr->mKey, (rc_var *)curr->mValue);
+      if(head->sub_value(head->rSRC.get(0))) newarr->set(curr->mKey, (rc_var *)curr->mValue);
       head->cmd_clrsrc();
     }
 
@@ -1460,7 +1454,7 @@ void array_reject(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -1472,8 +1466,7 @@ void array_reject(rc_head *head)
     {
       head->rSRC.push((rc_var *)curr->mValue);
       head->method_invoke((rc_method *)fx->mData);
-      if(!head->sub_value(head->rSRC.get(0)))
-        newarr->set(curr->mKey, (rc_var *)curr->mValue);
+      if(!head->sub_value(head->rSRC.get(0))) newarr->set(curr->mKey, (rc_var *)curr->mValue);
       head->cmd_clrsrc();
     }
 
@@ -1490,7 +1483,7 @@ void array_reject(rc_head *head)
  */
 void array_collect(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *def_var = head->rSRC.pop(), *fx_var = head->rSRC.pop();
   ic_object *fx = fx_var->get();
   ic_array *arr = (ic_array *)obj->mData;
@@ -1538,7 +1531,7 @@ void array_collect(rc_head *head)
 void array_flatten_do(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *to = new ic_array();
+  ic_array *to   = new ic_array();
   array_flatten_r(head, (ic_array *)obj->mData, to);
   head->var_save(head->pCurrObj, head->new_array(to, obj->mTainted));
   head->pCurrObj->mLinks++;
@@ -1550,9 +1543,9 @@ void array_flatten_do(rc_head *head)
  */
 void array_inflate_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *size_var = head->rSRC.pop();
-  ic_object *size = size_var->get();
+  ic_object *size  = size_var->get();
   if(!obj->mFrozen)
   {
     if(head->pCore->class_type(size->pClass) == M_CLASS_INT)
@@ -1560,7 +1553,7 @@ void array_inflate_do(rc_head *head)
       // size of each piece at max
       long count = ((ic_int *)size->mData)->mValue;
       // size of current piece
-      long tmpsize = 0;
+      long tmpsize  = 0;
       ic_array *arr = (ic_array *)obj->mData;
       // newarr = [tmparr = [item, ...], tmparr = [item, ...], ...]
       ic_array *newarr = new ic_array(), *tmparr = new ic_array();
@@ -1579,13 +1572,12 @@ void array_inflate_do(rc_head *head)
         {
           newarr->append(head->new_array(tmparr, obj->mTainted), false);
           tmpsize = 0;
-          tmparr = new ic_array();
+          tmparr  = new ic_array();
         }
       }
 
       // last box may not be full, but anyway
-      if(tmpsize > 0)
-        newarr->append(head->new_array(tmparr, obj->mTainted), false);
+      if(tmpsize > 0) newarr->append(head->new_array(tmparr, obj->mTainted), false);
 
       head->var_save(head->pCurrObj, head->new_array(newarr, obj->mTainted));
       head->pCurrObj->mLinks++;
@@ -1605,8 +1597,8 @@ void array_inflate_do(rc_head *head)
  */
 void array_unique_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_object *obj    = head->pCurrObj->get();
+  ic_array *arr     = (ic_array *)obj->mData;
   ic_array *new_arr = new ic_array();
   sc_voidmapitem *curr, *curr2;
 
@@ -1627,8 +1619,7 @@ void array_unique_do(rc_head *head)
     }
 
     // append the item if it has not been found in the array
-    if(!found)
-      new_arr->append((rc_var *)curr->mValue);
+    if(!found) new_arr->append((rc_var *)curr->mValue);
   }
 
   head->var_save(head->pCurrObj, head->new_array(new_arr, obj->mTainted));
@@ -1643,7 +1634,7 @@ void array_select_do(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(!obj->mFrozen)
   {
@@ -1657,13 +1648,12 @@ void array_select_do(rc_head *head)
       while(curr = arr->iter_next())
         data.add((void *)curr);
 
-      for(long idx = 0; idx < data.length(); idx ++)
+      for(long idx = 0; idx < data.length(); idx++)
       {
         curr = (sc_voidmapitem *)data.get(idx);
         head->rSRC.push((rc_var *)curr->mValue);
         head->method_invoke((rc_method *)fx->mData);
-        if(!head->sub_value(head->rSRC.get(0)))
-          arr->unset(curr->mKey);
+        if(!head->sub_value(head->rSRC.get(0))) arr->unset(curr->mKey);
         head->cmd_clrsrc();
       }
 
@@ -1686,7 +1676,7 @@ void array_reject_do(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(!obj->mFrozen)
   {
@@ -1700,8 +1690,7 @@ void array_reject_do(rc_head *head)
       {
         head->rSRC.push((rc_var *)curr->mValue);
         head->method_invoke((rc_method *)fx->mData);
-        if(head->sub_value(head->rSRC.get(0)))
-          arr->unset(curr->mKey);
+        if(head->sub_value(head->rSRC.get(0))) arr->unset(curr->mKey);
         head->cmd_clrsrc();
       }
 
@@ -1744,9 +1733,9 @@ void array_clear_do(rc_head *head)
  */
 void array_zip(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   if(head->pCore->class_type(item->pClass) == M_CLASS_ARRAY)
   {
@@ -1797,9 +1786,9 @@ void array_zip(rc_head *head)
  */
 void array_zip_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   if(!obj->mFrozen)
   {
@@ -1856,17 +1845,16 @@ void array_zip_do(rc_head *head)
 void array_min(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   sc_voidmapitem *curr;
 
-  if(arr->length() == 0)
-    return;
+  if(arr->length() == 0) return;
 
   arr->iter_rewind();
 
   // minimal value is stored in AX register
   rc_var *ax = head->rAX;
-  head->rAX = (rc_var *)arr->iter_next()->mValue;
+  head->rAX  = (rc_var *)arr->iter_next()->mValue;
   head->rAX->mLinks++;
   while(curr = arr->iter_next())
   {
@@ -1910,17 +1898,16 @@ void array_min(rc_head *head)
 void array_max(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   sc_voidmapitem *curr;
 
-  if(arr->length() == 0)
-    return;
+  if(arr->length() == 0) return;
 
   arr->iter_rewind();
 
   // maximal value is stored in AX register
   rc_var *ax = head->rAX;
-  head->rAX = (rc_var *)arr->iter_next()->mValue;
+  head->rAX  = (rc_var *)arr->iter_next()->mValue;
   head->rAX->mLinks++;
   while(curr = arr->iter_next())
   {
@@ -1964,11 +1951,10 @@ void array_max(rc_head *head)
 void array_min_max(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   sc_voidmapitem *curr;
 
-  if(arr->length() == 0)
-    return;
+  if(arr->length() == 0) return;
 
   arr->iter_rewind();
 
@@ -1979,8 +1965,8 @@ void array_min_max(rc_head *head)
   while(curr = arr->iter_next())
   {
     rc_var *item = (rc_var *)curr->mValue;
-    char minres = head->sub_compare(item, min);
-    char maxres = head->sub_compare(item, max);
+    char minres  = head->sub_compare(item, min);
+    char maxres  = head->sub_compare(item, max);
 
     // incomparable types
     if(minres == -2 || maxres == -2)
@@ -2009,7 +1995,7 @@ void array_min_max(rc_head *head)
 void array_length(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long length = ((ic_array *)obj->mData)->length();
+  long length    = ((ic_array *)obj->mData)->length();
   head->rSRC.push(head->new_int(length, obj->mTainted));
 }
 
@@ -2019,7 +2005,7 @@ void array_length(rc_head *head)
 void array_to_b(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  bool val = ((ic_array *)obj->mData)->to_b();
+  bool val       = ((ic_array *)obj->mData)->to_b();
   head->rSRC.push(head->new_bool(val, obj->mTainted));
 }
 
@@ -2048,7 +2034,7 @@ void array_inspect(rc_head *head)
 
   sc_voidmapitem *curr;
   ic_object *obj = head->pCurrObj->get();
-  ic_array *arr = (ic_array *)obj->mData;
+  ic_array *arr  = (ic_array *)obj->mData;
   long count = arr->length(), idx = 0;
 
   arr->iter_rewind();
@@ -2056,17 +2042,16 @@ void array_inspect(rc_head *head)
   {
     head->method_invoke("inspect", (rc_var *)curr->mValue);
     rc_var *item_var = head->rSRC.pop();
-    ic_object *item = item_var->get();
+    ic_object *item  = item_var->get();
 
     if(head->pCore->class_type(item->pClass) == M_CLASS_STRING)
     {
       str->append(curr->mKey);
       str->append(":");
-      str->append((ic_string*)item->mData);
+      str->append((ic_string *)item->mData);
 
       // not the last item yet
-      if(idx < count-1)
-        str->append(", ");
+      if(idx < count - 1) str->append(", ");
     }
     else
     {

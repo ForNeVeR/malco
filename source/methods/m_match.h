@@ -21,9 +21,9 @@ void match_op_create(rc_head *head)
  */
 void match_op_cmp_match(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   long left = ((ic_match *)obj->mData)->count(), right = ((ic_match *)item->mData)->count();
   char result = (left == right ? 0 : (left > right ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -35,9 +35,9 @@ void match_op_cmp_match(rc_head *head)
  */
 void match_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool left = ((ic_match *)obj->mData)->count() != 0, right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : (left ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -49,10 +49,10 @@ void match_op_cmp_bool(rc_head *head)
  */
 void match_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  const char *str = "match";
+  ic_object *item  = item_var->get();
+  const char *str  = "match";
   // note the -1 part to reverse values, as item is at rightside
   char result = ((ic_string *)item->mData)->compare(str) * (-1);
   head->rSRC.push(head->new_int(result));
@@ -75,7 +75,7 @@ void match_get(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   rc_var *id_var = head->rSRC.pop();
-  ic_object *id = id_var->get();
+  ic_object *id  = id_var->get();
   if(head->pCore->class_type(id->pClass))
   {
     long val = ((ic_int *)id->mData)->mValue;
@@ -100,7 +100,7 @@ void match_bounds(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   rc_var *id_var = head->rSRC.pop();
-  ic_object *id = id_var->get();
+  ic_object *id  = id_var->get();
   if(head->pCore->class_type(id->pClass))
   {
     long val = ((ic_int *)id->mData)->mValue;
@@ -130,7 +130,7 @@ void match_bounds(rc_head *head)
 void match_to_b(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  bool val = ((ic_match *)obj->mData)->count() > 0;
+  bool val       = ((ic_match *)obj->mData)->count() > 0;
   head->rSRC.push(head->new_bool(val, obj->mTainted));
 }
 
@@ -140,7 +140,7 @@ void match_to_b(rc_head *head)
 void match_to_i(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long count = ((ic_match *)obj->mData)->count();
+  long count     = ((ic_match *)obj->mData)->count();
   head->rSRC.push(head->new_int(count, obj->mTainted));
 }
 
@@ -151,7 +151,7 @@ void match_inspect(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   ic_int count;
-  count.mValue = ((ic_match *)obj->mData)->count();
+  count.mValue   = ((ic_match *)obj->mData)->count();
   ic_string *str = new ic_string("{match:");
   str->append(count.to_s());
   if(count.mValue == 1)

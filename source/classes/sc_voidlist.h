@@ -18,7 +18,7 @@
  */
 sc_voiditem::sc_voiditem(void *ptr)
 {
-  mPtr = ptr;
+  mPtr  = ptr;
   pPrev = pNext = NULL;
 }
 
@@ -32,7 +32,7 @@ sc_voiditem::sc_voiditem(void *ptr)
 sc_voidlist::sc_voidlist()
 {
   mFirst = mLast = NULL;
-  mLength = 0;
+  mLength        = 0;
 }
 
 /**
@@ -42,7 +42,7 @@ sc_voidlist::~sc_voidlist()
 {
   register long idx;
   sc_voiditem *curr = mFirst, *tmp;
-  for(idx=0; idx<mLength; idx++)
+  for(idx = 0; idx < mLength; idx++)
   {
     tmp = curr->pNext;
     delete curr;
@@ -65,9 +65,9 @@ void sc_voidlist::add(void *ptr)
   }
   else
   {
-    curr->pPrev = mLast;
+    curr->pPrev  = mLast;
     mLast->pNext = curr;
-    mLast = curr;
+    mLast        = curr;
   }
 
   mLength++;
@@ -81,14 +81,14 @@ void sc_voidlist::del(void *ptr)
 {
   register long idx;
   sc_voiditem *curr = mFirst;
-  for(idx=0; idx<mLength; idx++)
+  for(idx = 0; idx < mLength; idx++)
   {
     if(curr->mPtr == ptr)
     {
       if(curr != mFirst) curr->pPrev->pNext = curr->pNext;
       if(curr != mLast) curr->pNext->pPrev = curr->pPrev;
       delete curr;
-      mLength --;
+      mLength--;
       return;
     }
 
@@ -104,14 +104,14 @@ void sc_voidlist::del(long id)
 {
   register long idx;
   sc_voiditem *curr = mFirst;
-  for(idx=0; idx<mLength; idx++)
+  for(idx = 0; idx < mLength; idx++)
   {
     if(idx == id)
     {
       if(curr != mFirst) curr->pPrev->pNext = curr->pNext;
       if(curr != mLast) curr->pNext->pPrev = curr->pPrev;
       delete curr;
-      mLength --;
+      mLength--;
       return;
     }
 
@@ -127,11 +127,11 @@ void *sc_voidlist::pop()
 {
   if(mLength > 0)
   {
-    void *result = mLast->mPtr;
+    void *result      = mLast->mPtr;
     sc_voiditem *curr = mLast;
     if(mLength > 1)
     {
-      mLast = mLast->pPrev;
+      mLast        = mLast->pPrev;
       mLast->pNext = NULL;
     }
     else
@@ -154,15 +154,15 @@ void *sc_voidlist::pop()
 sc_voidarray *sc_voidlist::pack()
 {
   sc_voidarray *arr = new sc_voidarray();
-  arr->mPtr = new void*[mLength];
+  arr->mPtr         = new void *[mLength];
   if(!arr->mPtr) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   arr->mLength = arr->mSize = mLength;
   register long idx;
   sc_voiditem *curr = mFirst;
-  for(idx=0; idx<mLength; idx++)
+  for(idx = 0; idx < mLength; idx++)
   {
     arr->mPtr[idx] = curr->mPtr;
-    curr = curr->pNext;
+    curr           = curr->pNext;
   }
 
   return arr;
@@ -173,7 +173,7 @@ sc_voidarray *sc_voidlist::pack()
  * @param id Pointer index.
  * @return Void pointer at index.
  */
-void * sc_voidlist::get(long id)
+void *sc_voidlist::get(long id)
 {
   sc_voiditem *curr = mFirst;
 

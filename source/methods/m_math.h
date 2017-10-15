@@ -14,7 +14,7 @@
 void math_abs(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
 
   char cls = head->pCore->class_type(value->pClass);
 
@@ -40,7 +40,7 @@ void math_abs(rc_head *head)
 void math_sin(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -67,7 +67,7 @@ void math_sin(rc_head *head)
 void math_sinh(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -94,7 +94,7 @@ void math_sinh(rc_head *head)
 void math_cos(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -121,7 +121,7 @@ void math_cos(rc_head *head)
 void math_cosh(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -148,7 +148,7 @@ void math_cosh(rc_head *head)
 void math_tan(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -175,7 +175,7 @@ void math_tan(rc_head *head)
 void math_tanh(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -202,7 +202,7 @@ void math_tanh(rc_head *head)
 void math_arcsin(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -231,7 +231,7 @@ void math_arcsin(rc_head *head)
 void math_arcsinh(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -260,7 +260,7 @@ void math_arcsinh(rc_head *head)
 void math_arccos(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -289,7 +289,7 @@ void math_arccos(rc_head *head)
 void math_arccosh(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -318,7 +318,7 @@ void math_arccosh(rc_head *head)
 void math_arctan(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -344,7 +344,7 @@ void math_arctan(rc_head *head)
 void math_arctanh(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -370,7 +370,7 @@ void math_arctanh(rc_head *head)
 void math_sqrt(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -399,7 +399,7 @@ void math_sqrt(rc_head *head)
 void math_cbrt(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -425,7 +425,7 @@ void math_cbrt(rc_head *head)
 void math_exp(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -451,7 +451,7 @@ void math_exp(rc_head *head)
 void math_log(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -480,7 +480,7 @@ void math_log(rc_head *head)
 void math_log2(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -509,7 +509,7 @@ void math_log2(rc_head *head)
 void math_log10(rc_head *head)
 {
   rc_var *value_var = head->rSRC.pop();
-  ic_object *value = value_var->get();
+  ic_object *value  = value_var->get();
   double val;
 
   char cls = head->pCore->class_type(value->pClass);
@@ -602,7 +602,7 @@ void math_min(rc_head *head)
   bool any = false, hasfloat = false, valid;
   while(curr_var = head->rSRC.pop())
   {
-    curr = curr_var->get();
+    curr     = curr_var->get();
     char cls = head->pCore->class_type(curr->pClass);
     // valid tells the object is a proper number, int or float
     valid = true;
@@ -611,7 +611,7 @@ void math_min(rc_head *head)
       val = ((ic_int *)curr->mData)->mValue;
     else if(cls == M_CLASS_FLOAT)
     {
-      val = ((ic_float *)curr->mData)->mValue;
+      val      = ((ic_float *)curr->mData)->mValue;
       hasfloat = true;
     }
     else
@@ -648,7 +648,7 @@ void math_max(rc_head *head)
   bool any = false, hasfloat = false, valid;
   while(curr_var = head->rSRC.pop())
   {
-    curr = curr_var->get();
+    curr     = curr_var->get();
     char cls = head->pCore->class_type(curr->pClass);
     // valid tells the object is a proper number, int or float
     valid = true;
@@ -657,7 +657,7 @@ void math_max(rc_head *head)
       val = ((ic_int *)curr->mData)->mValue;
     else if(cls == M_CLASS_FLOAT)
     {
-      val = ((ic_float *)curr->mData)->mValue;
+      val      = ((ic_float *)curr->mData)->mValue;
       hasfloat = true;
     }
     else
@@ -685,7 +685,7 @@ void math_max(rc_head *head)
 
 void math_even(rc_head *head)
 {
-  rc_var *var = head->rSRC.pop();
+  rc_var *var    = head->rSRC.pop();
   ic_object *obj = var->get();
   if(head->pCore->class_type(obj->pClass) == M_CLASS_INT)
   {
@@ -702,7 +702,6 @@ void math_even(rc_head *head)
  */
 void math_base_cvt(rc_head *head)
 {
-
 }
 
 #endif

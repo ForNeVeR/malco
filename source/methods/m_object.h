@@ -14,7 +14,7 @@
 void object_op_create(rc_head *head)
 {
   ic_object *name = head->var_get(head->rSRC.get(0));
-  char namecls = head->pCore->class_type(name->pClass);
+  char namecls    = head->pCore->class_type(name->pClass);
   if(namecls == M_CLASS_STRING)
   {
     rc_class *cls = head->pCore->class_resolve(((ic_string *)name->mData)->get(), head->pCore->pClassRoot);
@@ -90,7 +90,7 @@ void object_freeze_do(rc_head *head)
 void object_exec(rc_head *head)
 {
   rc_var *name_var = head->rSRC.pop();
-  ic_object *name = name_var->get();
+  ic_object *name  = name_var->get();
   if(head->pCore->class_type(name->pClass) == M_CLASS_STRING)
   {
     ic_string *name_str = (ic_string *)name->mData;
@@ -115,7 +115,7 @@ void object_assert(rc_head *head)
   char *name = head->pCurrObj->get()->pClass->mName;
   rc_var *curr;
   bool asserted = false;
-  int count = 1;
+  int count     = 1;
   while(curr = head->rSRC.pop())
   {
     if(head->pCore->class_type(curr->get()->pClass) == M_CLASS_STRING)
@@ -152,8 +152,8 @@ void object_class(rc_head *head)
 }
 
 /**
-* Returns object's class name.
-*/
+ * Returns object's class name.
+ */
 void object_class_name(rc_head *head)
 {
   head->rSRC.push(head->new_string(head->pCurrObj->get()->pClass->mName));
@@ -165,7 +165,7 @@ void object_class_name(rc_head *head)
 void object_has_member(rc_head *head)
 {
   rc_var *name_var = head->rSRC.pop();
-  ic_object *name = name_var->get();
+  ic_object *name  = name_var->get();
   if(head->pCore->class_type(name->pClass) == M_CLASS_STRING)
   {
     bool exists = head->pCurrObj->get()->mMembers->get((ic_string *)name->mData) != NULL;
@@ -182,7 +182,7 @@ void object_has_member(rc_head *head)
 void object_has_method(rc_head *head)
 {
   rc_var *name_var = head->rSRC.pop();
-  ic_object *name = name_var->get();
+  ic_object *name  = name_var->get();
   if(head->pCore->class_type(name->pClass) == M_CLASS_STRING)
   {
     bool exists = head->method_resolve(((ic_string *)name->mData)->get(), head->pCurrObj->get()->pClass) != NULL;
@@ -264,14 +264,13 @@ void object_print(rc_head *head)
 
   for(int idx = 0; idx < items.length(); idx++)
   {
-    var = (rc_var *)items.get(idx);
-    rc_var *curr = head->convert_string(var);
+    var            = (rc_var *)items.get(idx);
+    rc_var *curr   = head->convert_string(var);
     ic_string *str = (ic_string *)curr->get()->mData;
     printf("%s", str->get());
 
     head->obj_unlink(var);
-    if(var != curr)
-      head->obj_unlink(curr);
+    if(var != curr) head->obj_unlink(curr);
   }
 }
 

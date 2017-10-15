@@ -17,25 +17,25 @@
  */
 sc_exception::sc_exception(const char *msg, int type, const char *file, long line)
 {
-  mErrorMsg = new ic_string(msg);
+  mErrorMsg  = new ic_string(msg);
   mErrorType = type;
-  mFile = file;
-  mLine = line;
+  mFile      = file;
+  mLine      = line;
 }
 
 /**
-* sc_exception constructor.
-* @param msg Error message.
-* @param level Error level.
-* @param file File where error occurred.
-* @param line Line where error occurred.
-*/
+ * sc_exception constructor.
+ * @param msg Error message.
+ * @param level Error level.
+ * @param file File where error occurred.
+ * @param line Line where error occurred.
+ */
 sc_exception::sc_exception(ic_string *msg, int type, const char *file, long line)
 {
-  mErrorMsg = msg;
+  mErrorMsg  = msg;
   mErrorType = type;
-  mFile = file;
-  mLine = line;
+  mFile      = file;
+  mLine      = line;
 }
 
 /**
@@ -44,10 +44,10 @@ sc_exception::sc_exception(ic_string *msg, int type, const char *file, long line
  */
 sc_exception::sc_exception(const sc_exception &original)
 {
-  mErrorMsg = new ic_string(*original.mErrorMsg);
+  mErrorMsg  = new ic_string(*original.mErrorMsg);
   mErrorType = original.mErrorType;
-  mFile = original.mFile;
-  mLine = original.mLine;
+  mFile      = original.mFile;
+  mLine      = original.mLine;
 }
 
 /**

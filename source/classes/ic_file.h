@@ -86,20 +86,28 @@ void ic_file::choose(const char *name)
 bool ic_file::open(char mode)
 {
   // check if file is already open
-  if(mFile)
-    this->close();
+  if(mFile) this->close();
 
-  char mode_str[4] = { 0, 0, 0, 0 };
-  char idx = 0;
+  char mode_str[4] = {0, 0, 0, 0};
+  char idx         = 0;
 
   switch(mode)
   {
-    case IO_READ:                   mode_str[0] = 'r'; break;
-    case IO_WRITE:                  mode_str[0] = 'w'; break;
-    case IO_WRITE | FILE_APPEND:    mode_str[0] = 'a'; break;
-    case IO_RW:                     mode_str[0] = 'r'; mode_str[1] = '+'; break;
-    case IO_RW | FILE_REPLACE:      mode_str[0] = 'w'; mode_str[1] = '+'; break;
-    case IO_RW | FILE_APPEND:       mode_str[0] = 'a'; mode_str[1] = '+'; break;
+    case IO_READ: mode_str[0] = 'r'; break;
+    case IO_WRITE: mode_str[0] = 'w'; break;
+    case IO_WRITE | FILE_APPEND: mode_str[0] = 'a'; break;
+    case IO_RW:
+      mode_str[0] = 'r';
+      mode_str[1] = '+';
+      break;
+    case IO_RW | FILE_REPLACE:
+      mode_str[0] = 'w';
+      mode_str[1] = '+';
+      break;
+    case IO_RW | FILE_APPEND:
+      mode_str[0] = 'a';
+      mode_str[1] = '+';
+      break;
   }
 
   if(mode & FILE_BINARY)
@@ -141,7 +149,7 @@ ic_string *ic_file::read(long size)
   long tmpseek = ftell(mFile);
   fseek(mFile, 0, SEEK_END);
   long realsize = ftell(mFile);
-  size = MIN(size, realsize);
+  size          = MIN(size, realsize);
   fseek(mFile, tmpseek, 0);
 
   // load data from file
@@ -214,8 +222,7 @@ bool ic_file::exists()
  */
 void ic_file::seek(long pos, char mode)
 {
-  if(mFile)
-    fseek(mFile, pos, mode);
+  if(mFile) fseek(mFile, pos, mode);
 }
 
 /**
@@ -238,7 +245,7 @@ inline long ic_file::tell()
 bool ic_file::copy(const char *name)
 {
   FILE *from = fopen(mName, "rb");
-  FILE *to = fopen(name, "wb");
+  FILE *to   = fopen(name, "wb");
   if(!from || !to)
   {
     fclose(from);
@@ -306,7 +313,7 @@ inline bool ic_file::remove()
 bool ic_file::truncate(long size)
 {
   FILE *from = fopen(mName, "rb");
-  FILE *to = tmpfile();
+  FILE *to   = tmpfile();
 
   if(!from || !to)
   {
@@ -392,7 +399,7 @@ inline long ic_file::to_i()
  * ic_file -> char* converter.
  * @return char*
  */
-inline char* ic_file::to_s() const
+inline char *ic_file::to_s() const
 {
   return mName;
 }

@@ -11,9 +11,9 @@
 void rc_method::setup(int min, int max, bool splat, ...)
 {
   pExternalScope = NULL;
-  mMinArgs = min;
-  mMaxArgs = MAX(max, min);
-  mSplatArgs = splat;
+  mMinArgs       = min;
+  mMaxArgs       = MAX(max, min);
+  mSplatArgs     = splat;
 
   va_list names;
   va_start(names, splat);
@@ -25,9 +25,9 @@ void rc_method::setup(int min, int max, bool splat, ...)
 void rc_method::op()
 {
   pExternalScope = NULL;
-  mMinArgs = 1;
-  mMaxArgs = 1;
-  mSplatArgs = false;
+  mMinArgs       = 1;
+  mMaxArgs       = 1;
+  mSplatArgs     = false;
   mParams.add((void *)new ic_string("value"));
 }
 

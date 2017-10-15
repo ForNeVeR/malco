@@ -15,9 +15,9 @@
  */
 ic_object::ic_object(rc_class *root, void *data)
 {
-  mLinks = 1;
-  pClass = root;
-  mData = data;
+  mLinks  = 1;
+  pClass  = root;
+  mData   = data;
   mFrozen = mTainted = false;
 
   mMembers = new sc_voidmap(root->mMembers);

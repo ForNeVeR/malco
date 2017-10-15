@@ -13,9 +13,9 @@
  */
 void bool_op_create(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = (item_var ? item_var->get() : NULL);
+  ic_object *item  = (item_var ? item_var->get() : NULL);
 
   if(item)
   {
@@ -77,9 +77,9 @@ void bool_op_bxor_bool(rc_head *head)
  */
 void bool_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool left = ((ic_bool *)obj->mData)->mValue, right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : (left ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -91,7 +91,7 @@ void bool_op_cmp_bool(rc_head *head)
  */
 void bool_op_cmp_object(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
   if(item_var->get()->pClass == head->pCore->mClassCache.pUndef)
     head->rSRC.push(head->new_undef());
@@ -113,7 +113,7 @@ void bool_toggle_do(rc_head *head)
   if(!curr->mFrozen)
   {
     ic_bool *obj = (ic_bool *)curr->mData;
-    obj->mValue = !(obj->mValue);
+    obj->mValue  = !(obj->mValue);
   }
   else
     head->exception(M_ERR_FROZEN, M_EXC_SCRIPT);
@@ -134,7 +134,7 @@ void bool_to_b(rc_head *head)
 void bool_to_f(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  double val = ((ic_bool *)obj->mData)->to_f();
+  double val     = ((ic_bool *)obj->mData)->to_f();
   head->rSRC.push(head->new_float(val, obj->mTainted));
 }
 
@@ -144,7 +144,7 @@ void bool_to_f(rc_head *head)
 void bool_to_i(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long val = ((ic_bool *)obj->mData)->to_i();
+  long val       = ((ic_bool *)obj->mData)->to_i();
   head->rSRC.push(head->new_int(val, obj->mTainted));
 }
 
@@ -153,7 +153,7 @@ void bool_to_i(rc_head *head)
  */
 void bool_to_s(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   const char *str = ((ic_bool *)obj->mData)->to_s();
   head->rSRC.push(head->new_string(str, obj->mTainted));
 }

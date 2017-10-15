@@ -9,18 +9,18 @@
 #define SC_RANDOM_H
 
 int sc_random::state[624] = {0};
-int sc_random::index = 0;
+int sc_random::index      = 0;
 
 /**
  * (Re)-seeds the generator with specified integer.
  */
 void sc_random::seed(int new_seed)
 {
-  index = 0;
+  index    = 0;
   state[0] = new_seed;
   for(int i = 1; i < 624; ++i)
   {
-    state[i] = 0x6c078965 * (state[i - 1] ^ (state[i-1] >> 30)) + i;
+    state[i] = 0x6c078965 * (state[i - 1] ^ (state[i - 1] >> 30)) + i;
   }
 }
 
@@ -34,16 +34,15 @@ int sc_random::get_next()
   {
     generate();
   }
-  
+
   int y = state[index];
-  y = y ^ (y >> 11);
-  y = y ^ ((y << 7) & 0x9d2c5680);
-  y = y ^ ((y << 15) & 0xefc60000);
-  y = y ^ (y >> 18);
+  y     = y ^ (y >> 11);
+  y     = y ^ ((y << 7) & 0x9d2c5680);
+  y     = y ^ ((y << 15) & 0xefc60000);
+  y     = y ^ (y >> 18);
 
   ++index;
-  if(index == 624)
-      index = 0;
+  if(index == 624) index = 0;
 
   return y;
 }
@@ -56,8 +55,7 @@ int sc_random::get_next()
 int sc_random::get_next(int max_value)
 {
   int random_number = get_next();
-  if(random_number < 0)
-      random_number *= -1;
+  if(random_number < 0) random_number *= -1;
 
   return random_number % (max_value + 1);
 }
@@ -81,7 +79,7 @@ void sc_random::generate()
 {
   for(int i = 0; i < 624; ++i)
   {
-    int y = (state[i] >> 31) + (state[(i + 1) % 624] >> 1);
+    int y    = (state[i] >> 31) + (state[(i + 1) % 624] >> 1);
     state[i] = state[(i + 397) % 624] ^ (y >> 1);
     if((y % 2) == 1)
     {

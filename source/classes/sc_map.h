@@ -49,7 +49,7 @@ sc_mapitem::~sc_mapitem()
 sc_map::sc_map()
 {
   mRoot = mCurr = mCurrKey = mFirst = mLast = NULL;
-  mLength = 0;
+  mLength                                   = 0;
 }
 
 /**
@@ -83,7 +83,7 @@ sc_map::~sc_map()
  */
 inline void sc_map::adjust_balance(sc_mapitem *root, int dir, int bal)
 {
-  sc_mapitem *n = root->mLink[dir];
+  sc_mapitem *n  = root->mLink[dir];
   sc_mapitem *nn = n->mLink[!dir];
 
   if(nn->mBalance == 0)
@@ -91,12 +91,12 @@ inline void sc_map::adjust_balance(sc_mapitem *root, int dir, int bal)
   else if(nn->mBalance == bal)
   {
     root->mBalance = -bal;
-    n->mBalance = 0;
+    n->mBalance    = 0;
   }
   else
   {
     root->mBalance = 0;
-    n->mBalance = bal;
+    n->mBalance    = bal;
   }
 
   nn->mBalance = 0;
@@ -108,7 +108,7 @@ inline void sc_map::adjust_balance(sc_mapitem *root, int dir, int bal)
  * @param dir Direction.
  * @return Node that that has become root.
  */
-inline sc_mapitem *sc_map::rotate_single (sc_mapitem *root, int dir)
+inline sc_mapitem *sc_map::rotate_single(sc_mapitem *root, int dir)
 {
   sc_mapitem *save = root->mLink[!dir];
 
@@ -130,7 +130,7 @@ inline sc_mapitem *sc_map::rotate_single (sc_mapitem *root, int dir)
  * @param dir Direction.
  * @return Node that that has become root.
  */
-inline sc_mapitem *sc_map::rotate_double (sc_mapitem *root, int dir)
+inline sc_mapitem *sc_map::rotate_double(sc_mapitem *root, int dir)
 {
   sc_mapitem *save = root->mLink[!dir]->mLink[dir];
 
@@ -168,7 +168,7 @@ sc_mapitem *sc_map::insert(const char *key, const char *val)
   int done = 0;
   sc_mapitem *item;
   if(!key || !val) return NULL;
-  mRoot = this->insert_r(mRoot, key, val, &done, &item);
+  mRoot        = this->insert_r(mRoot, key, val, &done, &item);
   mRoot->pRoot = NULL;
 
   // maintain linked list
@@ -177,7 +177,7 @@ sc_mapitem *sc_map::insert(const char *key, const char *val)
   else
     mLast->pNext = item;
   item->pPrev = mLast;
-  mLast = item;
+  mLast       = item;
 
   iter_rewind();
   key_rewind();
@@ -198,7 +198,7 @@ sc_mapitem *sc_map::insert_r(sc_mapitem *root, const char *key, const char *val,
 {
   if(root == NULL)
   {
-    root = new sc_mapitem (key, val);
+    root = new sc_mapitem(key, val);
     if(!root) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
     *item = root;
   }
@@ -206,7 +206,7 @@ sc_mapitem *sc_map::insert_r(sc_mapitem *root, const char *key, const char *val,
   {
     int dir = (int)(root->mKey->compare(key) > 0);
 
-    root->mLink[dir] = insert_r(root->mLink[dir], key, val, done, item);
+    root->mLink[dir]        = insert_r(root->mLink[dir], key, val, done, item);
     root->mLink[dir]->pRoot = root;
 
     if(!*done)
@@ -217,7 +217,7 @@ sc_mapitem *sc_map::insert_r(sc_mapitem *root, const char *key, const char *val,
         *done = 1;
       else if(abs(root->mBalance) > 1)
       {
-        root = insert_balance(root, dir);
+        root  = insert_balance(root, dir);
         *done = 1;
       }
     }
@@ -235,12 +235,12 @@ sc_mapitem *sc_map::insert_r(sc_mapitem *root, const char *key, const char *val,
 inline sc_mapitem *sc_map::insert_balance(sc_mapitem *root, int dir)
 {
   sc_mapitem *n = root->mLink[dir];
-  int bal = dir == 0 ? -1 : 1;
+  int bal       = dir == 0 ? -1 : 1;
 
-  if ( n->mBalance == bal )
+  if(n->mBalance == bal)
   {
     root->mBalance = n->mBalance = 0;
-    root = rotate_single(root, !dir);
+    root                         = rotate_single(root, !dir);
   }
   else
   {
@@ -268,22 +268,20 @@ sc_mapitem *sc_map::remove_r(sc_mapitem *root, const char *key, int *done)
     if(root->mKey->compare(key) == 0)
     {
       // Unlink and fix parent
-      if (root->mLink[0] == NULL || root->mLink[1] == NULL)
+      if(root->mLink[0] == NULL || root->mLink[1] == NULL)
       {
         sc_mapitem *save;
 
         // maintain linked list
-        if(root->pPrev)
-          root->pPrev->pNext = root->pNext;
-        if(root->pNext)
-          root->pNext->pPrev = root->pPrev;
+        if(root->pPrev) root->pPrev->pNext = root->pNext;
+        if(root->pNext) root->pNext->pPrev = root->pPrev;
 
         if(root == mFirst)
           mFirst = root->pNext;
         else if(root == mLast)
           mLast = root->pPrev;
 
-        dir = root->mLink[0] == NULL;
+        dir  = root->mLink[0] == NULL;
         save = root->mLink[dir];
         delete root;
 
@@ -296,20 +294,19 @@ sc_mapitem *sc_map::remove_r(sc_mapitem *root, const char *key, int *done)
         // Find inorder predecessor
         sc_mapitem *heir = root->mLink[0];
 
-        while ( heir->mLink[1] != NULL )
+        while(heir->mLink[1] != NULL)
           heir = heir->mLink[1];
 
         /* Copy and set new search data */
         root->mKey = heir->mKey;
-        key = heir->mKey->get();
+        key        = heir->mKey->get();
       }
     }
 
     dir = (int)(root->mKey->compare(key) > 0);
 
     root->mLink[dir] = remove_r(root->mLink[dir], key, done);
-    if(root->mLink[dir])
-      root->mLink[dir]->pRoot = root;
+    if(root->mLink[dir]) root->mLink[dir]->pRoot = root;
 
     if(!*done)
     {
@@ -319,8 +316,8 @@ sc_mapitem *sc_map::remove_r(sc_mapitem *root, const char *key, int *done)
       // Terminate or rebalance as necessary
       if(abs(root->mBalance) == 1)
         *done = 1;
-      else if (abs(root->mBalance) > 1)
-        root = remove_balance (root, dir, done);
+      else if(abs(root->mBalance) > 1)
+        root = remove_balance(root, dir, done);
     }
   }
 
@@ -337,14 +334,14 @@ sc_mapitem *sc_map::remove_r(sc_mapitem *root, const char *key, int *done)
 inline sc_mapitem *sc_map::remove_balance(sc_mapitem *root, int dir, int *done)
 {
   sc_mapitem *n = root->mLink[!dir];
-  int bal = dir == 0 ? -1 : 1;
+  int bal       = dir == 0 ? -1 : 1;
 
   if(n->mBalance == -bal)
   {
     root->mBalance = n->mBalance = 0;
-    root = rotate_single(root, dir);
+    root                         = rotate_single(root, dir);
   }
-  else if (n->mBalance == bal)
+  else if(n->mBalance == bal)
   {
     adjust_balance(root, !dir, -bal);
     root = rotate_double(root, dir);
@@ -352,9 +349,9 @@ inline sc_mapitem *sc_map::remove_balance(sc_mapitem *root, int dir, int *done)
   else
   {
     root->mBalance = -bal;
-    n->mBalance = bal;
-    root = rotate_single(root, dir);
-    *done = 1;
+    n->mBalance    = bal;
+    root           = rotate_single(root, dir);
+    *done          = 1;
   }
 
   return root;
@@ -386,10 +383,9 @@ sc_mapitem *sc_map::find(const char *key)
   while(item)
   {
     res = item->mKey->compare(key);
-    if(!res)
-      return item;
+    if(!res) return item;
 
-    dir = (int)(res > 0);
+    dir  = (int)(res > 0);
     item = item->mLink[dir];
   }
 
@@ -469,9 +465,8 @@ inline char *sc_map::get(ic_string *key)
 void sc_map::remove(const char *key)
 {
   int done = 0;
-  mRoot = remove_r(mRoot, key, &done);
-  if(mRoot)
-    mRoot->pRoot = NULL;
+  mRoot    = remove_r(mRoot, key, &done);
+  if(mRoot) mRoot->pRoot = NULL;
 
   iter_rewind();
   key_rewind();
@@ -491,8 +486,7 @@ inline void sc_map::remove(ic_string *key)
  */
 void sc_map::clear()
 {
-  if(mRoot)
-    clear_r(mRoot);
+  if(mRoot) clear_r(mRoot);
 
   mLength = 0;
   mCurr = mCurrKey = mFirst = mLast = mRoot = NULL;
@@ -535,7 +529,8 @@ sc_mapitem *sc_map::key_next()
     while(mCurrKey->mLink[0])
       mCurrKey = mCurrKey->mLink[0];
   }
-  // if current point is the leaf, rise up by 1 level while walking the right-most branch
+  // if current point is the leaf, rise up by 1 level while walking the
+  // right-most branch
   else
   {
     sc_mapitem *root;

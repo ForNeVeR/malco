@@ -21,10 +21,9 @@
  * exceptions' output. Should not be NULL.
  */
 rc_rasm::rc_rasm(rc_core *core, const ic_string *code, const char *filename)
-  : pCore(core), mTape(), mDefTable(core), mStrTable(), mCode(*code),
-  mFileName(filename)
+    : pCore(core), mTape(), mDefTable(core), mStrTable(), mCode(*code), mFileName(filename)
 {
-  mLineNumber = 0;
+  mLineNumber        = 0;
   mCurrentMethodName = NULL;
 }
 
@@ -36,17 +35,16 @@ rc_rasm::~rc_rasm()
   // Clear variables:
   for(int i = 0; i < mVariables.length(); ++i)
   {
-    delete[] (char *)mVariables[i];
+    delete[](char *) mVariables[i];
   }
 
   // Clear class name stack:
-  for (int i = 0; i < mClassNameStack.length(); ++i)
+  for(int i = 0; i < mClassNameStack.length(); ++i)
   {
-    delete[] (char *)mClassNameStack[i];
+    delete[](char *) mClassNameStack[i];
   }
 
-  if(mCurrentMethodName)
-    delete mCurrentMethodName;
+  if(mCurrentMethodName) delete mCurrentMethodName;
 }
 
 /**
@@ -57,13 +55,13 @@ rc_rasm::~rc_rasm()
 void rc_rasm::assemble(const ic_string *path)
 {
   sc_voidarray *lines = mCode.split("\n");
-  int lineIndex = 0;
+  int lineIndex       = 0;
   int command_counter = 0;
 
   // Label processing loop:
   for(lineIndex = 0; lineIndex < lines->length(); ++lineIndex)
   {
-    ic_string *line = (ic_string *)lines->mPtr[lineIndex];
+    ic_string *line         = (ic_string *)lines->mPtr[lineIndex];
     ic_string *cleaned_line = clean_line(line);
     if(*cleaned_line != "")
     {
@@ -86,7 +84,7 @@ void rc_rasm::assemble(const ic_string *path)
   {
     for(lineIndex = 0; lineIndex < lines->length(); ++lineIndex)
     {
-      ic_string *line = (ic_string *)lines->mPtr[lineIndex];
+      ic_string *line         = (ic_string *)lines->mPtr[lineIndex];
       ic_string *cleaned_line = clean_line(line);
       if(*cleaned_line != "")
       {
@@ -95,13 +93,13 @@ void rc_rasm::assemble(const ic_string *path)
       delete cleaned_line;
     }
   }
-  catch(const sc_exception&)
+  catch(const sc_exception &)
   {
     // Set data for error condition:
     mLineNumber = lineIndex + 1;
     // Clear lines array:
-    for (int i = 0; i < lines->length(); ++i)
-      delete (ic_string *)lines->mPtr[i];
+    for(int i = 0; i < lines->length(); ++i)
+      delete(ic_string *)lines->mPtr[i];
 
     delete lines;
     // Re-throw the exception:
@@ -109,8 +107,8 @@ void rc_rasm::assemble(const ic_string *path)
   }
 
   // Clear lines array:
-  for (int i = 0; i < lines->length(); ++i)
-    delete (ic_string *)lines->mPtr[i];
+  for(int i = 0; i < lines->length(); ++i)
+    delete(ic_string *)lines->mPtr[i];
 
   delete lines;
 
@@ -155,8 +153,7 @@ void rc_rasm::process_line(ic_string *line)
     if(mCurrentMethodName)
     {
       ic_string *current_class = get_current_class();
-      ic_string *error_msg = ic_string::format(M_ERR_RASM_NESTED_METHOD,
-        func_name->get(), current_class->get());
+      ic_string *error_msg     = ic_string::format(M_ERR_RASM_NESTED_METHOD, func_name->get(), current_class->get());
 
       delete command_name;
       delete func_name;
@@ -166,15 +163,13 @@ void rc_rasm::process_line(ic_string *line)
     mCurrentMethodName = func_name;
 
     short modifiers = extract_modifiers(line);
-    int min_args = extract_int_parameter(line, 1);
-    bool splat = !has_parameter(line, 2);
-    int max_args = splat ? min_args : extract_int_parameter(line, 2);
+    int min_args    = extract_int_parameter(line, 1);
+    bool splat      = !has_parameter(line, 2);
+    int max_args    = splat ? min_args : extract_int_parameter(line, 2);
 
-    if((modifiers & !M_PROP_FINAL & !M_PROP_STATIC & !M_PROP_PRIVATE &
-      !M_PROP_PUBLIC) != 0)
+    if((modifiers & !M_PROP_FINAL & !M_PROP_STATIC & !M_PROP_PRIVATE & !M_PROP_PUBLIC) != 0)
     {
-      ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD,
-        func_name->get());
+      ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD, func_name->get());
 
       delete command_name;
       ERROR(error_msg, M_EMODE_COMPILE);
@@ -183,20 +178,19 @@ void rc_rasm::process_line(ic_string *line)
     ic_string *current_class = get_current_class();
 
     auto names = sc_voidarray();
-    mDefTable.add_method(func_name->get(), current_class->get(), modifiers,
-      mTape.length(), min_args, max_args, splat, &names);
+    mDefTable.add_method(func_name->get(), current_class->get(), modifiers, mTape.length(), min_args, max_args, splat,
+                         &names);
 
     delete current_class;
   }
   else if(*command_name == "CLASS")
   {
-    short modifiers = extract_modifiers(line);
+    short modifiers       = extract_modifiers(line);
     ic_string *class_name = extract_string_parameter(line);
 
     if((modifiers & !M_PROP_FINAL & !M_PROP_STUB) != 0)
     {
-      ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD,
-        class_name->get());
+      ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD, class_name->get());
 
       delete command_name;
       ERROR(error_msg, M_EMODE_COMPILE);
@@ -213,8 +207,7 @@ void rc_rasm::process_line(ic_string *line)
     }
 
     ic_string *current_class = get_current_class();
-    mDefTable.add_class(class_name->get(), parent_name->get(), modifiers,
-      current_class->get());
+    mDefTable.add_class(class_name->get(), parent_name->get(), modifiers, current_class->get());
     delete current_class;
 
     char *class_name_cstr = new char[class_name->length() + 1];
@@ -226,14 +219,12 @@ void rc_rasm::process_line(ic_string *line)
   }
   else if(*command_name == "VAR")
   {
-    short modifiers = extract_modifiers(line);
+    short modifiers     = extract_modifiers(line);
     ic_string *var_name = extract_string_parameter(line);
 
-    if((modifiers & !M_PROP_FINAL & !M_PROP_STATIC & !M_PROP_PRIVATE &
-      !M_PROP_PUBLIC) != 0)
+    if((modifiers & !M_PROP_FINAL & !M_PROP_STATIC & !M_PROP_PRIVATE & !M_PROP_PUBLIC) != 0)
     {
-      ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD,
-        var_name->get());
+      ic_string *error_msg = ic_string::format(M_ERR_RASM_BAD_MOD, var_name->get());
 
       delete command_name;
       ERROR(error_msg, M_EMODE_COMPILE);
@@ -256,7 +247,7 @@ void rc_rasm::process_line(ic_string *line)
       int length = mVariables.length();
       for(int i = 0; i < length; ++i)
       {
-        delete[] (char *)mVariables[0];
+        delete[](char *) mVariables[0];
         mVariables.del(0);
       }
     }
@@ -265,7 +256,7 @@ void rc_rasm::process_line(ic_string *line)
       // END pseudo-command closes class declaration, so last class name have
       // to be deleted from stack:
       long last_index = mClassNameStack.length() - 1;
-      delete[] (char *)mClassNameStack[last_index];
+      delete[](char *) mClassNameStack[last_index];
       mClassNameStack.del(last_index);
     }
   }
@@ -276,19 +267,18 @@ void rc_rasm::process_line(ic_string *line)
 
     if(cmd.mCmd == RASM_CMD_WTF)
     {
-      ic_string *msg = ic_string::format(M_ERR_RASM_UNKNOWN_CMD,
-        command_name->get());
+      ic_string *msg = ic_string::format(M_ERR_RASM_UNKNOWN_CMD, command_name->get());
 
       delete command_name;
       ERROR(msg, M_EMODE_COMPILE);
     }
 
-    cmd.mModifier = 0;
+    cmd.mModifier   = 0;
     cmd.mParam.addr = 0;
 
     // Label name processing:
-    if(cmd.mCmd == RASM_CMD_JMP || cmd.mCmd == RASM_CMD_JTRUE ||
-      cmd.mCmd == RASM_CMD_JFALSE || cmd.mCmd == RASM_CMD_TRY)
+    if(cmd.mCmd == RASM_CMD_JMP || cmd.mCmd == RASM_CMD_JTRUE || cmd.mCmd == RASM_CMD_JFALSE ||
+       cmd.mCmd == RASM_CMD_TRY)
     {
       ic_string *label_name = extract_string_parameter(line);
       if(mLabelMap.find(label_name->get()))
@@ -297,8 +287,7 @@ void rc_rasm::process_line(ic_string *line)
       }
       else
       {
-        ic_string *msg = ic_string::format(M_ERR_RASM_BAD_LABEL_NAME,
-          label_name->get());
+        ic_string *msg = ic_string::format(M_ERR_RASM_BAD_LABEL_NAME, label_name->get());
 
         delete command_name;
         delete label_name;
@@ -331,40 +320,40 @@ void rc_rasm::process_line(ic_string *line)
       }
       else if(*arg == "PROPERTY")
       {
-        cmd.mModifier = RASM_MOD_PROPERTY;
+        cmd.mModifier            = RASM_MOD_PROPERTY;
         ic_string *property_name = extract_string_parameter(line, 1);
-        cmd.mParam.addr = mStrTable.add(property_name);
+        cmd.mParam.addr          = mStrTable.add(property_name);
         delete property_name;
       }
       else if(*arg == "VAR")
       {
-        cmd.mModifier = RASM_MOD_VAR;
+        cmd.mModifier            = RASM_MOD_VAR;
         ic_string *variable_name = extract_string_parameter(line, 1);
-        cmd.mParam.addr = find_variable(variable_name);
+        cmd.mParam.addr          = find_variable(variable_name);
         delete variable_name;
       }
       else if(*arg == "CONST")
       {
-        cmd.mModifier = RASM_MOD_CONST;
+        cmd.mModifier        = RASM_MOD_CONST;
         ic_string *const_arg = extract_string_parameter(line, 1);
-        cmd.mParam.addr = mStrTable.add(const_arg);
+        cmd.mParam.addr      = mStrTable.add(const_arg);
         delete const_arg;
       }
       else if(is_parameter_int(line))
       {
-        cmd.mModifier = RASM_MOD_INT;
+        cmd.mModifier   = RASM_MOD_INT;
         cmd.mParam.addr = extract_int_parameter(line);
       }
       else if(is_parameter_float(line))
       {
-        cmd.mModifier = RASM_MOD_FLOAT;
+        cmd.mModifier  = RASM_MOD_FLOAT;
         cmd.mParam.val = extract_float_parameter(line);
       }
       else if(is_parameter_string(line))
       {
-        cmd.mModifier = RASM_MOD_STRING;
+        cmd.mModifier         = RASM_MOD_STRING;
         ic_string *string_arg = extract_string_parameter(line);
-        cmd.mParam.addr = mStrTable.add(string_arg);
+        cmd.mParam.addr       = mStrTable.add(string_arg);
         delete string_arg;
       }
       else
@@ -396,8 +385,7 @@ inline ic_string *rc_rasm::get_current_class()
     ic_string *class_name = new ic_string();
     for(int i = 0; i < mClassNameStack.length(); ++i)
     {
-      if(i != 0)
-        class_name->append("::", 2);
+      if(i != 0) class_name->append("::", 2);
       class_name->append((char *)mClassNameStack[i]);
     }
     return class_name;
@@ -413,8 +401,7 @@ long rc_rasm::find_variable(ic_string *name)
   for(long i = 0; i < mVariables.length(); ++i)
   {
     char *variable_name = (char *)mVariables[i];
-    if (name->compare(variable_name) == 0)
-      return i;
+    if(name->compare(variable_name) == 0) return i;
   }
 
   char *new_variable_name = new char[name->length() + 1];
@@ -432,14 +419,14 @@ ic_string *rc_rasm::clean_line(ic_string *line)
 {
   // In python syntax this regex was
   // r'\s*((?:(?:.*?)(?:".*?(?<!\\)(?:\\\\)*")?)+)\s*(?://.*)?$'.
-  ic_regex regex = ic_regex("/^\\s*"     // leading whitespace
-    "((?:(?:.*?)"                        // just some text
-    "(?:\".*?(?<!\\\\)(?:\\\\\\\\)*\")?" // possibly string literal
-    ")+)"                                // multiple of "text+string" patterns
-    "\\s*(?://.*)?$/"                    // trailing whitespace and a comment
-    );
+  ic_regex regex = ic_regex("/^\\s*"                             // leading whitespace
+                            "((?:(?:.*?)"                        // just some text
+                            "(?:\".*?(?<!\\\\)(?:\\\\\\\\)*\")?" // possibly string literal
+                            ")+)"                                // multiple of "text+string" patterns
+                            "\\s*(?://.*)?$/"                    // trailing whitespace and a comment
+  );
 
-  ic_match *match = regex.match(line);
+  ic_match *match         = regex.match(line);
   ic_string *cleaned_line = new ic_string(match->get(1));
   delete match;
 
@@ -447,15 +434,16 @@ ic_string *rc_rasm::clean_line(ic_string *line)
 }
 
 // Macros for generating command codes:
-#define COMMAND_FIRST(cmdname)        \
-  if(command->compare(#cmdname) == 0) \
-  {                                   \
-    return RASM_CMD_##cmdname;        \
+#define COMMAND_FIRST(cmdname)                                                                                         \
+  if(command->compare(#cmdname) == 0)                                                                                  \
+  {                                                                                                                    \
+    return RASM_CMD_##cmdname;                                                                                         \
   }
 #define COMMAND(cmdname) else COMMAND_FIRST(cmdname)
 
 /**
- * @param command Line containing ONLY command name (returned from parse_command_name).
+ * @param command Line containing ONLY command name (returned from
+ * parse_command_name).
  * @returns Code of command or RASM_CMD_WTF if no such command exists.
  */
 int rc_rasm::get_command_code(ic_string *command)
@@ -556,7 +544,7 @@ int rc_rasm::get_command_code(ic_string *command)
 bool rc_rasm::is_command(ic_string *line)
 {
   ic_string *command_name = extract_command_name(line);
-  bool contains_command = get_command_code(command_name) != RASM_CMD_WTF;
+  bool contains_command   = get_command_code(command_name) != RASM_CMD_WTF;
   delete command_name;
   return contains_command;
 }
@@ -567,7 +555,7 @@ bool rc_rasm::is_command(ic_string *line)
 bool rc_rasm::is_label(ic_string *line)
 {
   ic_string *command_name = extract_command_name(line);
-  bool contains_label = *command_name == "LABEL";
+  bool contains_label     = *command_name == "LABEL";
   delete command_name;
   return contains_label;
 }
@@ -589,7 +577,7 @@ sc_voidarray rc_rasm::split_into_primitives(ic_string *line)
   ic_match *match = regex.match(line);
   while(match && match->count() > 0)
   {
-    long bounds[2] = { 0 };
+    long bounds[2] = {0};
     match->bounds(1, bounds);
     long pos = bounds[1] + 1;
 
@@ -612,8 +600,7 @@ sc_voidarray rc_rasm::split_into_primitives(ic_string *line)
 ic_string *rc_rasm::extract_command_name(ic_string *line)
 {
   long i = 0; // first whitespace character index
-  while(line->length() > i &&
-    !std::strchr(ic_string::whitespace, line->char_at(i)))
+  while(line->length() > i && !std::strchr(ic_string::whitespace, line->char_at(i)))
   {
     ++i;
   }
@@ -627,14 +614,14 @@ ic_string *rc_rasm::extract_command_name(ic_string *line)
  */
 short rc_rasm::extract_modifiers(ic_string *line)
 {
-  short modifiers = 0;
-  auto regex = ic_regex("/\\s+/");
+  short modifiers     = 0;
+  auto regex          = ic_regex("/\\s+/");
   sc_voidarray *words = line->split(&regex);
 
   // First word is command name, so we start parsing from second.
   for(int i = 1; i < words->length(); ++i)
   {
-    ic_string *word = (ic_string *)words->mPtr[i];
+    ic_string *word        = (ic_string *)words->mPtr[i];
     short current_modifier = 0;
     if(*word == "final")
       current_modifier ^= M_PROP_FINAL;
@@ -670,7 +657,7 @@ short rc_rasm::extract_modifiers(ic_string *line)
 bool rc_rasm::has_parameter(ic_string *line, int index)
 {
   ic_string *parameter = (ic_string *)extract_raw_parameter(line, index);
-  if (parameter != NULL)
+  if(parameter != NULL)
   {
     delete parameter;
     return true;
@@ -684,17 +671,16 @@ bool rc_rasm::has_parameter(ic_string *line, int index)
  */
 ic_string *rc_rasm::extract_raw_parameter(ic_string *line, int index)
 {
-  sc_voidarray words = split_into_primitives(line);
-  ic_string *parameter = NULL;
+  sc_voidarray words        = split_into_primitives(line);
+  ic_string *parameter      = NULL;
   int first_parameter_index = 1;
 
   // Find first real parameter in line:
   for(int i = first_parameter_index; i < words.length(); ++i)
   {
     ic_string *maybe_parameter = (ic_string *)words[i];
-    if(*maybe_parameter == "final" ||*maybe_parameter == "stub" ||
-      *maybe_parameter == "static" ||*maybe_parameter == "private" ||
-      *maybe_parameter == "public")
+    if(*maybe_parameter == "final" || *maybe_parameter == "stub" || *maybe_parameter == "static" ||
+       *maybe_parameter == "private" || *maybe_parameter == "public")
     {
       ++first_parameter_index;
     }
@@ -713,8 +699,7 @@ ic_string *rc_rasm::extract_raw_parameter(ic_string *line, int index)
   // Delete all ic_string objects except returning one.
   for(int i = 0; i < words.length(); ++i)
   {
-    if(words[i] != (void *)parameter)
-      delete (ic_string *)words[i];
+    if(words[i] != (void *)parameter) delete(ic_string *)words[i];
   }
 
   return parameter;
@@ -726,7 +711,7 @@ ic_string *rc_rasm::extract_raw_parameter(ic_string *line, int index)
 int rc_rasm::extract_int_parameter(ic_string *line, int index)
 {
   ic_string *raw_parameter = extract_raw_parameter(line, index);
-  int result = raw_parameter->to_i();
+  int result               = raw_parameter->to_i();
   delete raw_parameter;
   return result;
 }
@@ -737,7 +722,7 @@ int rc_rasm::extract_int_parameter(ic_string *line, int index)
 double rc_rasm::extract_float_parameter(ic_string *line, int index)
 {
   ic_string *raw_parameter = extract_raw_parameter(line, index);
-  double result = raw_parameter->to_f();
+  double result            = raw_parameter->to_f();
   delete raw_parameter;
   return result;
 }
@@ -751,12 +736,10 @@ ic_string *rc_rasm::extract_string_parameter(ic_string *line, int index)
   ic_string *raw_parameter = extract_raw_parameter(line, index);
 
   long length = raw_parameter->length();
-  if(length < 2 || raw_parameter->char_at(0) != '"' ||
-    raw_parameter->char_at(length - 1) != '"')
+  if(length < 2 || raw_parameter->char_at(0) != '"' || raw_parameter->char_at(length - 1) != '"')
   {
     delete raw_parameter;
-    ic_string *msg = ic_string::format(M_ERR_MALFORMED_STRING,
-      raw_parameter->get());
+    ic_string *msg = ic_string::format(M_ERR_MALFORMED_STRING, raw_parameter->get());
     ERROR(msg, M_EMODE_COMPILE);
   }
 
@@ -773,8 +756,8 @@ ic_string *rc_rasm::extract_string_parameter(ic_string *line, int index)
 bool rc_rasm::is_parameter_int(ic_string *line, int index)
 {
   ic_string *parameter = extract_raw_parameter(line, index);
-  ic_regex int_regex = ic_regex("/^-?\\d+$/");
-  ic_match *match = int_regex.match(parameter);
+  ic_regex int_regex   = ic_regex("/^-?\\d+$/");
+  ic_match *match      = int_regex.match(parameter);
   delete parameter;
   if(match != NULL)
   {
@@ -792,7 +775,7 @@ bool rc_rasm::is_parameter_float(ic_string *line, int index)
 {
   ic_string *parameter = extract_raw_parameter(line, index);
   ic_regex float_regex = ic_regex("/^-?\\d+\\.\\d+$/");
-  ic_match *match = float_regex.match(parameter);
+  ic_match *match      = float_regex.match(parameter);
   delete parameter;
   if(match != NULL)
   {
@@ -809,8 +792,8 @@ bool rc_rasm::is_parameter_float(ic_string *line, int index)
 bool rc_rasm::is_parameter_string(ic_string *line, int index)
 {
   ic_string *parameter = extract_raw_parameter(line, index);
-  ic_regex int_regex = ic_regex("/\".*?(?<!\\\\)(?:\\\\\\\\)*\"/");
-  ic_match *match = int_regex.match(parameter);
+  ic_regex int_regex   = ic_regex("/\".*?(?<!\\\\)(?:\\\\\\\\)*\"/");
+  ic_match *match      = int_regex.match(parameter);
   delete parameter;
   if(match != NULL)
   {
@@ -832,7 +815,7 @@ bool rc_rasm::is_parameter_string(ic_string *line, int index)
 void rc_rasm::solve_escape_seq(ic_string *string)
 {
   long i = -1; // index of first unparsed slash symbol
-  while((i = string->substr_first("\\", i+1)) != -1)
+  while((i = string->substr_first("\\", i + 1)) != -1)
   {
     if(string->length() > i + 1)
     {
@@ -840,33 +823,27 @@ void rc_rasm::solve_escape_seq(ic_string *string)
       char escaped = '\0';
       switch(string->char_at(i + 1))
       {
-      case 'n':
-        escaped = '\n';
-        break;
-      case 't':
-        escaped = '\t';
-        break;
-      case '\\':
-        escaped = '\\';
-        break;
-      case 'x':
-        if(string->length() >= i + 5)
-        {
-          ic_string *hex = new ic_string("0x");
-          ic_string *buff = string->substr_get(i + 1, 2);
-          hex->append(buff);
-          delete buff;
-          const char *tmp = hex->get();
-          escaped = (char)strtol(tmp, NULL, 16);
-          delete hex;
-        }
-        else
-        {
-          ic_string *msg = ic_string::format(M_ERR_BAD_ESCAPE_SEQ, string->get());
-          ERROR(msg, M_EMODE_COMPILE);
-        }
-        break;
-      default:
+        case 'n': escaped = '\n'; break;
+        case 't': escaped = '\t'; break;
+        case '\\': escaped = '\\'; break;
+        case 'x':
+          if(string->length() >= i + 5)
+          {
+            ic_string *hex  = new ic_string("0x");
+            ic_string *buff = string->substr_get(i + 1, 2);
+            hex->append(buff);
+            delete buff;
+            const char *tmp = hex->get();
+            escaped         = (char)strtol(tmp, NULL, 16);
+            delete hex;
+          }
+          else
+          {
+            ic_string *msg = ic_string::format(M_ERR_BAD_ESCAPE_SEQ, string->get());
+            ERROR(msg, M_EMODE_COMPILE);
+          }
+          break;
+        default:
         {
           ic_string *msg = ic_string::format(M_ERR_BAD_ESCAPE_SEQ, string->get());
           ERROR(msg, M_EMODE_COMPILE);

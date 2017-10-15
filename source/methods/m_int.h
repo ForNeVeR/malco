@@ -13,9 +13,9 @@
  */
 void int_op_create(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = (item_var ? item_var->get() : NULL);
+  ic_object *item  = (item_var ? item_var->get() : NULL);
 
   if(item)
   {
@@ -50,12 +50,12 @@ void int_op_create(rc_head *head)
  */
 void int_op_add_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue + (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue + (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
-  //head->obj_unlink(right_var);
+  // head->obj_unlink(right_var);
 }
 
 /**
@@ -63,10 +63,10 @@ void int_op_add_int(rc_head *head)
  */
 void int_op_add_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  double result = ((ic_int *)obj->mData)->mValue + (((ic_float *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  double result     = ((ic_int *)obj->mData)->mValue + (((ic_float *)right->mData)->mValue);
   head->rSRC.push(head->new_float(result));
   head->obj_unlink(right_var);
 }
@@ -76,10 +76,10 @@ void int_op_add_float(rc_head *head)
  */
 void int_op_sub_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue - (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue - (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -89,10 +89,10 @@ void int_op_sub_int(rc_head *head)
  */
 void int_op_sub_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  double result = ((ic_int *)obj->mData)->mValue - (((ic_float *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  double result     = ((ic_int *)obj->mData)->mValue - (((ic_float *)right->mData)->mValue);
   head->rSRC.push(head->new_float(result));
   head->obj_unlink(right_var);
 }
@@ -102,10 +102,10 @@ void int_op_sub_float(rc_head *head)
  */
 void int_op_mul_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue * (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue * (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -115,10 +115,10 @@ void int_op_mul_int(rc_head *head)
  */
 void int_op_mul_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  double result = ((ic_int *)obj->mData)->mValue * (((ic_float *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  double result     = ((ic_int *)obj->mData)->mValue * (((ic_float *)right->mData)->mValue);
   head->rSRC.push(head->new_float(result));
   head->obj_unlink(right_var);
 }
@@ -128,9 +128,9 @@ void int_op_mul_float(rc_head *head)
  */
 void int_op_div_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
+  ic_object *right  = right_var->get();
   if(((ic_int *)right->mData)->mValue != 0)
   {
     long result = ((ic_int *)obj->mData)->mValue / (((ic_int *)right->mData)->mValue);
@@ -149,9 +149,9 @@ void int_op_div_int(rc_head *head)
  */
 void int_op_div_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
+  ic_object *right  = right_var->get();
   if(((ic_float *)right->mData)->mValue != 0)
   {
     double result = ((ic_int *)obj->mData)->mValue / (((ic_float *)right->mData)->mValue);
@@ -170,10 +170,10 @@ void int_op_div_float(rc_head *head)
  */
 void int_op_pow_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = (long)pow((double)((ic_int *)obj->mData)->mValue, (double)(((ic_int *)right->mData)->mValue));
+  ic_object *right  = right_var->get();
+  long result       = (long)pow((double)((ic_int *)obj->mData)->mValue, (double)(((ic_int *)right->mData)->mValue));
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -183,10 +183,10 @@ void int_op_pow_int(rc_head *head)
  */
 void int_op_pow_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  double result = pow((double)((ic_int *)obj->mData)->mValue, (double)(((ic_float *)right->mData)->mValue));
+  ic_object *right  = right_var->get();
+  double result     = pow((double)((ic_int *)obj->mData)->mValue, (double)(((ic_float *)right->mData)->mValue));
   head->rSRC.push(head->new_float(result));
   head->obj_unlink(right_var);
 }
@@ -196,10 +196,10 @@ void int_op_pow_float(rc_head *head)
  */
 void int_op_mod_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue % (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue % (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -209,10 +209,10 @@ void int_op_mod_int(rc_head *head)
  */
 void int_op_shl_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue << (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue << (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -222,10 +222,10 @@ void int_op_shl_int(rc_head *head)
  */
 void int_op_shr_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue >> (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue >> (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -235,10 +235,10 @@ void int_op_shr_int(rc_head *head)
  */
 void int_op_band_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue & (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue & (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -248,10 +248,10 @@ void int_op_band_int(rc_head *head)
  */
 void int_op_bor_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue | (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue | (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -261,10 +261,10 @@ void int_op_bor_int(rc_head *head)
  */
 void int_op_bxor_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *right_var = head->rSRC.pop();
-  ic_object *right = right_var->get();
-  long result = ((ic_int *)obj->mData)->mValue ^ (((ic_int *)right->mData)->mValue);
+  ic_object *right  = right_var->get();
+  long result       = ((ic_int *)obj->mData)->mValue ^ (((ic_int *)right->mData)->mValue);
   head->rSRC.push(head->new_int(result));
   head->obj_unlink(right_var);
 }
@@ -298,9 +298,9 @@ void int_op_dec(rc_head *head)
  */
 void int_op_cmp_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   long left = ((ic_int *)obj->mData)->mValue, right = ((ic_int *)item->mData)->mValue;
   char result = (left == right ? 0 : (left > right ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -312,9 +312,9 @@ void int_op_cmp_int(rc_head *head)
  */
 void int_op_cmp_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   double left = ((ic_int *)obj->mData)->mValue, right = ((ic_float *)item->mData)->mValue;
   char result = (left == right ? 0 : (left > right ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -326,10 +326,10 @@ void int_op_cmp_float(rc_head *head)
  */
 void int_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  const char *str = ((ic_int *)obj->mData)->to_s();
+  ic_object *item  = item_var->get();
+  const char *str  = ((ic_int *)obj->mData)->to_s();
   // note the -1 part to reverse values, as item is at rightside
   char result = ((ic_string *)item->mData)->compare(str) * (-1);
   head->rSRC.push(head->new_int(result));
@@ -341,9 +341,9 @@ void int_op_cmp_string(rc_head *head)
  */
 void int_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool left = ((ic_int *)obj->mData)->mValue != 0, right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : (left ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -355,10 +355,10 @@ void int_op_cmp_bool(rc_head *head)
  */
 void int_op_rel_range(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  bool result = ((ic_range *)item->mData)->contains(((ic_int *)obj->mData)->mValue);
+  ic_object *item  = item_var->get();
+  bool result      = ((ic_range *)item->mData)->contains(((ic_int *)obj->mData)->mValue);
   head->rSRC.push(head->new_bool(result));
   head->obj_unlink(item_var);
 }
@@ -368,8 +368,8 @@ void int_op_rel_range(rc_head *head)
  */
 void int_times(rc_head *head)
 {
-  rc_var *fxvar = head->rSRC.pop();
-  ic_object *fx = fxvar->get();
+  rc_var *fxvar   = head->rSRC.pop();
+  ic_object *fx   = fxvar->get();
   ic_object *curr = head->pCurrObj->get();
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
@@ -483,12 +483,12 @@ void int_to(rc_head *head)
 void int_char(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long val = ((ic_int *)obj->mData)->mValue;
+  long val       = ((ic_int *)obj->mData)->mValue;
   if(val >= 0 && val <= 255)
   {
     char str[2] = " ";
-    str[0] = (char)val;
-    str[1] = '\0';
+    str[0]      = (char)val;
+    str[1]      = '\0';
     head->rSRC.push(head->new_string(str, obj->mTainted));
   }
 }
@@ -499,7 +499,7 @@ void int_char(rc_head *head)
 void int_to_b(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  bool val = ((ic_int *)obj->mData)->to_b();
+  bool val       = ((ic_int *)obj->mData)->to_b();
   head->rSRC.push(head->new_bool(val, obj->mTainted));
 }
 
@@ -509,7 +509,7 @@ void int_to_b(rc_head *head)
 void int_to_f(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  double val = ((ic_int *)obj->mData)->to_f();
+  double val     = ((ic_int *)obj->mData)->to_f();
   head->rSRC.push(head->new_float(val, obj->mTainted));
 }
 
@@ -527,7 +527,7 @@ void int_to_i(rc_head *head)
  */
 void int_to_s(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   const char *str = ((ic_int *)obj->mData)->to_s();
   head->rSRC.push(head->new_string(str, obj->mTainted));
 }

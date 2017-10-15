@@ -15,15 +15,15 @@
  */
 rc_core::rc_core()
 {
-  mSetup = NULL;
-  mParser = NULL;
+  mSetup    = NULL;
+  mParser   = NULL;
   mCompiler = NULL;
 
   mFile = NULL;
 
   mSource = NULL;
-  mHead = NULL;
-  mTape = NULL;
+  mHead   = NULL;
+  mTape   = NULL;
 
   mPlugins = NULL;
 
@@ -58,7 +58,7 @@ void rc_core::init()
 {
   setlocale(LC_ALL, "C");
 
-  mState = M_STATE_INIT;
+  mState     = M_STATE_INIT;
   mErrorMode = M_EMODE_DEFAULT;
 
   try
@@ -75,10 +75,10 @@ void rc_core::init()
       throw;
   }
 
-  mFile = new ic_string();
+  mFile   = new ic_string();
   mSource = new ic_string();
-  mTape = new rc_tape();
-  mHead = new rc_head(this);
+  mTape   = new rc_tape();
+  mHead   = new rc_head(this);
 
   mStrTable = new rc_strtable();
 
@@ -104,18 +104,18 @@ int rc_core::process(int argc, char *argv[])
     {
       switch(mTask)
       {
-        case M_TASK_VERSION:  return task_version();
-        case M_TASK_CREDITS:  return task_credits();
+        case M_TASK_VERSION: return task_version();
+        case M_TASK_CREDITS: return task_credits();
       }
     }
     else if(argc == 3)
     {
       switch(mTask)
       {
-        case M_TASK_COMPILE:  return task_compile(argv[2]);
-        case M_TASK_RUN:      return task_run(argv[2]);
-        case M_TASK_RUN_BC:   return task_run_bc(argv[2]);
-        case M_TASK_EVAL:     return task_eval(argv[2]);
+        case M_TASK_COMPILE: return task_compile(argv[2]);
+        case M_TASK_RUN: return task_run(argv[2]);
+        case M_TASK_RUN_BC: return task_run_bc(argv[2]);
+        case M_TASK_EVAL: return task_eval(argv[2]);
       }
     }
   }
@@ -141,8 +141,10 @@ void rc_core::equip()
   method_add("assert", mClassCache.pObject, object_assert, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, true, "names");
   method_add("class", mClassCache.pObject, object_class, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("class_name", mClassCache.pObject, object_class_name, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
-  method_add("has_method", mClassCache.pObject, object_has_method, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "name");
-  method_add("has_member", mClassCache.pObject, object_has_member, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "name");
+  method_add("has_method", mClassCache.pObject, object_has_method, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 1, false, "name");
+  method_add("has_member", mClassCache.pObject, object_has_member, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 1, false, "name");
   method_add("inspect", mClassCache.pObject, object_inspect, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("to_a", mClassCache.pObject, object_to_a, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("to_b", mClassCache.pObject, object_to_b, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
@@ -150,7 +152,8 @@ void rc_core::equip()
   method_add("to_i", mClassCache.pObject, object_to_i, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("to_s", mClassCache.pObject, object_to_s, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
 
-  method_add("print", mClassCache.pObject, object_print, M_PROP_PUBLIC | M_PROP_FINAL | M_PROP_STATIC)->setup(1, 1, true, "values");
+  method_add("print", mClassCache.pObject, object_print, M_PROP_PUBLIC | M_PROP_FINAL | M_PROP_STATIC)
+      ->setup(1, 1, true, "values");
 
   // undef
   mClassCache.pUndef = class_create("undef", NULL, M_PROP_STUB);
@@ -285,20 +288,28 @@ void rc_core::equip()
   method_add("reverse", mClassCache.pString, string_reverse, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("reverse!", mClassCache.pString, string_reverse_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("substr", mClassCache.pString, string_sub, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "from", "to");
-  method_add("substr_first", mClassCache.pString, string_sub_first, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "str", "offset");
-  method_add("substr_last", mClassCache.pString, string_sub_last, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "str", "offset");
+  method_add("substr_first", mClassCache.pString, string_sub_first, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "str", "offset");
+  method_add("substr_last", mClassCache.pString, string_sub_last, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "str", "offset");
   method_add("count", mClassCache.pString, string_sub_count, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "str");
   method_add("append", mClassCache.pString, string_append, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "str");
   method_add("prepend", mClassCache.pString, string_prepend, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "str");
-  method_add("replace", mClassCache.pString, string_replace, M_PROP_PUBLIC | M_PROP_FINAL)->setup(2, 3, false, "from", "to", "max");
+  method_add("replace", mClassCache.pString, string_replace, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(2, 3, false, "from", "to", "max");
   method_add("append!", mClassCache.pString, string_append_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "str");
-  method_add("prepend!", mClassCache.pString, string_prepend_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "str");
-  method_add("replace!", mClassCache.pString, string_replace_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(2, 3, false, "from", "to", "max");
+  method_add("prepend!", mClassCache.pString, string_prepend_do, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 1, false, "str");
+  method_add("replace!", mClassCache.pString, string_replace_do, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(2, 3, false, "from", "to", "max");
   method_add("split", mClassCache.pString, string_split, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "by", "max");
-  method_add("apply", mClassCache.pString, string_apply, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "range", "fx");
+  method_add("apply", mClassCache.pString, string_apply, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "range", "fx");
   method_add("apply!", mClassCache.pString, string_apply_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "fx");
-  method_add("insert", mClassCache.pString, string_insert, M_PROP_PUBLIC | M_PROP_FINAL)->setup(2, 2, false, "str", "offset");
-  method_add("insert!", mClassCache.pString, string_insert_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(2, 2, false, "str", "offset");
+  method_add("insert", mClassCache.pString, string_insert, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(2, 2, false, "str", "offset");
+  method_add("insert!", mClassCache.pString, string_insert_do, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(2, 2, false, "str", "offset");
   method_add("has", mClassCache.pString, string_has, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "str");
   method_add("case_up", mClassCache.pString, string_case_up, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("case_down", mClassCache.pString, string_case_down, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
@@ -308,8 +319,10 @@ void rc_core::equip()
   method_add("case_swap!", mClassCache.pString, string_case_swap_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("chars", mClassCache.pString, string_chars, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("lines", mClassCache.pString, string_lines, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
-  method_add("translate", mClassCache.pString, string_translate, M_PROP_PUBLIC | M_PROP_FINAL)->setup(2, 2, false, "from", "to");
-  method_add("translate!", mClassCache.pString, string_translate_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(2, 2, false, "from", "to");
+  method_add("translate", mClassCache.pString, string_translate, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(2, 2, false, "from", "to");
+  method_add("translate!", mClassCache.pString, string_translate_do, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(2, 2, false, "from", "to");
   method_add("to_b", mClassCache.pString, string_to_b, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("to_f", mClassCache.pString, string_to_f, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("to_i", mClassCache.pString, string_to_i, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
@@ -317,14 +330,16 @@ void rc_core::equip()
 
   // range
   mClassCache.pRange = class_create("range");
-  method_add("#create", mClassCache.pRange, range_op_create, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "start", "end");
+  method_add("#create", mClassCache.pRange, range_op_create, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "start", "end");
   method_add("#cmp_bool", mClassCache.pRange, range_op_cmp_bool, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#cmp_range", mClassCache.pRange, range_op_cmp_range, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#cmp_string", mClassCache.pRange, range_op_cmp_string, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#rel_int", mClassCache.pRange, range_op_rel_int, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#rel_float", mClassCache.pRange, range_op_rel_float, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("inspect", mClassCache.pRange, range_inspect, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
-  method_add("set!", mClassCache.pRange, range_set_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "start", "end");
+  method_add("set!", mClassCache.pRange, range_set_do, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "start", "end");
   method_add("has", mClassCache.pRange, range_has, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "num");
   method_add("each", mClassCache.pRange, range_each, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "fx");
   method_add("length", mClassCache.pRange, range_length, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
@@ -390,7 +405,8 @@ void rc_core::equip()
 
   // array
   mClassCache.pArray = class_create("array");
-  method_add("#create", mClassCache.pArray, array_op_create, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, true, "objects");
+  method_add("#create", mClassCache.pArray, array_op_create, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 1, true, "objects");
   method_add("#idx", mClassCache.pArray, array_op_idx, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#add_array", mClassCache.pArray, array_op_add_array, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#shl_object", mClassCache.pArray, array_op_shl_object, M_PROP_PUBLIC | M_PROP_FINAL)->op();
@@ -401,8 +417,10 @@ void rc_core::equip()
   method_add("inspect", mClassCache.pArray, array_inspect, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("taint_all!", mClassCache.pArray, array_taint_all_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("untaint_all!", mClassCache.pArray, array_untaint_all_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
-  method_add("assert_any", mClassCache.pArray, array_assert_any, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, true, "objects");
-  method_add("assert_all", mClassCache.pArray, array_assert_all, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, true, "objects");
+  method_add("assert_any", mClassCache.pArray, array_assert_any, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 1, true, "objects");
+  method_add("assert_all", mClassCache.pArray, array_assert_all, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 1, true, "objects");
   method_add("any", mClassCache.pArray, array_any, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "fx");
   method_add("all", mClassCache.pArray, array_all, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "fx");
   method_add("has", mClassCache.pArray, array_has, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "obj");
@@ -416,11 +434,14 @@ void rc_core::equip()
   method_add("find", mClassCache.pArray, array_find, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "obj");
   method_add("sort", mClassCache.pArray, array_sort, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "order");
   method_add("sort!", mClassCache.pArray, array_sort_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "order");
-  method_add("sort_by", mClassCache.pArray, array_sort_by, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "order", "fx");
-  method_add("sort_by!", mClassCache.pArray, array_sort_by_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "order", "fx");
+  method_add("sort_by", mClassCache.pArray, array_sort_by, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "order", "fx");
+  method_add("sort_by!", mClassCache.pArray, array_sort_by_do, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "order", "fx");
   method_add("shuffle!", mClassCache.pArray, array_shuffle_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("shuffle", mClassCache.pArray, array_shuffle, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
-  method_add("map!", mClassCache.pArray, array_map_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "array", "mode");
+  method_add("map!", mClassCache.pArray, array_map_do, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "array", "mode");
   method_add("sum", mClassCache.pArray, array_sum, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("mult", mClassCache.pArray, array_mul, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("join", mClassCache.pArray, array_join, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0, 1, false, "spacer");
@@ -434,7 +455,8 @@ void rc_core::equip()
   method_add("unique", mClassCache.pArray, array_unique, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("select", mClassCache.pArray, array_select, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "fx");
   method_add("reject", mClassCache.pArray, array_reject, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "fx");
-  method_add("collect", mClassCache.pArray, array_collect, M_PROP_PUBLIC | M_PROP_FINAL)->setup(2, 2, false, "start", "fx");
+  method_add("collect", mClassCache.pArray, array_collect, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(2, 2, false, "start", "fx");
   method_add("reindex!", mClassCache.pArray, array_reindex_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("sort_shell!", mClassCache.pArray, array_sort_shell_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("sort_quick!", mClassCache.pArray, array_sort_quick_do, M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
@@ -456,7 +478,8 @@ void rc_core::equip()
 
   // exception
   mClassCache.pException = class_create("exception");
-  method_add("#create", mClassCache.pException, exception_op_create, M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "msg", "type");
+  method_add("#create", mClassCache.pException, exception_op_create, M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "msg", "type");
   method_add("#cmp_exception", mClassCache.pException, exception_op_cmp_exception, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#cmp_bool", mClassCache.pException, exception_op_cmp_exception, M_PROP_PUBLIC | M_PROP_FINAL)->op();
   method_add("#cmp_string", mClassCache.pException, exception_op_cmp_exception, M_PROP_PUBLIC | M_PROP_FINAL)->op();
@@ -505,8 +528,11 @@ void rc_core::equip()
   method_add("version", malco, malco_version, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("unicode", malco, malco_unicode, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("copyright", malco, malco_copyright, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
-  method_add("error_mode", malco, malco_error_mode, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "value");
-  method_add("how_to_create_explosives", malco, malco_how_to_create_explosives, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
+  method_add("error_mode", malco, malco_error_mode, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 1, false, "value");
+  method_add("how_to_create_explosives", malco, malco_how_to_create_explosives,
+             M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(0);
 
   // math
   rc_class *math = class_create("math", NULL, M_PROP_STATIC);
@@ -531,7 +557,8 @@ void rc_core::equip()
   method_add("log10", math, math_log10, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "value");
   method_add("pi", math, math_pi, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
   method_add("e", math, math_e, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(0);
-  method_add("random", math, math_random, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 2, false, "min", "max");
+  method_add("random", math, math_random, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)
+      ->setup(1, 2, false, "min", "max");
   method_add("max", math, math_max, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, true, "objects");
   method_add("min", math, math_min, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, true, "objects");
   method_add("even", math, math_even, M_PROP_STATIC | M_PROP_PUBLIC | M_PROP_FINAL)->setup(1, 1, false, "value");
@@ -546,14 +573,14 @@ int rc_core::cmdline_task(const char *task)
 {
   if(*task == '-')
   {
-    switch(*(task+1))
+    switch(*(task + 1))
     {
-      case 'f':   return M_TASK_RUN;
-      case 'b':   return M_TASK_RUN_BC;
-      case 'e':   return M_TASK_EVAL;
-      case 'c':   return M_TASK_COMPILE;
-      case 'v':   return M_TASK_VERSION;
-      case 'i':   return M_TASK_CREDITS;
+      case 'f': return M_TASK_RUN;
+      case 'b': return M_TASK_RUN_BC;
+      case 'e': return M_TASK_EVAL;
+      case 'c': return M_TASK_COMPILE;
+      case 'v': return M_TASK_VERSION;
+      case 'i': return M_TASK_CREDITS;
     }
   }
 
@@ -586,14 +613,13 @@ int rc_core::task_run(const char *file)
 int rc_core::task_compile(const char *file)
 {
   // if there's no current main file, select one
-  if(!mFile->length())
-    mFile->set(file);
+  if(!mFile->length()) mFile->set(file);
 
   mSource->file_load(file);
   ic_string filename = file;
 
   // first check whether we compile .mlc or .rasm file.
-  auto ext = std::unique_ptr<ic_string>(filename.substr_get(filename.substr_last(".")+1));
+  auto ext = std::unique_ptr<ic_string>(filename.substr_get(filename.substr_last(".") + 1));
   if(!ext->compare("rasm"))
   {
     rc_rasm rasm(this, mSource, mFile->get());
@@ -607,14 +633,13 @@ int rc_core::task_compile(const char *file)
     {
       switch(ex.mErrorType)
       {
-      case M_EMODE_COMPILE:
-      case M_EMODE_PARSE:
-        printf("Exception in file '%s', line %d:\n%s",
-          rasm.get_error_filename()->get(), rasm.get_error_line_number(),
-          ex.mErrorMsg->get());
-        return 1;
-      default: // critical error
-        throw;
+        case M_EMODE_COMPILE:
+        case M_EMODE_PARSE:
+          printf("Exception in file '%s', line %d:\n%s", rasm.get_error_filename()->get(), rasm.get_error_line_number(),
+                 ex.mErrorMsg->get());
+          return 1;
+        default: // critical error
+          throw;
       }
     }
   }
@@ -690,12 +715,12 @@ int rc_core::task_credits()
  */
 rc_class *rc_core::class_create(const char *name, rc_class *parent, short properties, rc_class *root)
 {
-  rc_class *cls = new rc_class();
+  rc_class *cls    = new rc_class();
   cls->mProperties = properties;
-  cls->pRoot = root;
+  cls->pRoot       = root;
 
   int namelen = strlen(name);
-  cls->mName = new char[namelen];
+  cls->mName  = new char[namelen];
   strcpy(cls->mName, name);
 
   // affix class to it's root
@@ -705,13 +730,13 @@ rc_class *rc_core::class_create(const char *name, rc_class *parent, short proper
     if(!root)
     {
       // full name is just name
-      root = pClassRoot;
+      root           = pClassRoot;
       cls->mFullName = cls->mName;
     }
     else
     {
       // fullname is parentname::name
-      int rootlen = strlen(root->mFullName);
+      int rootlen    = strlen(root->mFullName);
       cls->mFullName = new char[namelen + 2 + rootlen];
       strcpy(cls->mFullName, root->mFullName);
       strcpy(cls->mFullName + rootlen, "::");
@@ -719,25 +744,24 @@ rc_class *rc_core::class_create(const char *name, rc_class *parent, short proper
     }
 
     if(!root->mClasses.get(name))
-      root->mClasses.set(name, (void*)cls);
+      root->mClasses.set(name, (void *)cls);
     else
       ERROR(ic_string::format(M_ERR_OVERRIDE_CLASS, name), M_EXC_SCRIPT);
 
     // inherit properties
-    if(!parent)
-      parent = mClassCache.pObject;
+    if(!parent) parent = mClassCache.pObject;
 
-    cls->pParent = parent;
-    cls->mMembers = parent->mMembers;
+    cls->pParent        = parent;
+    cls->mMembers       = parent->mMembers;
     cls->mStaticMembers = parent->mStaticMembers;
   }
   else
   {
     // genuine moment of the genesis
-    cls->pParent = NULL;
-    cls->pRoot = NULL;
+    cls->pParent   = NULL;
+    cls->pRoot     = NULL;
     cls->mFullName = cls->mName;
-    pClassRoot = cls;
+    pClassRoot     = cls;
   }
 
   return cls;
@@ -757,17 +781,15 @@ inline rc_class *rc_core::class_resolve(const char *name, rc_class *root)
   ic_string str(name);
   sc_voidarray *pieces = str.split("::");
 
-  for(int idx = 0; idx < pieces->length(); idx ++)
+  for(int idx = 0; idx < pieces->length(); idx++)
   {
     ic_string *piece = (ic_string *)pieces->mPtr[idx];
-    if(idx > 0 || piece->compare("object"))
-      root = (rc_class *)(root->mClasses.get(piece));
+    if(idx > 0 || piece->compare("object")) root = (rc_class *)(root->mClasses.get(piece));
 
-    if(!root)
-      break;
+    if(!root) break;
   }
 
-  for(int idx = 0; idx < pieces->length(); idx ++)
+  for(int idx = 0; idx < pieces->length(); idx++)
   {
     ic_string *piece = (ic_string *)pieces->mPtr[idx];
     delete piece;
@@ -807,7 +829,7 @@ sc_voidarray *rc_core::class_parents(rc_class *cls)
 
   while(cls->pParent && cls->pParent != mClassCache.pObject)
   {
-    list.add((void*)cls->pParent);
+    list.add((void *)cls->pParent);
     cls = cls->pParent;
   }
 
@@ -822,22 +844,38 @@ int rc_core::class_type(rc_class *cls)
 {
   while(cls)
   {
-    if(cls == mClassCache.pUndef) return M_CLASS_UNDEF;
-    else if(cls == mClassCache.pBool) return M_CLASS_BOOL;
-    else if(cls == mClassCache.pInt) return M_CLASS_INT;
-    else if(cls == mClassCache.pFloat) return M_CLASS_FLOAT;
-    else if(cls == mClassCache.pString) return M_CLASS_STRING;
-    else if(cls == mClassCache.pRange) return M_CLASS_RANGE;
-    else if(cls == mClassCache.pRegex) return M_CLASS_REGEX;
-    else if(cls == mClassCache.pMatch) return M_CLASS_MATCH;
-    else if(cls == mClassCache.pMethod) return M_CLASS_METHOD;
-    else if(cls == mClassCache.pTime) return M_CLASS_TIME;
-    else if(cls == mClassCache.pFile) return M_CLASS_FILE;
-    else if(cls == mClassCache.pDir) return M_CLASS_DIR;
-    else if(cls == mClassCache.pSocket) return M_CLASS_SOCKET;
-    else if(cls == mClassCache.pClass) return M_CLASS_CLASS;
-    else if(cls == mClassCache.pArray) return M_CLASS_ARRAY;
-    else if(cls == mClassCache.pException) return M_CLASS_EXCEPTION;
+    if(cls == mClassCache.pUndef)
+      return M_CLASS_UNDEF;
+    else if(cls == mClassCache.pBool)
+      return M_CLASS_BOOL;
+    else if(cls == mClassCache.pInt)
+      return M_CLASS_INT;
+    else if(cls == mClassCache.pFloat)
+      return M_CLASS_FLOAT;
+    else if(cls == mClassCache.pString)
+      return M_CLASS_STRING;
+    else if(cls == mClassCache.pRange)
+      return M_CLASS_RANGE;
+    else if(cls == mClassCache.pRegex)
+      return M_CLASS_REGEX;
+    else if(cls == mClassCache.pMatch)
+      return M_CLASS_MATCH;
+    else if(cls == mClassCache.pMethod)
+      return M_CLASS_METHOD;
+    else if(cls == mClassCache.pTime)
+      return M_CLASS_TIME;
+    else if(cls == mClassCache.pFile)
+      return M_CLASS_FILE;
+    else if(cls == mClassCache.pDir)
+      return M_CLASS_DIR;
+    else if(cls == mClassCache.pSocket)
+      return M_CLASS_SOCKET;
+    else if(cls == mClassCache.pClass)
+      return M_CLASS_CLASS;
+    else if(cls == mClassCache.pArray)
+      return M_CLASS_ARRAY;
+    else if(cls == mClassCache.pException)
+      return M_CLASS_EXCEPTION;
 
     cls = cls->pParent;
   }
@@ -861,12 +899,12 @@ inline rc_method *rc_core::method_add(const char *name, rc_class *root, long poi
 
   rc_method *method = new rc_method();
 
-  method->mName = name;
-  method->mNative = false;
-  method->pNativeFunc = NULL;
-  method->mExecPoint = point;
-  method->pClass = root;
-  method->mProperties = properties;
+  method->mName          = name;
+  method->mNative        = false;
+  method->pNativeFunc    = NULL;
+  method->mExecPoint     = point;
+  method->pClass         = root;
+  method->mProperties    = properties;
   method->pExternalScope = NULL;
   root->mMethods.set(name, (void *)method);
 
@@ -889,12 +927,12 @@ inline rc_method *rc_core::method_add(const char *name, rc_class *root, native_f
 
   rc_method *method = new rc_method();
 
-  method->mName = name;
-  method->mNative = true;
-  method->pNativeFunc = func;
-  method->mExecPoint = 0;
-  method->pClass = root;
-  method->mProperties = properties;
+  method->mName          = name;
+  method->mNative        = true;
+  method->pNativeFunc    = func;
+  method->mExecPoint     = 0;
+  method->pClass         = root;
+  method->mProperties    = properties;
   method->pExternalScope = NULL;
   root->mMethods.set(name, (void *)method);
 
@@ -949,7 +987,7 @@ void rc_core::member_add(const char *name, rc_class *root, short properties)
   if(root->mMembers.get(name) != NULL || root->mStaticMembers.get(name) != NULL)
     ERROR(ic_string::format(M_ERR_OVERRIDE_FINAL, name), M_EXC_SCRIPT);
 
-  rc_var *member = new rc_var();
+  rc_var *member      = new rc_var();
   member->mProperties = properties;
   if(properties & M_PROP_STATIC)
     root->mStaticMembers.set(name, (void *)member);
@@ -996,16 +1034,17 @@ inline void rc_core::error(const sc_exception &ex)
 }
 
 /**
-* Processes an internal error.
-* @param msg Error message.
-* @param mode Error mode.
-* @param head Execution head that caused the error.
-*/
+ * Processes an internal error.
+ * @param msg Error message.
+ * @param mode Error mode.
+ * @param head Execution head that caused the error.
+ */
 inline void rc_core::error(const char *msg, int mode, rc_head *head)
 {
   if(mErrorMode & mode)
   {
-    ic_string *str = ic_string::format("%s (file '%s', line %i, char %i)", msg, head->mFile, head->mLine, head->mOffset);
+    ic_string *str =
+        ic_string::format("%s (file '%s', line %i, char %i)", msg, head->mFile, head->mLine, head->mOffset);
     error_any(str, mode);
     delete str;
   }
@@ -1019,11 +1058,9 @@ inline void rc_core::error(const char *msg, int mode, rc_head *head)
  */
 inline void rc_core::error_any(ic_string *msg, int mode)
 {
-  if(mErrorMode & mode)
-    printf(msg->get());
+  if(mErrorMode & mode) printf(msg->get());
 
-  if(mode != M_EMODE_NOTICE && mode != M_EMODE_WARNING)
-    mState = M_STATE_DEAD;
+  if(mode != M_EMODE_NOTICE && mode != M_EMODE_WARNING) mState = M_STATE_DEAD;
 }
 
 /**
@@ -1032,7 +1069,6 @@ inline void rc_core::error_any(ic_string *msg, int mode)
  */
 void rc_core::plugins_load()
 {
-
 }
 
 #endif

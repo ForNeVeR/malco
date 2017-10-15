@@ -17,10 +17,10 @@
  */
 rc_lexem::rc_lexem(char type, long line, long offset, long param)
 {
-  mType = type;
-  mLine = line;
+  mType   = type;
+  mLine   = line;
   mOffset = offset;
-  mParam = param;
+  mParam  = param;
 }
 
 
@@ -43,8 +43,8 @@ rc_parser::~rc_parser()
 {
 }
 
-/**
- * Build table of lexem constants.
- */
+  /**
+   * Build table of lexem constants.
+   */
 
 #endif

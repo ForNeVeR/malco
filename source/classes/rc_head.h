@@ -17,10 +17,10 @@ rc_head::rc_head(rc_core *core)
   pCore = core;
   mLine = mOffset = 0;
   strcpy(mFile, "<unknown>");
-  mStartTime = clock();
+  mStartTime    = clock();
   mStatCommands = mStatFiles = mStatLines = 0;
-  mExternalScope = false;
-  mVars = new sc_voidarray();
+  mExternalScope                          = false;
+  mVars                                   = new sc_voidarray();
 
   // define registers
   rAX = NULL;
@@ -33,8 +33,7 @@ rc_head::rc_head(rc_core *core)
  */
 rc_head::~rc_head()
 {
-  if(rAX)
-    obj_unlink(rAX);
+  if(rAX) obj_unlink(rAX);
 
   cmd_clrsrc();
   cmd_clrdst();
@@ -58,24 +57,21 @@ int rc_head::playback(bool main)
   if(main)
   {
     pCurrClass = pTmpClass = pCore->mClassCache.pObject;
-    pCurrObj = NULL;
+    pCurrObj               = NULL;
   }
 
   while((pCmd = pCore->mTape->select(mOffset)) != NULL && pCore->mState != M_STATE_DEAD)
   {
     // exit
-    if(pCmd->mCmd == RASM_CMD_EXIT)
-      break;
+    if(pCmd->mCmd == RASM_CMD_EXIT) break;
 
     execute();
 
-    if(!main && pCmd->mCmd == RASM_CMD_RETURN)
-      break;
+    if(!main && pCmd->mCmd == RASM_CMD_RETURN) break;
 
     mStatCommands++;
 
-    if(pCmd->mCmd != RASM_CMD_JFALSE && pCmd->mCmd != RASM_CMD_JTRUE && pCmd->mCmd != RASM_CMD_JMP)
-      mOffset++;
+    if(pCmd->mCmd != RASM_CMD_JFALSE && pCmd->mCmd != RASM_CMD_JTRUE && pCmd->mCmd != RASM_CMD_JMP) mOffset++;
   }
 
   return 0;
@@ -88,81 +84,81 @@ void rc_head::execute()
 {
   switch(pCmd->mCmd)
   {
-    case RASM_CMD_LOADAX:       cmd_loadax(); break;
-    case RASM_CMD_LOADBX:       cmd_loadbx(); break;
-    case RASM_CMD_SAVEAX:       cmd_saveax(); break;
-    case RASM_CMD_SAVEBX:       cmd_savebx(); break;
-    case RASM_CMD_XCHG:         cmd_xchg(); break;
-    case RASM_CMD_ASSIGN:       cmd_assign(); break;
-    case RASM_CMD_UNSPLASSIGN:  cmd_unsplassign(); break;
+    case RASM_CMD_LOADAX: cmd_loadax(); break;
+    case RASM_CMD_LOADBX: cmd_loadbx(); break;
+    case RASM_CMD_SAVEAX: cmd_saveax(); break;
+    case RASM_CMD_SAVEBX: cmd_savebx(); break;
+    case RASM_CMD_XCHG: cmd_xchg(); break;
+    case RASM_CMD_ASSIGN: cmd_assign(); break;
+    case RASM_CMD_UNSPLASSIGN: cmd_unsplassign(); break;
 
-    case RASM_CMD_ADD:          cmd_add(); break;
-    case RASM_CMD_SUB:          cmd_sub(); break;
-    case RASM_CMD_MUL:          cmd_mul(); break;
-    case RASM_CMD_DIV:          cmd_div(); break;
-    case RASM_CMD_MOD:          cmd_mod(); break;
-    case RASM_CMD_POW:          cmd_pow(); break;
-    case RASM_CMD_SHL:          cmd_shl(); break;
-    case RASM_CMD_SHR:          cmd_shr(); break;
-    case RASM_CMD_BAND:         cmd_band(); break;
-    case RASM_CMD_BOR:          cmd_bor(); break;
-    case RASM_CMD_BXOR:         cmd_bxor(); break;
-    case RASM_CMD_AND:          cmd_and(); break;
-    case RASM_CMD_OR:           cmd_or(); break;
-    case RASM_CMD_XOR:          cmd_xor(); break;
+    case RASM_CMD_ADD: cmd_add(); break;
+    case RASM_CMD_SUB: cmd_sub(); break;
+    case RASM_CMD_MUL: cmd_mul(); break;
+    case RASM_CMD_DIV: cmd_div(); break;
+    case RASM_CMD_MOD: cmd_mod(); break;
+    case RASM_CMD_POW: cmd_pow(); break;
+    case RASM_CMD_SHL: cmd_shl(); break;
+    case RASM_CMD_SHR: cmd_shr(); break;
+    case RASM_CMD_BAND: cmd_band(); break;
+    case RASM_CMD_BOR: cmd_bor(); break;
+    case RASM_CMD_BXOR: cmd_bxor(); break;
+    case RASM_CMD_AND: cmd_and(); break;
+    case RASM_CMD_OR: cmd_or(); break;
+    case RASM_CMD_XOR: cmd_xor(); break;
 
-    case RASM_CMD_INC:          cmd_inc(); break;
-    case RASM_CMD_DEC:          cmd_dec(); break;
-    case RASM_CMD_NEG:          cmd_neg(); break;
+    case RASM_CMD_INC: cmd_inc(); break;
+    case RASM_CMD_DEC: cmd_dec(); break;
+    case RASM_CMD_NEG: cmd_neg(); break;
 
-    case RASM_CMD_EQ:           cmd_eq(); break;
-    case RASM_CMD_EQ_STRICT:    cmd_eq_strict(); break;
-    case RASM_CMD_REL:          cmd_rel(); break;
-    case RASM_CMD_LESS:         cmd_less(); break;
-    case RASM_CMD_LESS_EQ:      cmd_less_eq(); break;
-    case RASM_CMD_GREATER:      cmd_greater(); break;
-    case RASM_CMD_GREATER_EQ:   cmd_greater_eq(); break;
-    case RASM_CMD_CMP:          cmd_cmp(); break;
-    case RASM_CMD_JTRUE:        cmd_jtrue(); break;
-    case RASM_CMD_JFALSE:       cmd_jfalse(); break;
-    case RASM_CMD_JMP:          cmd_jmp(); break;
+    case RASM_CMD_EQ: cmd_eq(); break;
+    case RASM_CMD_EQ_STRICT: cmd_eq_strict(); break;
+    case RASM_CMD_REL: cmd_rel(); break;
+    case RASM_CMD_LESS: cmd_less(); break;
+    case RASM_CMD_LESS_EQ: cmd_less_eq(); break;
+    case RASM_CMD_GREATER: cmd_greater(); break;
+    case RASM_CMD_GREATER_EQ: cmd_greater_eq(); break;
+    case RASM_CMD_CMP: cmd_cmp(); break;
+    case RASM_CMD_JTRUE: cmd_jtrue(); break;
+    case RASM_CMD_JFALSE: cmd_jfalse(); break;
+    case RASM_CMD_JMP: cmd_jmp(); break;
 
-    case RASM_CMD_PUSHUS:       cmd_pushus(); break;
-    case RASM_CMD_POPUS:        cmd_popus(); break;
-    case RASM_CMD_PUSHSRC:      cmd_pushsrc(); break;
-    case RASM_CMD_PUSHDST:      cmd_pushdst(); break;
-    case RASM_CMD_POPSRC:       cmd_popsrc(); break;
-    case RASM_CMD_POPDST:       cmd_popdst(); break;
-    case RASM_CMD_SPLAT:        cmd_splat(); break;
-    case RASM_CMD_UNSPLAT:      cmd_unsplat(); break;
-    case RASM_CMD_MOVESRC:      cmd_movesrc(); break;
-    case RASM_CMD_MOVEDST:      cmd_movedst(); break;
-    case RASM_CMD_CLRSRC:       cmd_clrsrc(); break;
-    case RASM_CMD_CLRDST:       cmd_clrdst(); break;
+    case RASM_CMD_PUSHUS: cmd_pushus(); break;
+    case RASM_CMD_POPUS: cmd_popus(); break;
+    case RASM_CMD_PUSHSRC: cmd_pushsrc(); break;
+    case RASM_CMD_PUSHDST: cmd_pushdst(); break;
+    case RASM_CMD_POPSRC: cmd_popsrc(); break;
+    case RASM_CMD_POPDST: cmd_popdst(); break;
+    case RASM_CMD_SPLAT: cmd_splat(); break;
+    case RASM_CMD_UNSPLAT: cmd_unsplat(); break;
+    case RASM_CMD_MOVESRC: cmd_movesrc(); break;
+    case RASM_CMD_MOVEDST: cmd_movedst(); break;
+    case RASM_CMD_CLRSRC: cmd_clrsrc(); break;
+    case RASM_CMD_CLRDST: cmd_clrdst(); break;
 
-    case RASM_CMD_NEW:          cmd_new(); break;
-    case RASM_CMD_CALL:         cmd_call(); break;
-    case RASM_CMD_RETURN:       cmd_return(); break;
-    case RASM_CMD_NSP:          cmd_nsp(); break;
-    case RASM_CMD_BINDLAMBDA:   cmd_bindlambda(); break;
+    case RASM_CMD_NEW: cmd_new(); break;
+    case RASM_CMD_CALL: cmd_call(); break;
+    case RASM_CMD_RETURN: cmd_return(); break;
+    case RASM_CMD_NSP: cmd_nsp(); break;
+    case RASM_CMD_BINDLAMBDA: cmd_bindlambda(); break;
 
-    case RASM_CMD_INDEX:        cmd_index(); break;
+    case RASM_CMD_INDEX: cmd_index(); break;
 
-    case RASM_CMD_INCLUDE:      cmd_include(); break;
-    case RASM_CMD_REQUIRE:      cmd_require(); break;
-    case RASM_CMD_GC:           cmd_gc(); break;
-    case RASM_CMD_SETPTY:       cmd_setpty(); break;
-    case RASM_CMD_SETLINE:      cmd_setline(); break;
-    case RASM_CMD_SETFILE:      cmd_setfile(); break;
-    case RASM_CMD_THROW:        cmd_throw(); break;
-    case RASM_CMD_TRY:          cmd_try(); break;
-    case RASM_CMD_TRIED:        cmd_tried(); break;
+    case RASM_CMD_INCLUDE: cmd_include(); break;
+    case RASM_CMD_REQUIRE: cmd_require(); break;
+    case RASM_CMD_GC: cmd_gc(); break;
+    case RASM_CMD_SETPTY: cmd_setpty(); break;
+    case RASM_CMD_SETLINE: cmd_setline(); break;
+    case RASM_CMD_SETFILE: cmd_setfile(); break;
+    case RASM_CMD_THROW: cmd_throw(); break;
+    case RASM_CMD_TRY: cmd_try(); break;
+    case RASM_CMD_TRIED: cmd_tried(); break;
 
-    case RASM_CMD_REGCLASS:     cmd_regclass(); break;
-    case RASM_CMD_REGPROPERTY:  cmd_regproperty(); break;
-    case RASM_CMD_REGMETHOD:    cmd_regmethod(); break;
+    case RASM_CMD_REGCLASS: cmd_regclass(); break;
+    case RASM_CMD_REGPROPERTY: cmd_regproperty(); break;
+    case RASM_CMD_REGMETHOD: cmd_regmethod(); break;
 
-    case RASM_CMD_INSPECT:      cmd_inspect(); break;
+    case RASM_CMD_INSPECT: cmd_inspect(); break;
   }
 }
 
@@ -171,13 +167,13 @@ void rc_head::execute()
  */
 void rc_head::state_save()
 {
-  rc_headstate *state = new rc_headstate();
-  state->rAX = rAX;
-  state->mVars = mVars;
-  state->pStateClass = pCurrClass;
+  rc_headstate *state   = new rc_headstate();
+  state->rAX            = rAX;
+  state->mVars          = mVars;
+  state->pStateClass    = pCurrClass;
   state->pStateTmpClass = pTmpClass;
-  state->pStateObj = pCurrObj;
-  state->mOffset = mOffset;
+  state->pStateObj      = pCurrObj;
+  state->mOffset        = mOffset;
   state->mExternalScope = mExternalScope;
   rCS.add((void *)state);
 
@@ -192,13 +188,13 @@ void rc_head::state_load()
   if(rCS.length())
   {
     rc_headstate *state = (rc_headstate *)rCS.get(rCS.length() - 1);
-    rAX = state->rAX;
-    mVars = state->mVars;
-    pCurrClass = state->pStateClass;
-    pTmpClass = state->pStateTmpClass;
-    pCurrObj = state->pStateObj;
-    mExternalScope = state->mExternalScope;
-    mOffset = state->mOffset;
+    rAX                 = state->rAX;
+    mVars               = state->mVars;
+    pCurrClass          = state->pStateClass;
+    pTmpClass           = state->pStateTmpClass;
+    pCurrObj            = state->pStateObj;
+    mExternalScope      = state->mExternalScope;
+    mOffset             = state->mOffset;
 
     rCS.del(rCS.length() - 1);
   }
@@ -232,13 +228,12 @@ rc_method *rc_head::method_resolve(const char *name, rc_class *root)
  */
 inline void rc_head::method_invoke(const char *name, rc_var *object, bool report)
 {
-  rc_class *cls = (object ? object->get()->pClass : pTmpClass);
+  rc_class *cls     = (object ? object->get()->pClass : pTmpClass);
   rc_method *method = method_resolve(name, cls);
   if(method)
     method_invoke(method, object);
-  else
-    if(report)
-      exception(ic_string::format(M_ERR_NO_FX, name, pTmpClass->mName), M_EXC_NOT_FOUND);
+  else if(report)
+    exception(ic_string::format(M_ERR_NO_FX, name, pTmpClass->mName), M_EXC_NOT_FOUND);
 }
 
 /**
@@ -255,12 +250,14 @@ void rc_head::method_invoke(rc_method *method, rc_var *object)
     return;
   }
 
-  // ensure method can be called: if it's dynamical and called statically, throw an error
+  // ensure method can be called: if it's dynamical and called statically, throw
+  // an error
   if(!(method->mProperties & M_PROP_STATIC) && !object)
     exception(ic_string::format(M_ERR_BAD_STATIC_CALL, method->mName), M_EXC_SCRIPT);
 
   // validate method's privacy restrictions
-  if(((method->mProperties & M_PROP_INTERNAL) && var_get(object)->pClass != pCurrClass) || ((method->mProperties & M_PROP_PRIVATE) && object != pCurrObj))
+  if(((method->mProperties & M_PROP_INTERNAL) && var_get(object)->pClass != pCurrClass) ||
+     ((method->mProperties & M_PROP_PRIVATE) && object != pCurrObj))
     exception(ic_string::format(M_ERR_FX_PRIVATE, method->mName), M_EXC_NOT_FOUND);
 
   // validate method's number of arguments
@@ -279,12 +276,12 @@ void rc_head::method_invoke(rc_method *method, rc_var *object)
     if(method->pExternalScope)
     {
       mExternalScope = true;
-      mVars = method->pExternalScope;
+      mVars          = method->pExternalScope;
     }
     else
     {
       mExternalScope = false;
-      mVars = new sc_voidarray();
+      mVars          = new sc_voidarray();
     }
   }
 
@@ -292,14 +289,15 @@ void rc_head::method_invoke(rc_method *method, rc_var *object)
   // calling via argument names?
   if(pCmd->mModifier == RASM_MOD_NAMES)
   {
-    rc_var *var = rSRC.pop();
+    rc_var *var   = rSRC.pop();
     ic_array *arr = (ic_array *)var_get(var)->mData;
-    for(long idx=0; idx < method->mParams.length(); idx++)
+    for(long idx = 0; idx < method->mParams.length(); idx++)
     {
       ic_string *name = (ic_string *)method->mParams.get(idx);
-      rc_var *obj = arr->get(name);
+      rc_var *obj     = arr->get(name);
       arr->unset(name);
-      // whole array gets deleted, each object will be unlinked, thus we need to keep the count
+      // whole array gets deleted, each object will be unlinked, thus we need to
+      // keep the count
       obj->mLinks++;
       if(obj)
         rSRC.push(obj);
@@ -324,7 +322,7 @@ void rc_head::method_invoke(rc_method *method, rc_var *object)
   }
 
   pCurrClass = method->pClass;
-  pCurrObj = (method->mProperties & M_PROP_STATIC) ? NULL : object;
+  pCurrObj   = (method->mProperties & M_PROP_STATIC) ? NULL : object;
 
   // execute the method actually
   if(method->mNative)
@@ -460,14 +458,14 @@ rc_var *rc_head::scope_get(long id)
 {
   if(mVars->length() <= id)
   {
-    mVars->resize(id+1);
-    rc_var *var = new_undef();
+    mVars->resize(id + 1);
+    rc_var *var      = new_undef();
     var->mProperties = 0;
     mVars->set(id, (void *)var);
     return var;
   }
   else
-    return (rc_var*)mVars->get(id);
+    return (rc_var *)mVars->get(id);
 }
 
 /**
@@ -479,13 +477,11 @@ rc_var *rc_head::bare_id_resolve(const char *name)
 {
   // first try a class (more common)
   rc_class *cls = (rc_class *)pTmpClass->mClasses.get(name);
-  if(cls)
-    return new_class(cls, false);
+  if(cls) return new_class(cls, false);
 
   // then attempt a method
   rc_method *mth = (rc_method *)pTmpClass->mMethods.get(name);
-  if(mth)
-    return new_method(mth, false);
+  if(mth) return new_method(mth, false);
 
   exception(ic_string::format(M_ERR_BAD_IDENTIFIER, name, pTmpClass->mName), M_EXC_NOT_FOUND);
 
@@ -503,7 +499,7 @@ inline rc_var *rc_head::member_resolve(const char *name, rc_var *obj, rc_class *
 {
   rc_var *var;
   bool dynamic = false; // false = member is static, belongs to class
-  bool ok = true;
+  bool ok      = true;
   if(obj)
   {
     cls = obj->get()->pClass;
@@ -530,14 +526,12 @@ inline rc_var *rc_head::member_resolve(const char *name, rc_var *obj, rc_class *
     if(dynamic)
     {
       // dynamic: must be requested from the object itself
-      if(obj != pCurrObj)
-        ok = false;
+      if(obj != pCurrObj) ok = false;
     }
     else
     {
       // static: only from the class itself
-      if(cls != pTmpClass)
-        ok = false;
+      if(cls != pTmpClass) ok = false;
     }
   }
   else if(var->mProperties & M_PROP_INTERNAL)
@@ -553,8 +547,7 @@ inline rc_var *rc_head::member_resolve(const char *name, rc_var *obj, rc_class *
     return NULL;
   }
 
-  if(!var->get())
-    var_save(var, new_undef());
+  if(!var->get()) var_save(var, new_undef());
 
   return var;
 }
@@ -568,7 +561,7 @@ void rc_head::warning(const char *msg, ...)
   ic_string *str = ic_string::format("%s (file %s, line %i)", msg, mFile, mLine);
   va_list args;
   va_start(args, msg);
-    pCore->error_any(ic_string::format_list(str->get(), args), M_EMODE_WARNING);
+  pCore->error_any(ic_string::format_list(str->get(), args), M_EMODE_WARNING);
   va_end(args);
   delete str;
 }
@@ -582,7 +575,7 @@ void rc_head::notice(const char *msg, ...)
   ic_string *str = ic_string::format("%s (file %s, line %i)", msg, mFile, mLine);
   va_list args;
   va_start(args, msg);
-    pCore->error_any(ic_string::format_list(str->get(), args), M_EMODE_NOTICE);
+  pCore->error_any(ic_string::format_list(str->get(), args), M_EMODE_NOTICE);
   va_end(args);
   delete str;
 }
@@ -636,7 +629,7 @@ ic_string *rc_head::obj_inspect(rc_var *obj)
 rc_var *rc_head::obj_create(rc_class *objclass)
 {
   int datatype = pCore->class_type(objclass);
-  rc_var *obj = new rc_var(new ic_object(objclass, new_basic(datatype)));
+  rc_var *obj  = new rc_var(new ic_object(objclass, new_basic(datatype)));
 
   // call in-class initialization
   // #init may not have parameters, otherwise it will fail the constructor,
@@ -656,27 +649,27 @@ rc_var *rc_head::obj_create(rc_class *objclass)
 rc_var *rc_head::obj_clone(rc_var *var)
 {
   sc_voidmapitem *curr;
-  ic_object *obj = var_get(var);
-  rc_var *newvar = obj_create(obj->pClass);
+  ic_object *obj    = var_get(var);
+  rc_var *newvar    = obj_create(obj->pClass);
   ic_object *newobj = var_get(newvar);
 
   // clone basic object
   switch(pCore->class_type(obj->pClass))
   {
-    case M_CLASS_BOOL:      ((ic_bool *)newobj->mData)->mValue = ((ic_bool *)obj->mData)->mValue; break;
-    case M_CLASS_INT:       ((ic_int *)newobj->mData)->mValue = ((ic_int *)obj->mData)->mValue; break;
-    case M_CLASS_FLOAT:     ((ic_float *)newobj->mData)->mValue = ((ic_float *)obj->mData)->mValue; break;
-    case M_CLASS_STRING:    ((ic_string *)newobj->mData)->set((ic_string *)obj->mData); break;
-    case M_CLASS_TIME:      ((ic_time *)newobj->mData)->set(((ic_time *)obj->mData)->get()); break;
-    case M_CLASS_ARRAY:     ((ic_array *)newobj->mData)->copy((ic_array *)obj->mData); break;
-    case M_CLASS_REGEX:     *((ic_regex *)newobj->mData) = *((ic_regex *)obj->mData); break;
-    case M_CLASS_RANGE:     *((ic_range *)newobj->mData) = *((ic_range *)obj->mData); break;
-    case M_CLASS_MATCH:     *((ic_match *)newobj->mData) = *((ic_match *)obj->mData); break;
-    case M_CLASS_DIR:       *((ic_dir *)newobj->mData) = *((ic_dir *)obj->mData); break;
-    case M_CLASS_SOCKET:    *((ic_socket *)newobj->mData) = *((ic_socket *)obj->mData); break;
-    case M_CLASS_FILE:      *((ic_file *)newobj->mData) = *((ic_file *)obj->mData); break;
-    case M_CLASS_CLASS:     *((rc_class *)newobj->mData) = *((rc_class *)obj->mData); break;
-    case M_CLASS_METHOD:    *((rc_method *)newobj->mData) = *((rc_method *)obj->mData); break;
+    case M_CLASS_BOOL: ((ic_bool *)newobj->mData)->mValue = ((ic_bool *)obj->mData)->mValue; break;
+    case M_CLASS_INT: ((ic_int *)newobj->mData)->mValue = ((ic_int *)obj->mData)->mValue; break;
+    case M_CLASS_FLOAT: ((ic_float *)newobj->mData)->mValue = ((ic_float *)obj->mData)->mValue; break;
+    case M_CLASS_STRING: ((ic_string *)newobj->mData)->set((ic_string *)obj->mData); break;
+    case M_CLASS_TIME: ((ic_time *)newobj->mData)->set(((ic_time *)obj->mData)->get()); break;
+    case M_CLASS_ARRAY: ((ic_array *)newobj->mData)->copy((ic_array *)obj->mData); break;
+    case M_CLASS_REGEX: *((ic_regex *)newobj->mData) = *((ic_regex *)obj->mData); break;
+    case M_CLASS_RANGE: *((ic_range *)newobj->mData) = *((ic_range *)obj->mData); break;
+    case M_CLASS_MATCH: *((ic_match *)newobj->mData) = *((ic_match *)obj->mData); break;
+    case M_CLASS_DIR: *((ic_dir *)newobj->mData) = *((ic_dir *)obj->mData); break;
+    case M_CLASS_SOCKET: *((ic_socket *)newobj->mData) = *((ic_socket *)obj->mData); break;
+    case M_CLASS_FILE: *((ic_file *)newobj->mData) = *((ic_file *)obj->mData); break;
+    case M_CLASS_CLASS: *((rc_class *)newobj->mData) = *((rc_class *)obj->mData); break;
+    case M_CLASS_METHOD: *((rc_method *)newobj->mData) = *((rc_method *)obj->mData); break;
     case M_CLASS_EXCEPTION: *((sc_exception *)newobj->mData) = *((sc_exception *)obj->mData); break;
   }
 
@@ -684,7 +677,7 @@ rc_var *rc_head::obj_clone(rc_var *var)
   while(curr = newobj->mMembers->iter_next())
   {
     rc_var *var = (rc_var *)(newobj->mMembers->get(curr->mKey));
-    var->pObj = (void *)obj_clone((rc_var *)var->pObj);
+    var->pObj   = (void *)obj_clone((rc_var *)var->pObj);
   }
 
   return newvar;
@@ -696,8 +689,7 @@ rc_var *rc_head::obj_clone(rc_var *var)
  */
 void rc_head::obj_unlink(rc_var *obj)
 {
-  if(!obj)
-    return;
+  if(!obj) return;
 
   if(obj->mLinks <= 1)
   {
@@ -714,7 +706,7 @@ void rc_head::obj_unlink(rc_var *obj)
       // detect base classes and invoke destructors
       sc_voidarray *bases = pCore->class_parents(sub->pClass);
       // 'object' does not have a constructor for sure
-      for(int idx=0; idx < bases->length() - 1; idx++)
+      for(int idx = 0; idx < bases->length() - 1; idx++)
       {
         rc_class *curr = (rc_class *)bases->get(idx);
         method_invoke("#destroy", obj, false);
@@ -725,7 +717,7 @@ void rc_head::obj_unlink(rc_var *obj)
       obj_unlink(sub);
     }
 
-    //printf("dl %p  ", obj);
+    // printf("dl %p  ", obj);
     delete obj;
   }
   else
@@ -738,8 +730,7 @@ void rc_head::obj_unlink(rc_var *obj)
  */
 void rc_head::obj_unlink(ic_object *obj)
 {
-  if(!obj)
-    return;
+  if(!obj) return;
 
   if(obj->mLinks <= 1)
   {
@@ -762,15 +753,15 @@ void rc_head::obj_unlink(ic_object *obj)
       ic_array *arr = (ic_array *)obj->mData;
       arr->iter_rewind();
       while(sc_voidmapitem *curr = arr->iter_next())
-        obj_unlink((rc_var*)curr->mValue);
+        obj_unlink((rc_var *)curr->mValue);
     }
 
-    //printf("do %p  ", obj);
+    // printf("do %p  ", obj);
     delete obj;
   }
   else
   {
-    //printf("undo %i  ", obj->mLinks);
+    // printf("undo %i  ", obj->mLinks);
     obj->mLinks--;
   }
 }
@@ -787,10 +778,9 @@ rc_var *rc_head::convert_bool(rc_var *var)
   method_invoke("to_b", var, false);
   if(rSRC.mLength)
   {
-    rc_var *curr = rSRC.pop();
+    rc_var *curr   = rSRC.pop();
     ic_object *obj = var_get(curr);
-    if(pCore->class_type(obj->pClass) == M_CLASS_BOOL)
-      return curr;
+    if(pCore->class_type(obj->pClass) == M_CLASS_BOOL) return curr;
   }
 
   exception(M_ERR_BAD_TO_B, M_EXC_ARGS);
@@ -809,11 +799,10 @@ rc_var *rc_head::convert_string(rc_var *var)
   method_invoke("to_s", var, false);
   if(rSRC.mLength)
   {
-    rc_var *curr = rSRC.pop();
+    rc_var *curr   = rSRC.pop();
     ic_object *obj = var_get(curr);
-    char ct = pCore->class_type(obj->pClass);
-    if(ct == M_CLASS_STRING)
-      return curr;
+    char ct        = pCore->class_type(obj->pClass);
+    if(ct == M_CLASS_STRING) return curr;
   }
 
   exception(M_ERR_BAD_TO_S, M_EXC_ARGS);
@@ -832,10 +821,9 @@ rc_var *rc_head::convert_int(rc_var *var)
   method_invoke("to_i", var, false);
   if(rSRC.mLength)
   {
-    rc_var *curr = rSRC.pop();
+    rc_var *curr   = rSRC.pop();
     ic_object *obj = var_get(curr);
-    if(pCore->class_type(obj->pClass) == M_CLASS_INT)
-      return curr;
+    if(pCore->class_type(obj->pClass) == M_CLASS_INT) return curr;
   }
 
   exception(M_ERR_BAD_TO_I, M_EXC_ARGS);
@@ -851,19 +839,19 @@ inline void *rc_head::new_basic(char type)
 {
   switch(type)
   {
-    case M_CLASS_BOOL:      return new ic_bool();
-    case M_CLASS_INT:       return new ic_int();
-    case M_CLASS_FLOAT:     return new ic_float();
-    case M_CLASS_STRING:    return new ic_string();
-    case M_CLASS_RANGE:     return new ic_range();
-    case M_CLASS_REGEX:     return new ic_regex();
-    case M_CLASS_TIME:      return new ic_time();
-    case M_CLASS_FILE:      return new ic_file();
-    case M_CLASS_DIR:       return new ic_dir();
-    case M_CLASS_SOCKET:    return new ic_socket();
-    case M_CLASS_METHOD:    return new rc_method();
-    case M_CLASS_CLASS:     return new rc_class();
-    case M_CLASS_ARRAY:     return new ic_array();
+    case M_CLASS_BOOL: return new ic_bool();
+    case M_CLASS_INT: return new ic_int();
+    case M_CLASS_FLOAT: return new ic_float();
+    case M_CLASS_STRING: return new ic_string();
+    case M_CLASS_RANGE: return new ic_range();
+    case M_CLASS_REGEX: return new ic_regex();
+    case M_CLASS_TIME: return new ic_time();
+    case M_CLASS_FILE: return new ic_file();
+    case M_CLASS_DIR: return new ic_dir();
+    case M_CLASS_SOCKET: return new ic_socket();
+    case M_CLASS_METHOD: return new rc_method();
+    case M_CLASS_CLASS: return new rc_class();
+    case M_CLASS_ARRAY: return new ic_array();
 
     default: return NULL;
   }
@@ -1067,11 +1055,11 @@ inline rc_var *rc_head::new_array(bool tainted)
 }
 
 /**
-* Creates an array object.
-* @param arr Array.
-* @param tainted Tainted flag.
-* @return Pointer to created object.
-*/
+ * Creates an array object.
+ * @param arr Array.
+ * @param tainted Tainted flag.
+ * @return Pointer to created object.
+ */
 inline rc_var *rc_head::new_array(ic_array *arr, bool tainted)
 {
   return new rc_var((new ic_object(pCore->mClassCache.pArray, arr))->taint(tainted));
@@ -1108,44 +1096,47 @@ inline rc_var *rc_head::new_exception(ic_string *msg, int type, bool tainted)
  */
 void rc_head::cmd_loadax()
 {
-  if(rAX)
-    obj_unlink(rAX);
+  if(rAX) obj_unlink(rAX);
 
   const char *name = NULL;
   switch(pCmd->mModifier)
   {
-    case RASM_MOD_NULL:       rAX = NULL; break;
-    case RASM_MOD_UNDEF:      rAX = new_undef(); break;
-    case RASM_MOD_FALSE:      rAX = new_bool(false); break;
-    case RASM_MOD_TRUE:       rAX = new_bool(true); break;
-    case RASM_MOD_INT:        rAX = new_int(pCmd->mParam.addr); break;
-    case RASM_MOD_FLOAT:      rAX = new_float(pCmd->mParam.val); break;
-    case RASM_MOD_STRING:     rAX = new_string(pCore->mStrTable->get(pCmd->mParam.addr)); break;
+    case RASM_MOD_NULL: rAX = NULL; break;
+    case RASM_MOD_UNDEF: rAX = new_undef(); break;
+    case RASM_MOD_FALSE: rAX = new_bool(false); break;
+    case RASM_MOD_TRUE: rAX = new_bool(true); break;
+    case RASM_MOD_INT: rAX = new_int(pCmd->mParam.addr); break;
+    case RASM_MOD_FLOAT: rAX = new_float(pCmd->mParam.val); break;
+    case RASM_MOD_STRING: rAX = new_string(pCore->mStrTable->get(pCmd->mParam.addr)); break;
 
-    case RASM_MOD_VAR:        rAX = scope_get(pCmd->mParam.addr);
-                              if(rAX) rAX->mLinks++;
-                              break;
+    case RASM_MOD_VAR:
+      rAX = scope_get(pCmd->mParam.addr);
+      if(rAX) rAX->mLinks++;
+      break;
 
-    case RASM_MOD_PROPERTY:   rAX = member_resolve(pCore->mStrTable->get(pCmd->mParam.addr), rAX, pTmpClass);
-                              if(rAX) rAX->mLinks++;
-                              nsp_flush();
-                              break;
+    case RASM_MOD_PROPERTY:
+      rAX = member_resolve(pCore->mStrTable->get(pCmd->mParam.addr), rAX, pTmpClass);
+      if(rAX) rAX->mLinks++;
+      nsp_flush();
+      break;
 
-    case RASM_MOD_CONST:      rAX = bare_id_resolve(pCore->mStrTable->get(pCmd->mParam.addr));
-                              if(rAX) rAX->mLinks++;
-                              nsp_flush();
-                              break;
+    case RASM_MOD_CONST:
+      rAX = bare_id_resolve(pCore->mStrTable->get(pCmd->mParam.addr));
+      if(rAX) rAX->mLinks++;
+      nsp_flush();
+      break;
 
-    case RASM_MOD_SELF:       if(pCurrObj)
-                              {
-                                rAX = pCurrObj;
-                                rAX->mLinks++;
-                              }
-                              else
-                                exception(M_ERR_THIS_DISABLED, M_EXC_SCRIPT);
-                              break;
+    case RASM_MOD_SELF:
+      if(pCurrObj)
+      {
+        rAX = pCurrObj;
+        rAX->mLinks++;
+      }
+      else
+        exception(M_ERR_THIS_DISABLED, M_EXC_SCRIPT);
+      break;
 
-    default:                  exception(ic_string::format(M_ERR_UNKNOWN_MOD, pCmd->mModifier, mOffset), M_EXC_INTERNAL);
+    default: exception(ic_string::format(M_ERR_UNKNOWN_MOD, pCmd->mModifier, mOffset), M_EXC_INTERNAL);
   }
 }
 
@@ -1159,38 +1150,42 @@ void rc_head::cmd_loadbx()
 
   switch(pCmd->mModifier)
   {
-    case RASM_MOD_NULL:       bx = NULL; break;
-    case RASM_MOD_UNDEF:      bx = new_undef(); break;
-    case RASM_MOD_FALSE:      bx = new_bool(false); break;
-    case RASM_MOD_TRUE:       bx = new_bool(true); break;
-    case RASM_MOD_INT:        bx = new_int(pCmd->mParam.addr); break;
-    case RASM_MOD_FLOAT:      bx = new_float(pCmd->mParam.val); break;
-    case RASM_MOD_STRING:     bx = new_string(pCore->mStrTable->get(pCmd->mParam.addr)); break;
+    case RASM_MOD_NULL: bx = NULL; break;
+    case RASM_MOD_UNDEF: bx = new_undef(); break;
+    case RASM_MOD_FALSE: bx = new_bool(false); break;
+    case RASM_MOD_TRUE: bx = new_bool(true); break;
+    case RASM_MOD_INT: bx = new_int(pCmd->mParam.addr); break;
+    case RASM_MOD_FLOAT: bx = new_float(pCmd->mParam.val); break;
+    case RASM_MOD_STRING: bx = new_string(pCore->mStrTable->get(pCmd->mParam.addr)); break;
 
-    case RASM_MOD_VAR:        bx = scope_get(pCmd->mParam.addr);
-                              if(bx) bx->mLinks++;
-                              break;
+    case RASM_MOD_VAR:
+      bx = scope_get(pCmd->mParam.addr);
+      if(bx) bx->mLinks++;
+      break;
 
-    case RASM_MOD_PROPERTY:   bx = member_resolve(pCore->mStrTable->get(pCmd->mParam.addr), rAX, pTmpClass);
-                              if(bx) bx->mLinks++;
-                              nsp_flush();
-                              break;
+    case RASM_MOD_PROPERTY:
+      bx = member_resolve(pCore->mStrTable->get(pCmd->mParam.addr), rAX, pTmpClass);
+      if(bx) bx->mLinks++;
+      nsp_flush();
+      break;
 
-    case RASM_MOD_CONST:      bx = bare_id_resolve(pCore->mStrTable->get(pCmd->mParam.addr));
-                              if(bx) bx->mLinks++;
-                              nsp_flush();
-                              break;
+    case RASM_MOD_CONST:
+      bx = bare_id_resolve(pCore->mStrTable->get(pCmd->mParam.addr));
+      if(bx) bx->mLinks++;
+      nsp_flush();
+      break;
 
-    case RASM_MOD_SELF:       if(pCurrObj)
-                              {
-                                bx = pCurrObj;
-                                bx->mLinks++;
-                              }
-                              else
-                                exception(M_ERR_THIS_DISABLED, M_EXC_SCRIPT);
-                              break;
+    case RASM_MOD_SELF:
+      if(pCurrObj)
+      {
+        bx = pCurrObj;
+        bx->mLinks++;
+      }
+      else
+        exception(M_ERR_THIS_DISABLED, M_EXC_SCRIPT);
+      break;
 
-    default:                  exception(ic_string::format(M_ERR_UNKNOWN_MOD, pCmd->mModifier, mOffset), M_EXC_INTERNAL);
+    default: exception(ic_string::format(M_ERR_UNKNOWN_MOD, pCmd->mModifier, mOffset), M_EXC_INTERNAL);
   }
 
   rSRC.push(bx);
@@ -1201,8 +1196,7 @@ void rc_head::cmd_loadbx()
  */
 inline void rc_head::cmd_saveax()
 {
-  if(!rAX)
-    exception(ic_string::format(M_ERR_INTERNAL, "SAVEAX with AX=0"), M_EXC_INTERNAL);
+  if(!rAX) exception(ic_string::format(M_ERR_INTERNAL, "SAVEAX with AX=0"), M_EXC_INTERNAL);
 
   rAX->mLinks++;
   var_save(scope_get(pCmd->mParam.addr), rAX);
@@ -1213,8 +1207,7 @@ inline void rc_head::cmd_saveax()
  */
 inline void rc_head::cmd_savebx()
 {
-  if(!rSRC.mLength)
-    exception(ic_string::format(M_ERR_INTERNAL, "SAVEBX with BX=0"), M_EXC_INTERNAL);
+  if(!rSRC.mLength) exception(ic_string::format(M_ERR_INTERNAL, "SAVEBX with BX=0"), M_EXC_INTERNAL);
 
   rc_var *res = rSRC.pop();
   res->mLinks++;
@@ -1229,15 +1222,13 @@ void rc_head::cmd_assign()
   // detect number of assignments either from a parameter
   // or from the actual length of queues
   int count = MIN(rSRC.mLength, rDST.mLength);
-  int max = pCmd->mParam.addr;
-  if(max)
-    count = MIN(count, max);
+  int max   = pCmd->mParam.addr;
+  if(max) count = MIN(count, max);
 
   // report an imbalanced assignment notice
-  if(max == 0 && rSRC.mLength != rDST.mLength)
-    notice(M_WARN_IMBALANCED_PASG);
+  if(max == 0 && rSRC.mLength != rDST.mLength) notice(M_WARN_IMBALANCED_PASG);
 
-  while(count --> 0)
+  while(count-- > 0)
     var_save(rDST.pop(), rSRC.pop());
 }
 
@@ -1249,14 +1240,13 @@ void rc_head::cmd_unsplassign()
   // detect number of items either from a parameter
   // or from the actual length of queues
   int count = MIN(rSRC.mLength, rDST.mLength);
-  int max = pCmd->mParam.addr;
-  if(max)
-    count = MIN(count, max);
+  int max   = pCmd->mParam.addr;
+  if(max) count = MIN(count, max);
 
   // pack a needed number of objects into an array
-  rc_var *var = new_array();
+  rc_var *var   = new_array();
   ic_array *arr = (ic_array *)(var_get(var)->mData);
-  while(count --> 0)
+  while(count-- > 0)
     arr->append(rSRC.pop(), false);
 
   var_save(rDST.pop(), var);
@@ -1267,8 +1257,8 @@ void rc_head::cmd_unsplassign()
  */
 inline void rc_head::cmd_xchg()
 {
-  rc_var *tmp = rAX;
-  rAX = rSRC.mFirst->pObj;
+  rc_var *tmp       = rAX;
+  rAX               = rSRC.mFirst->pObj;
   rSRC.mFirst->pObj = tmp;
 }
 
@@ -1377,8 +1367,8 @@ inline void rc_head::cmd_or()
 }
 
 /**
-* Does logical XOR on AX and BX, saves result in BX.
-*/
+ * Does logical XOR on AX and BX, saves result in BX.
+ */
 inline void rc_head::cmd_xor()
 {
   sub_logical_op('x');
@@ -1389,8 +1379,7 @@ inline void rc_head::cmd_xor()
  */
 inline void rc_head::cmd_inc()
 {
-  if(!rAX)
-    exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "inc"), M_EXC_ARGS);
+  if(!rAX) exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "inc"), M_EXC_ARGS);
 
   // object gets modified, but stays in rAX
   method_invoke("#inc", rAX);
@@ -1401,8 +1390,7 @@ inline void rc_head::cmd_inc()
  */
 inline void rc_head::cmd_dec()
 {
-  if(!rAX)
-    exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "dec"), M_EXC_ARGS);
+  if(!rAX) exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "dec"), M_EXC_ARGS);
 
   // object gets modified, but stays in rAX
   method_invoke("#dec", rAX);
@@ -1419,7 +1407,7 @@ inline void rc_head::cmd_neg()
     ic_object *obj = var_get(rSRC.get(0));
     if(pCore->class_type(obj->pClass) == M_CLASS_BOOL)
     {
-      bool value = !((ic_bool *)obj->mData)->mValue;
+      bool value                      = !((ic_bool *)obj->mData)->mValue;
       ((ic_bool *)obj->mData)->mValue = value;
     }
     else
@@ -1433,7 +1421,7 @@ inline void rc_head::cmd_neg()
 void rc_head::cmd_eq()
 {
   // compare
-  char type = sub_compare();
+  char type   = sub_compare();
   rc_var *var = rSRC.pop();
   if(type == M_CLASS_UNDEF)
     rSRC.push(new_bool(false, var_get(var)->mTainted));
@@ -1452,7 +1440,7 @@ void rc_head::cmd_eq()
 void rc_head::cmd_eq_strict()
 {
   // compare
-  char type = sub_compare(true);
+  char type   = sub_compare(true);
   rc_var *var = rSRC.pop();
   if(type == M_CLASS_UNDEF)
     rSRC.push(new_bool(false, var_get(var)->mTainted));
@@ -1470,8 +1458,7 @@ void rc_head::cmd_eq_strict()
  */
 void rc_head::cmd_rel()
 {
-  if(!rAX || !rSRC.mLength)
-    exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "#rel"), M_EXC_ARGS);
+  if(!rAX || !rSRC.mLength) exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "#rel"), M_EXC_ARGS);
 
   ic_object *left = var_get(rAX), *right = var_get(rSRC.get(0));
   bool taint = left->mTainted || right->mTainted;
@@ -1488,7 +1475,7 @@ void rc_head::cmd_rel()
     else
     {
       ic_object *obj = var_get(rSRC.get(0));
-      obj->mTainted = taint;
+      obj->mTainted  = taint;
     }
   }
   else if(pCore->class_is_heir(left->pClass, right->pClass) || pCore->class_is_heir(right->pClass, left->pClass))
@@ -1520,7 +1507,7 @@ void rc_head::cmd_rel()
 void rc_head::cmd_less()
 {
   // compare
-  char type = sub_compare(true);
+  char type   = sub_compare(true);
   rc_var *var = rSRC.pop();
   if(type == M_CLASS_UNDEF)
     rSRC.push(new_bool(false, var_get(var)->mTainted));
@@ -1539,7 +1526,7 @@ void rc_head::cmd_less()
 void rc_head::cmd_less_eq()
 {
   // compare
-  char type = sub_compare(true);
+  char type   = sub_compare(true);
   rc_var *var = rSRC.pop();
   if(type == M_CLASS_UNDEF)
     rSRC.push(new_bool(false, var_get(var)->mTainted));
@@ -1558,7 +1545,7 @@ void rc_head::cmd_less_eq()
 void rc_head::cmd_greater()
 {
   // compare
-  char type = sub_compare(true);
+  char type   = sub_compare(true);
   rc_var *var = rSRC.pop();
   if(type == M_CLASS_UNDEF)
     rSRC.push(new_bool(false, var_get(var)->mTainted));
@@ -1577,7 +1564,7 @@ void rc_head::cmd_greater()
 void rc_head::cmd_greater_eq()
 {
   // compare
-  char type = sub_compare(true);
+  char type   = sub_compare(true);
   rc_var *var = rSRC.pop();
   if(type == M_CLASS_UNDEF)
     rSRC.push(new_bool(false, var_get(var)->mTainted));
@@ -1603,8 +1590,7 @@ inline void rc_head::cmd_cmp()
  */
 inline void rc_head::cmd_jtrue()
 {
-  if(!rSRC.mLength)
-    exception(ic_string::format(M_ERR_INTERNAL, "JTRUE with BX=0"), M_EXC_INTERNAL);
+  if(!rSRC.mLength) exception(ic_string::format(M_ERR_INTERNAL, "JTRUE with BX=0"), M_EXC_INTERNAL);
 
   rc_var *var = rSRC.pop();
   if(sub_value(var))
@@ -1615,12 +1601,11 @@ inline void rc_head::cmd_jtrue()
 }
 
 /**
-* Jump to address if AX is empty.
-*/
+ * Jump to address if AX is empty.
+ */
 inline void rc_head::cmd_jfalse()
 {
-  if(!rSRC.mLength)
-    exception(ic_string::format(M_ERR_INTERNAL, "JFALSE with BX=0"), M_EXC_INTERNAL);
+  if(!rSRC.mLength) exception(ic_string::format(M_ERR_INTERNAL, "JFALSE with BX=0"), M_EXC_INTERNAL);
 
   rc_var *var = rSRC.pop();
   if(!sub_value(var))
@@ -1705,8 +1690,7 @@ inline void rc_head::cmd_pushdst()
  */
 inline void rc_head::cmd_popdst()
 {
-  if(rDST.mLength)
-    obj_unlink(rDST.pop());
+  if(rDST.mLength) obj_unlink(rDST.pop());
 }
 
 /**
@@ -1725,7 +1709,7 @@ inline void rc_head::cmd_splat()
  */
 inline void rc_head::cmd_unsplat()
 {
-  rc_var *var = new_array();
+  rc_var *var   = new_array();
   ic_array *arr = (ic_array *)(var_get(var)->mData);
   while(rSRC.mLength > 0)
   {
@@ -1745,7 +1729,7 @@ inline void rc_head::cmd_unsplat()
 void rc_head::cmd_movesrc()
 {
   long count = MIN(rSRC.mLength, pCmd->mParam.addr);
-  while(count --> 0)
+  while(count-- > 0)
     rDST.push(rSRC.pop());
 }
 
@@ -1756,7 +1740,7 @@ void rc_head::cmd_movesrc()
 void rc_head::cmd_movedst()
 {
   long count = MIN(rDST.mLength, pCmd->mParam.addr);
-  while(count --> 0)
+  while(count-- > 0)
     rSRC.push(rDST.pop());
 }
 
@@ -1786,11 +1770,10 @@ inline void rc_head::cmd_clrdst()
  */
 inline void rc_head::cmd_new()
 {
-  if(rAX)
-    obj_unlink(rAX);
+  if(rAX) obj_unlink(rAX);
 
   char *classname = pCore->mStrTable->get(pCmd->mParam.addr);
-  rAX = obj_create(pCore->class_resolve(classname, pTmpClass));
+  rAX             = obj_create(pCore->class_resolve(classname, pTmpClass));
   nsp_flush();
 }
 
@@ -1818,12 +1801,12 @@ inline void rc_head::cmd_return()
   if(!mExternalScope)
   {
     // collect garbage
-    for(long idx=0; idx < mVars->length(); idx++)
+    for(long idx = 0; idx < mVars->length(); idx++)
       obj_unlink((rc_var *)mVars->get(idx));
-  
+
     delete mVars;
   }
-  
+
   state_load();
 }
 
@@ -1843,7 +1826,7 @@ inline void rc_head::cmd_bindlambda()
   ic_object *lambda = var_get(rAX);
   if(pCore->class_type(lambda->pClass) == M_CLASS_METHOD)
   {
-    rc_method *method = (rc_method *)lambda->mData;
+    rc_method *method      = (rc_method *)lambda->mData;
     method->pExternalScope = mVars;
   }
   else
@@ -1856,13 +1839,11 @@ inline void rc_head::cmd_bindlambda()
  */
 inline void rc_head::cmd_index()
 {
-  if(!rAX)
-    exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "idx"), M_EXC_ARGS);
+  if(!rAX) exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "idx"), M_EXC_ARGS);
 
   method_invoke("#idx", rAX);
 
-  if(!rSRC.mLength)
-    rSRC.push(new_undef());
+  if(!rSRC.mLength) rSRC.push(new_undef());
 }
 
 /**
@@ -1871,7 +1852,6 @@ inline void rc_head::cmd_index()
  */
 void rc_head::cmd_include()
 {
-
 }
 
 /**
@@ -1880,7 +1860,6 @@ void rc_head::cmd_include()
  */
 void rc_head::cmd_require()
 {
-
 }
 
 /**
@@ -1935,7 +1914,7 @@ void rc_head::cmd_throw()
     method_invoke("to_s", rAX, false);
     if(rSRC.mLength)
     {
-      rc_var *str = rSRC.pop();
+      rc_var *str    = rSRC.pop();
       ic_string *msg = (ic_string *)var_get(str)->mData;
       var_get(str)->mLinks++;
       obj_unlink(str);
@@ -1959,11 +1938,7 @@ void rc_head::cmd_throw()
   else
   {
     sc_exception *exc = (sc_exception *)var_get(rAX)->mData;
-    pCore->error_any(ic_string::format(M_ERR_EXCEPTION,
-      exc->mErrorMsg->get(),
-      exc->mFile,
-      exc->mLine
-    ), M_EMODE_EXCEPT);
+    pCore->error_any(ic_string::format(M_ERR_EXCEPTION, exc->mErrorMsg->get(), exc->mFile, exc->mLine), M_EMODE_EXCEPT);
   }
 }
 
@@ -1974,7 +1949,7 @@ inline void rc_head::cmd_try()
 {
   state_save();
   rc_headstate *state = (rc_headstate *)rCS.pop();
-  state->mOffset = pCmd->mParam.addr;
+  state->mOffset      = pCmd->mParam.addr;
   rSS.add((void *)state);
 }
 
@@ -1992,7 +1967,6 @@ inline void rc_head::cmd_tried()
  */
 void rc_head::cmd_regclass()
 {
-
 }
 
 /**
@@ -2001,7 +1975,6 @@ void rc_head::cmd_regclass()
  */
 void rc_head::cmd_regproperty()
 {
-
 }
 
 /**
@@ -2010,50 +1983,52 @@ void rc_head::cmd_regproperty()
  */
 void rc_head::cmd_regmethod()
 {
-
 }
 
 /**
  * Show debug info about RVM state.
  */
-#define INSPECT_SRC     1
-#define INSPECT_DST     2
-#define INSPECT_AX      3
-#define INSPECT_BX      4
-#define INSPECT_US      5
-#define INSPECT_CS      6
-#define INSPECT_SS      7
+#define INSPECT_SRC 1
+#define INSPECT_DST 2
+#define INSPECT_AX 3
+#define INSPECT_BX 4
+#define INSPECT_US 5
+#define INSPECT_CS 6
+#define INSPECT_SS 7
 
 void rc_head::cmd_inspect()
 {
-  int count = 0;
+  int count   = 0;
   rc_var *obj = NULL;
   switch(pCmd->mParam.addr)
   {
-    case INSPECT_AX:    obj_inspect(rAX); break;
-    case INSPECT_BX:    obj_inspect(rSRC.get(0)); break;
+    case INSPECT_AX: obj_inspect(rAX); break;
+    case INSPECT_BX: obj_inspect(rSRC.get(0)); break;
 
-    case INSPECT_SRC:   printf("{src:\n");
-                        rSRC.iter_rewind();
-                        while(obj = rSRC.iter_next())
-                          obj_inspect(obj);
-                        printf("}\n");
-                        break;
+    case INSPECT_SRC:
+      printf("{src:\n");
+      rSRC.iter_rewind();
+      while(obj = rSRC.iter_next())
+        obj_inspect(obj);
+      printf("}\n");
+      break;
 
-    case INSPECT_US:    printf("{us(10):\n");
-                        rUS.iter_rewind();
-                        while((obj = rUS.iter_next()) != NULL && count < 10)
-                        {
-                          obj_inspect(obj);
-                          count++;
-                        }
-                        printf("}\n");
-                        break;
+    case INSPECT_US:
+      printf("{us(10):\n");
+      rUS.iter_rewind();
+      while((obj = rUS.iter_next()) != NULL && count < 10)
+      {
+        obj_inspect(obj);
+        count++;
+      }
+      printf("}\n");
+      break;
 
-    case INSPECT_CS:    printf("{cs(10):\n");
-                        // todo!
-                        printf("}\n");
-                        break;
+    case INSPECT_CS:
+      printf("{cs(10):\n");
+      // todo!
+      printf("}\n");
+      break;
   }
 }
 
@@ -2072,21 +2047,17 @@ void rc_head::cmd_inspect()
  */
 inline void rc_head::sub_math_op(const char *name)
 {
-  if(!rAX || !rSRC.mLength)
-    exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, name), M_EXC_ARGS);
+  if(!rAX || !rSRC.mLength) exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, name), M_EXC_ARGS);
 
   ic_object *left = var_get(rAX), *right = var_get(rSRC.get(0));
   bool taint = left->mTainted || right->mTainted;
 
   rc_method *op = pCore->op_resolve(name, left->pClass, right->pClass);
-  if(op)
-    method_invoke(op, rAX);
+  if(op) method_invoke(op, rAX);
 
-  if(!rSRC.mLength)
-    rSRC.push(new_undef());
+  if(!rSRC.mLength) rSRC.push(new_undef());
 
-  if(taint)
-    var_get(rSRC.get(0))->mTainted = true;
+  if(taint) var_get(rSRC.get(0))->mTainted = true;
 }
 
 /**
@@ -2095,8 +2066,7 @@ inline void rc_head::sub_math_op(const char *name)
  */
 inline void rc_head::sub_logical_op(char name)
 {
-  if(!rAX || !rSRC.mLength)
-    exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "to_b"), M_EXC_ARGS);
+  if(!rAX || !rSRC.mLength) exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "to_b"), M_EXC_ARGS);
 
   bool taint = var_get(rAX)->mTainted || var_get(rSRC.get(0))->mTainted;
   bool left = false, right = false, result = false;
@@ -2105,13 +2075,11 @@ inline void rc_head::sub_logical_op(char name)
 
   // convert left operand to boolean
   rc_var *leftvar = convert_bool(rAX);
-  if(leftvar)
-    left = ((ic_bool *)var_get(leftvar)->mData)->mValue;
+  if(leftvar) left = ((ic_bool *)var_get(leftvar)->mData)->mValue;
 
   // convert left operand to boolean
   rc_var *rightvar = convert_bool(tmp);
-  if(rightvar)
-    right = ((ic_bool *)var_get(rightvar)->mData)->mValue;
+  if(rightvar) right = ((ic_bool *)var_get(rightvar)->mData)->mValue;
 
   switch(name)
   {
@@ -2125,13 +2093,13 @@ inline void rc_head::sub_logical_op(char name)
 
 /**
  * Invokes the 'cmp' operator and ensures it has returned proper values.
- * @param strict Strictly compare objects (they should be identical, not just equal)
+ * @param strict Strictly compare objects (they should be identical, not just
+ * equal)
  * @return object type - M_CLASS_INT or M_CLASS_UNDEF
  */
 char rc_head::sub_compare(bool strict)
 {
-  if(!rAX || !rSRC.mLength)
-    exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "#cmp"), M_EXC_ARGS);
+  if(!rAX || !rSRC.mLength) exception(ic_string::format(M_ERR_OP_EMPTY_REGISTER, "#cmp"), M_EXC_ARGS);
 
   ic_object *left = var_get(rAX), *right = var_get(rSRC.get(0));
   bool taint = left->mTainted || right->mTainted;
@@ -2151,17 +2119,15 @@ char rc_head::sub_compare(bool strict)
     else
     {
       rc_method *op = pCore->op_resolve("#cmp", left->pClass, right->pClass);
-      if(op)
-        method_invoke(op, rAX);
+      if(op) method_invoke(op, rAX);
 
       // no return value means an undef
-      if(!rSRC.mLength)
-        rSRC.push(new_undef());
+      if(!rSRC.mLength) rSRC.push(new_undef());
     }
   }
 
   ic_object *res = var_get(rSRC.get(0));
-  res->mTainted = taint;
+  res->mTainted  = taint;
 
   // return class type or WTF
   char cls = pCore->class_type(res->pClass);
@@ -2218,47 +2184,52 @@ bool rc_head::sub_value(rc_var *var)
   rc_var *tmp = NULL;
 
   ic_object *obj = var_get(var);
-  char cls = pCore->class_type(obj->pClass);
+  char cls       = pCore->class_type(obj->pClass);
   switch(cls)
   {
     // always false
-    case M_CLASS_UNDEF:           return false;
+    case M_CLASS_UNDEF:
+      return false;
 
     // always true
     case M_CLASS_CLASS:
-    case M_CLASS_METHOD:          
-    case M_CLASS_EXCEPTION:       return true;
+    case M_CLASS_METHOD:
+    case M_CLASS_EXCEPTION:
+      return true;
 
     // depends
-    case M_CLASS_BOOL:            return (((ic_bool *)obj->mData)->mValue);
-    case M_CLASS_INT:             return (((ic_int *)obj->mData)->mValue != 0);
-    case M_CLASS_FLOAT:           return (((ic_float *)obj->mData)->mValue != 0);
-    case M_CLASS_STRING:          return (((ic_string *)obj->mData)->mLength != 0);
-    case M_CLASS_RANGE:           return (((ic_range *)obj->mData)->length() != 0);
-    case M_CLASS_REGEX:           return (((ic_regex *)obj->mData)->to_b());
-    case M_CLASS_ARRAY:           return (((ic_array *)obj->mData)->length() != 0);
-    case M_CLASS_FILE:            return (((ic_file *)obj->mData)->exists());
-    case M_CLASS_TIME:            return (((ic_time *)obj->mData)->to_b());
-    case M_CLASS_MATCH:           return (((ic_match *)obj->mData)->count() > 0);
+    case M_CLASS_BOOL: return (((ic_bool *)obj->mData)->mValue);
+    case M_CLASS_INT: return (((ic_int *)obj->mData)->mValue != 0);
+    case M_CLASS_FLOAT: return (((ic_float *)obj->mData)->mValue != 0);
+    case M_CLASS_STRING: return (((ic_string *)obj->mData)->mLength != 0);
+    case M_CLASS_RANGE: return (((ic_range *)obj->mData)->length() != 0);
+    case M_CLASS_REGEX: return (((ic_regex *)obj->mData)->to_b());
+    case M_CLASS_ARRAY: return (((ic_array *)obj->mData)->length() != 0);
+    case M_CLASS_FILE: return (((ic_file *)obj->mData)->exists());
+    case M_CLASS_TIME: return (((ic_time *)obj->mData)->to_b());
+    case M_CLASS_MATCH:
+      return (((ic_match *)obj->mData)->count() > 0);
 
     // todo
-    case M_CLASS_DIR:             return true;
-    case M_CLASS_SOCKET:          return true;
+    case M_CLASS_DIR: return true;
+    case M_CLASS_SOCKET:
+      return true;
 
     // user classes
-    case M_CLASS_OTHER:           tmp = convert_bool(var);
-                                  obj = var_get(tmp);
-                                  if(obj)
-                                  {
-                                    obj_unlink(tmp);
-                                    return (((ic_bool *)obj->mData)->mValue);
-                                  }
-                                  else
-                                  {
-                                    obj_unlink(tmp);
-                                    return false;
-                                  }
+    case M_CLASS_OTHER:
+      tmp = convert_bool(var);
+      obj = var_get(tmp);
+      if(obj)
+      {
+        obj_unlink(tmp);
+        return (((ic_bool *)obj->mData)->mValue);
+      }
+      else
+      {
+        obj_unlink(tmp);
+        return false;
+      }
 
-    default:                      return false;
+    default: return false;
   }
 }

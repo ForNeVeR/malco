@@ -13,9 +13,9 @@
  */
 void string_op_create(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = (item_var ? item_var->get() : NULL);
+  ic_object *item  = (item_var ? item_var->get() : NULL);
 
   if(item)
   {
@@ -38,7 +38,8 @@ void string_op_create(rc_head *head)
       ((ic_string *)obj->mData)->set((ic_string *)item->mData);
     }
     else if(cls != M_CLASS_UNDEF)
-      head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, 1, "bool, int, float or string", "new string"), M_EXC_ARGS);
+      head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, 1, "bool, int, float or string", "new string"),
+                      M_EXC_ARGS);
   }
 
   head->obj_unlink(item_var);
@@ -68,9 +69,9 @@ void string_op_sub_string(rc_head *head)
  */
 void string_op_mul_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
   for(int idx = ((ic_int *)item->mData)->mValue; idx > 1; idx--)
@@ -86,10 +87,10 @@ void string_op_mul_int(rc_head *head)
  */
 void string_op_mod_array(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  ic_array *arr = (ic_array *)item->mData;
+  ic_object *item  = item_var->get();
+  ic_array *arr    = (ic_array *)item->mData;
 
   // pack array items into voidarray of strings
   sc_voidarray strings;
@@ -121,9 +122,9 @@ void string_op_mod_array(rc_head *head)
  */
 void string_op_shl_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
   newstr->append(((ic_bool *)item->mData)->mValue ? "true" : "false");
@@ -137,9 +138,9 @@ void string_op_shl_bool(rc_head *head)
  */
 void string_op_shl_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
   newstr->append(((ic_int *)item->mData)->to_s());
@@ -153,9 +154,9 @@ void string_op_shl_int(rc_head *head)
  */
 void string_op_shl_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
   newstr->append(((ic_float *)item->mData)->to_s());
@@ -169,9 +170,9 @@ void string_op_shl_float(rc_head *head)
  */
 void string_op_shl_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
 
   ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
   newstr->append((ic_string *)str->mData);
@@ -185,9 +186,9 @@ void string_op_shl_string(rc_head *head)
  */
 void string_op_shl_range(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
   newstr->append(((ic_range *)item->mData)->to_s());
@@ -201,12 +202,12 @@ void string_op_shl_range(rc_head *head)
  */
 void string_op_shl_object(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
 
   head->method_invoke("to_s", str_var);
   head->obj_unlink(str_var);
-  str_var = head->rSRC.pop();
+  str_var        = head->rSRC.pop();
   ic_object *str = str_var ? str_var->get() : NULL;
   if(!str || head->pCore->class_type(str->pClass) != M_CLASS_STRING)
   {
@@ -227,15 +228,15 @@ void string_op_shl_object(rc_head *head)
  */
 void string_op_idx(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   char cls = head->pCore->class_type(item->pClass);
   if(cls == M_CLASS_RANGE)
   {
     // return a substring by range
-    ic_range *rg = (ic_range*)item->mData;
+    ic_range *rg      = (ic_range *)item->mData;
     ic_string *newstr = ((ic_string *)obj->mData)->substr_get(rg->mStart, rg->mEnd - rg->mStart);
     head->rSRC.push(head->new_string(newstr, obj->mTainted));
   }
@@ -243,13 +244,13 @@ void string_op_idx(rc_head *head)
   {
     // return the first position where substring is found
     ic_string *str = (ic_string *)item->mData;
-    long pos = ((ic_string *)obj->mData)->substr_first(str);
+    long pos       = ((ic_string *)obj->mData)->substr_first(str);
     head->rSRC.push(head->new_int(pos, obj->mTainted));
   }
   else if(cls == M_CLASS_REGEX)
   {
     // return the position of matching regex
-    ic_regex *rx = (ic_regex *)item->mData;
+    ic_regex *rx    = (ic_regex *)item->mData;
     ic_match *match = rx->match((ic_string *)obj->mData);
     if(match->count())
     {
@@ -271,9 +272,9 @@ void string_op_idx(rc_head *head)
  */
 void string_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   char result = ((ic_string *)obj->mData)->compare(((ic_bool *)item->mData)->mValue ? "true" : "false");
   head->rSRC.push(head->new_int(result));
@@ -285,9 +286,9 @@ void string_op_cmp_bool(rc_head *head)
  */
 void string_op_cmp_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   char result = ((ic_string *)obj->mData)->compare(((ic_int *)item->mData)->to_s());
   head->rSRC.push(head->new_int(result));
@@ -299,9 +300,9 @@ void string_op_cmp_int(rc_head *head)
  */
 void string_op_cmp_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   char result = ((ic_string *)obj->mData)->compare(((ic_float *)item->mData)->to_s());
   head->rSRC.push(head->new_int(result));
@@ -313,9 +314,9 @@ void string_op_cmp_float(rc_head *head)
  */
 void string_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
 
   char result = ((ic_string *)obj->mData)->compare((ic_string *)item->mData);
   head->rSRC.push(head->new_int(result));
@@ -329,9 +330,9 @@ void string_op_rel_regex(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
   rc_var *rx_var = head->rSRC.pop();
-  ic_object *rx = rx_var->get();
+  ic_object *rx  = rx_var->get();
 
-  ic_string *str = (ic_string *)obj->mData;
+  ic_string *str  = (ic_string *)obj->mData;
   ic_match *match = ((ic_regex *)rx->mData)->match(str);
   head->rSRC.push(head->new_match(match, obj->mTainted));
 
@@ -345,7 +346,7 @@ void string_op_rel_regex(rc_head *head)
 void string_length(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long length = ((ic_string*)obj->mData)->length();
+  long length    = ((ic_string *)obj->mData)->length();
   head->rSRC.push(head->new_int(length, obj->mTainted));
 }
 
@@ -440,7 +441,7 @@ void string_trim_right_do(rc_head *head)
 void string_ord(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  char chr = ((ic_string *)obj->mData)->char_at(0);
+  char chr       = ((ic_string *)obj->mData)->char_at(0);
   head->rSRC.push(head->new_int((long)chr, obj->mTainted));
 }
 
@@ -477,14 +478,14 @@ void string_reverse_do(rc_head *head)
  */
 void string_sub(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *start_var = head->rSRC.pop(), *len_var = head->rSRC.pop();
   ic_object *start = start_var->get(), *len = (len_var ? len_var->get() : NULL);
-  
+
   if(head->pCore->class_type(start->pClass) == M_CLASS_RANGE && !len)
   {
-    ic_range *iv = (ic_range *)start->mData;
-    ic_string *str = ((ic_string *)obj->mData)->substr_get(iv->mStart, iv->mEnd-iv->mStart);
+    ic_range *iv   = (ic_range *)start->mData;
+    ic_string *str = ((ic_string *)obj->mData)->substr_get(iv->mStart, iv->mEnd - iv->mStart);
     if(str)
       head->rSRC.push(head->new_string(str, obj->mTainted));
     else
@@ -514,8 +515,7 @@ void string_sub(rc_head *head)
     head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, 1, "range or int", "sub"), M_EXC_ARGS);
 
   head->obj_unlink(start_var);
-  if(len_var)
-    head->obj_unlink(len_var);
+  if(len_var) head->obj_unlink(len_var);
 }
 
 /**
@@ -523,7 +523,7 @@ void string_sub(rc_head *head)
  */
 void string_sub_first(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop(), *offset_var = head->rSRC.pop();
   ic_object *str = str_var->get(), *offset = (offset_var ? offset_var->get() : NULL);
   if(str->class_id() == M_CLASS_STRING)
@@ -543,8 +543,7 @@ void string_sub_first(rc_head *head)
     }
 
     long result = ((ic_string *)obj->mData)->substr_first((ic_string *)str->mData, pad);
-    if(result != -1)
-      head->rSRC.push(head->new_int(result, obj->mTainted));
+    if(result != -1) head->rSRC.push(head->new_int(result, obj->mTainted));
   }
   else
     head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, 1, "string", "sub_first"), M_EXC_ARGS);
@@ -558,7 +557,7 @@ void string_sub_first(rc_head *head)
  */
 void string_sub_last(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop(), *offset_var = head->rSRC.pop();
   ic_object *str = str_var->get(), *offset = (offset_var ? offset_var->get() : NULL);
   if(str->class_id() == M_CLASS_STRING)
@@ -578,8 +577,7 @@ void string_sub_last(rc_head *head)
     }
 
     long result = ((ic_string *)obj->mData)->substr_last((ic_string *)str->mData, pad);
-    if(result != -1)
-      head->rSRC.push(head->new_int(result, obj->mTainted));
+    if(result != -1) head->rSRC.push(head->new_int(result, obj->mTainted));
   }
   else
     head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, 1, "string", "sub_last"), M_EXC_ARGS);
@@ -593,9 +591,9 @@ void string_sub_last(rc_head *head)
  */
 void string_sub_count(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
   if(str->class_id() == M_CLASS_STRING)
   {
     long result = ((ic_string *)obj->mData)->substr_count((ic_string *)str->mData);
@@ -612,21 +610,20 @@ void string_sub_count(rc_head *head)
  */
 void string_append(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
 
   if(head->pCore->class_type(str->pClass) != M_CLASS_STRING)
   {
     head->method_invoke("to_s", str_var);
     head->obj_unlink(str_var);
     str_var = head->rSRC.pop();
-    str = str_var ? str_var->get() : NULL;
+    str     = str_var ? str_var->get() : NULL;
     if(!str || head->pCore->class_type(str->pClass) != M_CLASS_STRING)
     {
       head->exception(M_ERR_BAD_TO_S, M_EXC_SCRIPT);
-      if(str_var)
-        head->obj_unlink(str_var);
+      if(str_var) head->obj_unlink(str_var);
       return;
     }
   }
@@ -643,21 +640,20 @@ void string_append(rc_head *head)
  */
 void string_prepend(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
 
   if(head->pCore->class_type(str->pClass) != M_CLASS_STRING)
   {
     head->method_invoke("to_s", str_var);
     head->obj_unlink(str_var);
     str_var = head->rSRC.pop();
-    str = str_var ? str_var->get() : NULL;
+    str     = str_var ? str_var->get() : NULL;
     if(!str || head->pCore->class_type(str->pClass) != M_CLASS_STRING)
     {
       head->exception(M_ERR_BAD_TO_S, M_EXC_SCRIPT);
-      if(str_var)
-        head->obj_unlink(str_var);
+      if(str_var) head->obj_unlink(str_var);
       return;
     }
   }
@@ -674,12 +670,12 @@ void string_prepend(rc_head *head)
  */
 void string_replace(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *from_var = head->rSRC.pop(), *to_var = head->rSRC.pop(), *max_var = head->rSRC.pop();
   ic_object *from = from_var->get(), *to = to_var->get(), *max = (max_var ? max_var->get() : NULL);
   ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
-  long count = 0;
-  
+  long count        = 0;
+
   // validate 'max'
   if(max && head->pCore->class_type(max->pClass) != M_CLASS_UNDEF)
   {
@@ -730,9 +726,9 @@ void string_replace(rc_head *head)
  */
 void string_append_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
 
   if(!obj->mFrozen)
   {
@@ -741,12 +737,11 @@ void string_append_do(rc_head *head)
       head->method_invoke("to_s", str_var);
       head->obj_unlink(str_var);
       str_var = head->rSRC.pop();
-      str = str_var ? str_var->get() : NULL;
+      str     = str_var ? str_var->get() : NULL;
       if(!str || head->pCore->class_type(str->pClass) != M_CLASS_STRING)
       {
         head->exception(M_ERR_BAD_TO_S, M_EXC_SCRIPT);
-        if(str_var)
-          head->obj_unlink(str_var);
+        if(str_var) head->obj_unlink(str_var);
         return;
       }
     }
@@ -767,9 +762,9 @@ void string_append_do(rc_head *head)
  */
 void string_prepend_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
 
   if(!obj->mFrozen)
   {
@@ -778,12 +773,11 @@ void string_prepend_do(rc_head *head)
       head->method_invoke("to_s", str_var);
       head->obj_unlink(str_var);
       str_var = head->rSRC.pop();
-      str = str_var ? str_var->get() : NULL;
+      str     = str_var ? str_var->get() : NULL;
       if(!str || head->pCore->class_type(str->pClass) != M_CLASS_STRING)
       {
         head->exception(M_ERR_BAD_TO_S, M_EXC_SCRIPT);
-        if(str_var)
-          head->obj_unlink(str_var);
+        if(str_var) head->obj_unlink(str_var);
         return;
       }
     }
@@ -804,7 +798,7 @@ void string_prepend_do(rc_head *head)
  */
 void string_replace_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *from_var = head->rSRC.pop(), *to_var = head->rSRC.pop(), *max_var = head->rSRC.pop();
   ic_object *from = from_var->get(), *to = to_var->get(), *max = (max_var ? max_var->get() : NULL);
   long count = 0;
@@ -868,7 +862,7 @@ void string_replace_do(rc_head *head)
  */
 void string_split(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *split_var = head->rSRC.pop(), *max_var = head->rSRC.pop();
   ic_object *split = split_var->get(), *max = (max_var ? max_var->get() : NULL);
   ic_string *str = (ic_string *)obj->mData;
@@ -894,12 +888,12 @@ void string_split(rc_head *head)
   if(cls == M_CLASS_STRING)
   {
     ic_string *sp = (ic_string *)split->mData;
-    tokens = str->split(sp, count);
+    tokens        = str->split(sp, count);
   }
   else if(cls == M_CLASS_REGEX)
   {
     ic_regex *sp = (ic_regex *)split->mData;
-    tokens = str->split(sp, count);
+    tokens       = str->split(sp, count);
   }
   else
   {
@@ -910,7 +904,7 @@ void string_split(rc_head *head)
   }
 
   ic_array *arr = new ic_array();
-  for(long idx=0; idx < tokens->length(); idx++)
+  for(long idx = 0; idx < tokens->length(); idx++)
   {
     ic_string *curr = (ic_string *)(tokens->mPtr[idx]);
     arr->append(head->new_string(curr), obj->mTainted);
@@ -929,7 +923,7 @@ void string_split(rc_head *head)
  */
 void string_apply(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *idx_var = head->rSRC.pop(), *fx_var = head->rSRC.pop();
   ic_object *idx = idx_var->get(), *fx = fx_var->get();
 
@@ -937,18 +931,18 @@ void string_apply(rc_head *head)
   {
     if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
     {
-      ic_range *iv = (ic_range *)idx->mData;
-      ic_string *str = ((ic_string *)obj->mData)->substr_get(iv->mStart, iv->mEnd-iv->mStart);
+      ic_range *iv   = (ic_range *)idx->mData;
+      ic_string *str = ((ic_string *)obj->mData)->substr_get(iv->mStart, iv->mEnd - iv->mStart);
       if(str)
       {
         head->rSRC.push(head->new_string(str, obj->mTainted));
         head->method_invoke((rc_method *)fx->mData);
         rc_var *applied_var = head->rSRC.pop();
-        ic_object *applied = applied_var->get();
+        ic_object *applied  = applied_var->get();
         if(head->pCore->class_type(applied->pClass) == M_CLASS_STRING)
         {
           ic_string *newstr = new ic_string(*(ic_string *)obj->mData);
-          newstr->substr_set(iv->mStart, iv->mEnd-iv->mStart, (ic_string *)applied->mData);
+          newstr->substr_set(iv->mStart, iv->mEnd - iv->mStart, (ic_string *)applied->mData);
           head->rSRC.push(head->new_string(newstr, obj->mTainted || applied->mTainted));
         }
         else
@@ -972,7 +966,7 @@ void string_apply(rc_head *head)
  */
 void string_apply_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *idx_var = head->rSRC.pop(), *fx_var = head->rSRC.pop();
   ic_object *idx = idx_var->get(), *fx = fx_var->get();
 
@@ -982,17 +976,17 @@ void string_apply_do(rc_head *head)
     {
       if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
       {
-        ic_range *iv = (ic_range *)idx->mData;
-        ic_string *str = ((ic_string *)obj->mData)->substr_get(iv->mStart, iv->mEnd-iv->mStart);
+        ic_range *iv   = (ic_range *)idx->mData;
+        ic_string *str = ((ic_string *)obj->mData)->substr_get(iv->mStart, iv->mEnd - iv->mStart);
         if(str)
         {
           head->rSRC.push(head->new_string(str, obj->mTainted));
           head->method_invoke((rc_method *)fx->mData);
           rc_var *applied_var = head->rSRC.pop();
-          ic_object *applied = applied_var->get();
+          ic_object *applied  = applied_var->get();
           if(head->pCore->class_type(applied->pClass) == M_CLASS_STRING)
           {
-            ((ic_string *)obj->mData)->substr_set(iv->mStart, iv->mEnd-iv->mStart, (ic_string *)applied->mData);
+            ((ic_string *)obj->mData)->substr_set(iv->mStart, iv->mEnd - iv->mStart, (ic_string *)applied->mData);
             if(applied->mTainted) obj->mTainted = true;
             head->pCurrObj->mLinks++;
             head->rSRC.push(head->pCurrObj);
@@ -1021,7 +1015,7 @@ void string_apply_do(rc_head *head)
  */
 void string_insert(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop(), *idx_var = head->rSRC.pop();
   ic_object *str = str_var->get(), *idx = idx_var->get();
 
@@ -1030,7 +1024,7 @@ void string_insert(rc_head *head)
     if(head->pCore->class_type(idx->pClass) == M_CLASS_INT)
     {
       ic_string *newstr = new ic_string(*((ic_string *)obj->mData));
-      newstr->substr_set(((ic_int *)idx->mData)->mValue, 0, (ic_string*)str->mData);
+      newstr->substr_set(((ic_int *)idx->mData)->mValue, 0, (ic_string *)str->mData);
       head->rSRC.push(head->new_string(newstr, obj->mTainted || str->mTainted));
     }
     else
@@ -1048,7 +1042,7 @@ void string_insert(rc_head *head)
  */
 void string_insert_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop(), *idx_var = head->rSRC.pop();
   ic_object *str = str_var->get(), *idx = idx_var->get();
 
@@ -1058,7 +1052,7 @@ void string_insert_do(rc_head *head)
     {
       if(head->pCore->class_type(idx->pClass) == M_CLASS_INT)
       {
-        ((ic_string *)obj->mData)->substr_set(((ic_int *)idx->mData)->mValue, 0, (ic_string*)str->mData);
+        ((ic_string *)obj->mData)->substr_set(((ic_int *)idx->mData)->mValue, 0, (ic_string *)str->mData);
         if(str->mTainted) obj->mTainted = true;
         head->pCurrObj->mLinks++;
         head->rSRC.push(head->pCurrObj);
@@ -1081,9 +1075,9 @@ void string_insert_do(rc_head *head)
  */
 void string_has(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
   if(head->pCore->class_type(str->pClass) == M_CLASS_STRING)
   {
     bool has = ((ic_string *)obj->mData)->substr_first((ic_string *)str->mData) > -1;
@@ -1184,14 +1178,14 @@ void string_case_swap_do(rc_head *head)
  */
 void string_chars(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
-  ic_string *str = (ic_string *)obj->mData;
+  ic_object *obj   = head->pCurrObj->get();
+  ic_string *str   = (ic_string *)obj->mData;
   ic_array *newarr = new ic_array();
-  
+
   char *buf = str->get();
   char newstr[2];
   newstr[1] = '\0';
-  for(long idx=0; idx < str->length(); idx++)
+  for(long idx = 0; idx < str->length(); idx++)
   {
     newstr[0] = buf[idx];
     newarr->append(head->new_string(newstr), obj->mTainted);
@@ -1205,13 +1199,13 @@ void string_chars(rc_head *head)
  */
 void string_lines(rc_head *head)
 {
-  ic_string delim = "\n";
-  ic_object *obj = head->pCurrObj->get();
-  ic_string *str = (ic_string *)obj->mData;
+  ic_string delim  = "\n";
+  ic_object *obj   = head->pCurrObj->get();
+  ic_string *str   = (ic_string *)obj->mData;
   ic_array *newarr = new ic_array();
 
   sc_voidarray *arr = str->split(delim);
-  for(long idx=0; idx < arr->length(); idx++)
+  for(long idx = 0; idx < arr->length(); idx++)
   {
     ic_string *line = (ic_string *)arr->mPtr[idx];
     newarr->append(head->new_string(line), obj->mTainted);
@@ -1227,7 +1221,7 @@ void string_lines(rc_head *head)
  */
 void string_translate(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *from_var = head->rSRC.pop(), *to_var = head->rSRC.pop();
   ic_object *from = from_var->get(), *to = to_var->get();
 
@@ -1251,11 +1245,11 @@ void string_translate(rc_head *head)
 }
 
 /**
-* Translates characters in the string.
-*/
+ * Translates characters in the string.
+ */
 void string_translate_do(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *from_var = head->rSRC.pop(), *to_var = head->rSRC.pop();
   ic_object *from = from_var->get(), *to = to_var->get();
 
@@ -1290,7 +1284,7 @@ void string_translate_do(rc_head *head)
 void string_to_b(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  bool val = ((ic_string *)obj->mData)->to_b();
+  bool val       = ((ic_string *)obj->mData)->to_b();
   head->rSRC.push(head->new_bool(val, obj->mTainted));
 }
 
@@ -1300,7 +1294,7 @@ void string_to_b(rc_head *head)
 void string_to_f(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  double val = ((ic_string *)obj->mData)->to_f();
+  double val     = ((ic_string *)obj->mData)->to_f();
   head->rSRC.push(head->new_float(val, obj->mTainted));
 }
 
@@ -1310,7 +1304,7 @@ void string_to_f(rc_head *head)
 void string_to_i(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long val = ((ic_string *)obj->mData)->to_i();
+  long val       = ((ic_string *)obj->mData)->to_i();
   head->rSRC.push(head->new_int(val, obj->mTainted));
 }
 

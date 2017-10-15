@@ -47,7 +47,7 @@ sc_voidmapitem::~sc_voidmapitem()
 sc_voidmap::sc_voidmap()
 {
   mRoot = mCurr = mCurrKey = mFirst = mLast = NULL;
-  mLength = 0;
+  mLength                                   = 0;
 }
 
 /**
@@ -57,7 +57,7 @@ sc_voidmap::sc_voidmap()
 sc_voidmap::sc_voidmap(sc_voidmap &map)
 {
   mRoot = mCurr = mCurrKey = mFirst = mLast = NULL;
-  mLength = 0;
+  mLength                                   = 0;
 
   sc_voidmapitem *item;
   map.iter_rewind();
@@ -81,7 +81,7 @@ sc_voidmap::~sc_voidmap()
  */
 inline void sc_voidmap::adjust_balance(sc_voidmapitem *root, int dir, int bal)
 {
-  sc_voidmapitem *n = root->mLink[dir];
+  sc_voidmapitem *n  = root->mLink[dir];
   sc_voidmapitem *nn = n->mLink[!dir];
 
   if(nn->mBalance == 0)
@@ -89,12 +89,12 @@ inline void sc_voidmap::adjust_balance(sc_voidmapitem *root, int dir, int bal)
   else if(nn->mBalance == bal)
   {
     root->mBalance = -bal;
-    n->mBalance = 0;
+    n->mBalance    = 0;
   }
   else
   {
     root->mBalance = 0;
-    n->mBalance = bal;
+    n->mBalance    = bal;
   }
 
   nn->mBalance = 0;
@@ -106,7 +106,7 @@ inline void sc_voidmap::adjust_balance(sc_voidmapitem *root, int dir, int bal)
  * @param dir Direction.
  * @return Node that that has become root.
  */
-inline sc_voidmapitem *sc_voidmap::rotate_single (sc_voidmapitem *root, int dir)
+inline sc_voidmapitem *sc_voidmap::rotate_single(sc_voidmapitem *root, int dir)
 {
   sc_voidmapitem *save = root->mLink[!dir];
 
@@ -128,7 +128,7 @@ inline sc_voidmapitem *sc_voidmap::rotate_single (sc_voidmapitem *root, int dir)
  * @param dir Direction.
  * @return Node that that has become root.
  */
-inline sc_voidmapitem *sc_voidmap::rotate_double (sc_voidmapitem *root, int dir)
+inline sc_voidmapitem *sc_voidmap::rotate_double(sc_voidmapitem *root, int dir)
 {
   sc_voidmapitem *save = root->mLink[!dir]->mLink[dir];
 
@@ -166,7 +166,7 @@ sc_voidmapitem *sc_voidmap::insert(const char *key, void *val)
   int done = 0;
   sc_voidmapitem *item;
   if(!key || !val) return NULL;
-  mRoot = this->insert_r(mRoot, key, val, &done, &item);
+  mRoot        = this->insert_r(mRoot, key, val, &done, &item);
   mRoot->pRoot = NULL;
 
   // maintain linked list
@@ -175,7 +175,7 @@ sc_voidmapitem *sc_voidmap::insert(const char *key, void *val)
   else
     mLast->pNext = item;
   item->pPrev = mLast;
-  mLast = item;
+  mLast       = item;
 
   iter_rewind();
   key_rewind();
@@ -196,7 +196,7 @@ sc_voidmapitem *sc_voidmap::insert_r(sc_voidmapitem *root, const char *key, void
 {
   if(root == NULL)
   {
-    root = new sc_voidmapitem (key, val);
+    root = new sc_voidmapitem(key, val);
     if(!root) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
     *item = root;
   }
@@ -204,7 +204,7 @@ sc_voidmapitem *sc_voidmap::insert_r(sc_voidmapitem *root, const char *key, void
   {
     int dir = (int)(root->mKey->compare(key) < 0);
 
-    root->mLink[dir] = insert_r(root->mLink[dir], key, val, done, item );
+    root->mLink[dir] = insert_r(root->mLink[dir], key, val, done, item);
 
     if(!*done)
     {
@@ -214,7 +214,7 @@ sc_voidmapitem *sc_voidmap::insert_r(sc_voidmapitem *root, const char *key, void
         *done = 1;
       else if(abs(root->mBalance) > 1)
       {
-        root = insert_balance(root, dir);
+        root  = insert_balance(root, dir);
         *done = 1;
       }
     }
@@ -232,12 +232,12 @@ sc_voidmapitem *sc_voidmap::insert_r(sc_voidmapitem *root, const char *key, void
 inline sc_voidmapitem *sc_voidmap::insert_balance(sc_voidmapitem *root, int dir)
 {
   sc_voidmapitem *n = root->mLink[dir];
-  int bal = dir == 0 ? -1 : 1;
+  int bal           = dir == 0 ? -1 : 1;
 
-  if ( n->mBalance == bal )
+  if(n->mBalance == bal)
   {
     root->mBalance = n->mBalance = 0;
-    root = rotate_single(root, !dir);
+    root                         = rotate_single(root, !dir);
   }
   else
   {
@@ -265,22 +265,20 @@ sc_voidmapitem *sc_voidmap::remove_r(sc_voidmapitem *root, const char *key, int 
     if(root->mKey->compare(key) == 0)
     {
       /* Unlink and fix parent */
-      if (root->mLink[0] == NULL || root->mLink[1] == NULL)
+      if(root->mLink[0] == NULL || root->mLink[1] == NULL)
       {
         sc_voidmapitem *save;
 
         // maintain linked list
-        if(root->pPrev)
-          root->pPrev->pNext = root->pNext;
-        if(root->pNext)
-          root->pNext->pPrev = root->pPrev;
+        if(root->pPrev) root->pPrev->pNext = root->pNext;
+        if(root->pNext) root->pNext->pPrev = root->pPrev;
 
         if(root == mFirst)
           mFirst = root->pNext;
         else if(root == mLast)
           mLast = root->pPrev;
 
-        dir = root->mLink[0] == NULL;
+        dir  = root->mLink[0] == NULL;
         save = root->mLink[dir];
         delete root;
 
@@ -293,16 +291,16 @@ sc_voidmapitem *sc_voidmap::remove_r(sc_voidmapitem *root, const char *key, int 
         /* Find inorder predecessor */
         sc_voidmapitem *heir = root->mLink[0];
 
-        while ( heir->mLink[1] != NULL )
+        while(heir->mLink[1] != NULL)
           heir = heir->mLink[1];
 
         /* Copy and set new search data */
         root->mKey = heir->mKey;
-        key = heir->mKey->get();
+        key        = heir->mKey->get();
       }
     }
 
-    dir = (int)(root->mKey->compare(key) < 0);
+    dir              = (int)(root->mKey->compare(key) < 0);
     root->mLink[dir] = remove_r(root->mLink[dir], key, done);
 
     if(!*done)
@@ -313,8 +311,8 @@ sc_voidmapitem *sc_voidmap::remove_r(sc_voidmapitem *root, const char *key, int 
       /* Terminate or rebalance as necessary */
       if(abs(root->mBalance) == 1)
         *done = 1;
-      else if (abs(root->mBalance) > 1)
-        root = remove_balance (root, dir, done);
+      else if(abs(root->mBalance) > 1)
+        root = remove_balance(root, dir, done);
     }
   }
 
@@ -331,14 +329,14 @@ sc_voidmapitem *sc_voidmap::remove_r(sc_voidmapitem *root, const char *key, int 
 inline sc_voidmapitem *sc_voidmap::remove_balance(sc_voidmapitem *root, int dir, int *done)
 {
   sc_voidmapitem *n = root->mLink[!dir];
-  int bal = dir == 0 ? -1 : 1;
+  int bal           = dir == 0 ? -1 : 1;
 
   if(n->mBalance == -bal)
   {
     root->mBalance = n->mBalance = 0;
-    root = rotate_single(root, dir);
+    root                         = rotate_single(root, dir);
   }
-  else if (n->mBalance == bal)
+  else if(n->mBalance == bal)
   {
     adjust_balance(root, !dir, -bal);
     root = rotate_double(root, dir);
@@ -346,9 +344,9 @@ inline sc_voidmapitem *sc_voidmap::remove_balance(sc_voidmapitem *root, int dir,
   else
   {
     root->mBalance = -bal;
-    n->mBalance = bal;
-    root = rotate_single(root, dir);
-    *done = 1;
+    n->mBalance    = bal;
+    root           = rotate_single(root, dir);
+    *done          = 1;
   }
 
   return root;
@@ -380,10 +378,9 @@ sc_voidmapitem *sc_voidmap::find(const char *key)
   while(item)
   {
     res = item->mKey->compare(key);
-    if(!res)
-      return item;
+    if(!res) return item;
 
-    dir = (int)(res < 0);
+    dir  = (int)(res < 0);
     item = item->mLink[dir];
   }
 
@@ -454,8 +451,8 @@ inline void *sc_voidmap::get(ic_string *key)
  */
 void sc_voidmap::remove(const char *key)
 {
-  int done = 0;
-  mRoot = remove_r(mRoot, key, &done);
+  int done     = 0;
+  mRoot        = remove_r(mRoot, key, &done);
   mRoot->pRoot = NULL;
   iter_rewind();
   key_rewind();
@@ -475,17 +472,16 @@ inline void sc_voidmap::remove(ic_string *key)
  */
 void sc_voidmap::clear()
 {
-  if(mRoot)
-    clear_r(mRoot);
+  if(mRoot) clear_r(mRoot);
 
   mLength = 0;
   mCurr = mCurrKey = mFirst = mLast = mRoot = NULL;
 }
 
 /**
-* Returns next key\item pair from the tree in time-based order.
-* @return Next key\item pair.
-*/
+ * Returns next key\item pair from the tree in time-based order.
+ * @return Next key\item pair.
+ */
 sc_voidmapitem *sc_voidmap::iter_next()
 {
   sc_voidmapitem *curr = mCurr;
@@ -496,8 +492,8 @@ sc_voidmapitem *sc_voidmap::iter_next()
 }
 
 /**
-* Rewinds the time-based iteration.
-*/
+ * Rewinds the time-based iteration.
+ */
 void sc_voidmap::iter_rewind()
 {
   mCurr = mFirst;
@@ -520,7 +516,8 @@ sc_voidmapitem *sc_voidmap::key_next()
     while(mCurrKey->mLink[0])
       mCurrKey = mCurrKey->mLink[0];
   }
-  // if current point is the leaf, rise up by 1 level while walking the right-most branch
+  // if current point is the leaf, rise up by 1 level while walking the
+  // right-most branch
   else
   {
     sc_voidmapitem *root;

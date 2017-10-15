@@ -14,7 +14,7 @@
  */
 ic_int::ic_int(long value)
 {
-  mValue = value;
+  mValue  = value;
   mStrBuf = NULL;
 }
 
@@ -23,7 +23,7 @@ ic_int::ic_int(long value)
  */
 ic_int::~ic_int()
 {
-   delete mStrBuf;
+  delete mStrBuf;
 }
 
 /**
@@ -53,7 +53,7 @@ const char *ic_int::to_s()
   delete mStrBuf;
 
   auto val = std::to_string(mValue);
-  mStrBuf = new char[val.size() + 1];
+  mStrBuf  = new char[val.size() + 1];
   std::strncpy(mStrBuf, val.c_str(), val.size() + 1);
   return mStrBuf;
 }

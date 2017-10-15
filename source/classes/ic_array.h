@@ -15,9 +15,9 @@ ic_array::ic_array()
 {
   mItems = new sc_voidmap();
 
-  mCurrIdx = 0;
-  mCurr = NULL;
-  mFinished = false;
+  mCurrIdx          = 0;
+  mCurr             = NULL;
+  mFinished         = false;
   mAutoIndex.mValue = 0;
 }
 
@@ -94,9 +94,9 @@ void ic_array::clear()
 {
   mItems->clear();
 
-  mCurrIdx = 0;
-  mCurr = NULL;
-  mFinished = false;
+  mCurrIdx          = 0;
+  mCurr             = NULL;
+  mFinished         = false;
   mAutoIndex.mValue = 0;
 }
 
@@ -114,10 +114,10 @@ inline rc_var *ic_array::get(ic_string *key)
 }
 
 /**
-* Returns an object by it's key.
-* @param key Key of the object.
-* @return Object.
-*/
+ * Returns an object by it's key.
+ * @param key Key of the object.
+ * @return Object.
+ */
 inline rc_var *ic_array::get(const char *key)
 {
   ic_string str = key;

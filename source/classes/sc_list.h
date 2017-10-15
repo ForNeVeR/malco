@@ -15,7 +15,7 @@
 sc_listitem::sc_listitem()
 {
   mNext = mPrev = NULL;
-  pObj = NULL;
+  pObj          = NULL;
 }
 
 
@@ -62,7 +62,8 @@ rc_var *sc_list::pop()
 
 /**
  * Pushes an item.
- * This function is not implemented here, inheriting classes should implement it.
+ * This function is not implemented here, inheriting classes should implement
+ * it.
  */
 void sc_list::push(rc_var *ptr)
 {
@@ -88,7 +89,7 @@ rc_var *sc_list::iter_next()
   if(!mCurr) return NULL;
 
   rc_var *obj = mCurr->pObj;
-  mCurr = mCurr->mNext;
+  mCurr       = mCurr->mNext;
   return obj;
 }
 
@@ -138,7 +139,7 @@ inline rc_var *sc_list::get(long idx)
 void sc_stack::push(rc_var *ptr)
 {
   sc_listitem *tmp = new sc_listitem();
-  tmp->pObj = ptr;
+  tmp->pObj        = ptr;
 
   if(mLength == 0)
   {
@@ -147,8 +148,8 @@ void sc_stack::push(rc_var *ptr)
   else
   {
     mLast->mNext = tmp;
-    tmp->mPrev = mLast;
-    mLast = tmp;
+    tmp->mPrev   = mLast;
+    mLast        = tmp;
   }
 
   mLength++;
@@ -166,7 +167,7 @@ void sc_stack::push(rc_var *ptr)
 void sc_queue::push(rc_var *ptr)
 {
   sc_listitem *tmp = new sc_listitem();
-  tmp->pObj = ptr;
+  tmp->pObj        = ptr;
 
   if(mLength == 0)
   {
@@ -175,8 +176,8 @@ void sc_queue::push(rc_var *ptr)
   else
   {
     mFirst->mPrev = tmp;
-    tmp->mNext = mFirst;
-    mFirst = tmp;
+    tmp->mNext    = mFirst;
+    mFirst        = tmp;
   }
 
   mLength++;

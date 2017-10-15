@@ -15,7 +15,7 @@
 sc_voidarray::sc_voidarray(int size)
 {
   mLength = mSize = 0;
-  mPtr = NULL;
+  mPtr            = NULL;
   if(size) resize(size);
 }
 
@@ -26,7 +26,7 @@ sc_voidarray::sc_voidarray(int size)
 sc_voidarray::sc_voidarray(const sc_voidarray &obj)
 {
   mLength = mSize = obj.mLength;
-  mPtr = new void *[mSize];
+  mPtr            = new void *[mSize];
   if(!mPtr) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   std::memcpy(mPtr, obj.mPtr, mSize * sizeof(void *));
 }
@@ -36,7 +36,7 @@ sc_voidarray::sc_voidarray(const sc_voidarray &obj)
  */
 sc_voidarray::~sc_voidarray()
 {
-  delete [] mPtr;
+  delete[] mPtr;
 }
 
 /**
@@ -55,8 +55,7 @@ void sc_voidarray::add(void *ptr)
  */
 void sc_voidarray::del(long index)
 {
-  if(index < mLength - 1)
-    std::memmove((void *) (mPtr + index), (void *) (mPtr + index + 1), mLength - index - 1);
+  if(index < mLength - 1) std::memmove((void *)(mPtr + index), (void *)(mPtr + index + 1), mLength - index - 1);
   mLength--;
 }
 
@@ -80,9 +79,8 @@ inline void *sc_voidarray::pop()
  */
 inline void *&sc_voidarray::get(long index)
 {
-  if(index >= mLength)
-    resize(index+1);
-    
+  if(index >= mLength) resize(index + 1);
+
   return mPtr[index];
 }
 
@@ -93,10 +91,9 @@ inline void *&sc_voidarray::get(long index)
  */
 inline void sc_voidarray::set(long index, void *ptr)
 {
-  if(index >= mLength)
-    resize(index+1);
+  if(index >= mLength) resize(index + 1);
 
-  mLength = index + 1;
+  mLength     = index + 1;
   mPtr[index] = ptr;
 }
 
@@ -126,15 +123,14 @@ long sc_voidarray::length() const
  */
 void sc_voidarray::resize(long size)
 {
-  if(size <= mLength || size < mSize)
-    return;
+  if(size <= mLength || size < mSize) return;
 
   void **new_ptr = new void *[size];
   if(!new_ptr) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
 
   if(mPtr)
   {
-    std::memcpy((void *) new_ptr, (void *) mPtr, mLength * sizeof(void *));
+    std::memcpy((void *)new_ptr, (void *)mPtr, mLength * sizeof(void *));
     delete[] mPtr;
   }
 
@@ -143,7 +139,7 @@ void sc_voidarray::resize(long size)
     new_ptr[idx] = NULL;
 
   mSize = size;
-  mPtr = new_ptr;
+  mPtr  = new_ptr;
 }
 
 #endif // SC_VOIDARRAY_H

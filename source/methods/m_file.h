@@ -13,7 +13,7 @@
  */
 void file_op_create(rc_head *head)
 {
-  ic_object *name = head->rIN.pop();
+  ic_object *name       = head->rIN.pop();
   head->pCurrObj->mData = new ic_file(name);
 }
 
@@ -25,7 +25,7 @@ void file_open(rc_head *head)
   ic_object *obj = head->rIN.pop();
   if(obj->class_id() == M_CLASS_INT)
   {
-    char mode = (char)((ic_int *)obj->mData)->mValue;
+    char mode   = (char)((ic_int *)obj->mData)->mValue;
     bool result = ((ic_file *)head->pCurrObj->mData)->open(mode);
     head->rOUT.push(head->obj_bool(result));
   }
@@ -36,7 +36,7 @@ void file_open(rc_head *head)
  */
 void file_close(rc_head *head)
 {
-  ((ic_file *)head->pCurrObj->mData)->close();  
+  ((ic_file *)head->pCurrObj->mData)->close();
 }
 
 /**
@@ -52,7 +52,7 @@ void file_read(rc_head *head)
     {
       ic_string *str = file->read(((ic_int *)obj->mData)->mValue);
       head->rOUT.push(head->obj_string(str));
-    } 
+    }
   }
   else
     head->rOUT.push(head->obj_bool(false));
@@ -84,7 +84,7 @@ void file_read_lines(rc_head *head)
   {
     // make array and string
     ic_string *str = new ic_string();
-    ic_array *arr = new ic_array();
+    ic_array *arr  = new ic_array();
 
     long tmp_pos = ftell(file->mFile);
     fseek(file->mFile, 0, SEEK_SET);
@@ -118,8 +118,8 @@ void file_seek(rc_head *head)
   ic_object *mode = head->rIN.pop(), *pos = head->rIN.pop();
   if((mode->class_id() & pos->class_id()) == M_CLASS_INT)
   {
-    long imode = ((ic_int*)mode->mData)->mValue;
-    long ipos = ((ic_int*)mode->mData)->mValue;
+    long imode = ((ic_int *)mode->mData)->mValue;
+    long ipos  = ((ic_int *)mode->mData)->mValue;
     ((ic_file *)head->pCurrObj->mData)->seek(ipos, imode);
   }
 }
@@ -159,8 +159,8 @@ void file_copy(rc_head *head)
   ic_object *obj = head->rIN.pop();
   if(obj->class_id() == M_CLASS_STRING)
   {
-    ic_string *name = (ic_string*)obj->mData;
-    ((ic_file*)head->pCurrObj->mData)->copy(name);
+    ic_string *name = (ic_string *)obj->mData;
+    ((ic_file *)head->pCurrObj->mData)->copy(name);
   }
 }
 
@@ -172,8 +172,8 @@ void file_rename(rc_head *head)
   ic_object *obj = head->rIN.pop();
   if(obj->class_id() == M_CLASS_STRING)
   {
-    ic_string *name = (ic_string*)obj->mData;
-    ((ic_file*)head->pCurrObj->mData)->rename(name);
+    ic_string *name = (ic_string *)obj->mData;
+    ((ic_file *)head->pCurrObj->mData)->rename(name);
   }
 }
 
@@ -182,7 +182,7 @@ void file_rename(rc_head *head)
  */
 void file_rename(rc_head *head)
 {
-  ((ic_file*)head->pCurrObj->mData)->remove(name);
+  ((ic_file *)head->pCurrObj->mData)->remove(name);
 }
 
 /**
@@ -194,7 +194,7 @@ void file_truncate(rc_head *head)
   if(obj->class_id() == M_CLASS_INT)
   {
     long size = ((ic_int *)obj->mData)->mValue;
-    ((ic_file*)head->pCurrObj->mData)->truncate(name);
+    ((ic_file *)head->pCurrObj->mData)->truncate(name);
   }
 }
 
@@ -220,7 +220,7 @@ void file_to_i(rc_head *head)
 void file_inspect(rc_head *head)
 {
   ic_string *str = new ic_string("{file:");
-  ic_file *file = (ic_file *)head->pCurrObj->mData;
+  ic_file *file  = (ic_file *)head->pCurrObj->mData;
   str->append(file->mName);
 
   if(file->mFile)

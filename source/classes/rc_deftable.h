@@ -27,19 +27,19 @@ void rc_deftable::declare_class(long id)
   long len = 0;
 
   // read length and name
-  char *str = mTable.get(id);
+  char *str  = mTable.get(id);
   char *name = (char *)(str + idx);
-  len = strlen(name);
+  len        = strlen(name);
   idx += len + 1;
 
   // read length and parent name
   char *parent = (char *)(str + idx);
-  len = strlen(parent);
+  len          = strlen(parent);
   idx += len + 1;
 
   // read length and parent name
   char *root = (char *)(str + idx);
-  len = strlen(root);
+  len        = strlen(root);
   idx += len + 1;
 
   // read props
@@ -65,14 +65,14 @@ void rc_deftable::declare_method(long id)
   long len = 0;
 
   // read length and name
-  char *str = mTable.get(id);
+  char *str  = mTable.get(id);
   char *name = (char *)(str + idx);
-  len = strlen(name);
+  len        = strlen(name);
   idx += len + 1;
 
   // read length and parent name
   char *parent = (char *)(str + idx);
-  len = strlen(parent);
+  len          = strlen(parent);
   idx += len + 1;
 
   // props, point, min_args, max_args, splat
@@ -90,13 +90,13 @@ void rc_deftable::declare_method(long id)
   rc_class *cls = pCore->class_resolve(parent);
   if(cls)
   {
-    rc_method *method = pCore->method_add(name, cls, point, props);
-    method->mMaxArgs = max_args;
-    method->mMinArgs = min_args;
+    rc_method *method  = pCore->method_add(name, cls, point, props);
+    method->mMaxArgs   = max_args;
+    method->mMinArgs   = min_args;
     method->mSplatArgs = splat;
 
     // load argument names
-    for(long idx2 = 0; idx2 < max_args; idx2 ++)
+    for(long idx2 = 0; idx2 < max_args; idx2++)
     {
       ic_string *curr = new ic_string((char *)(str + idx));
       idx += curr->length() + 1;
@@ -119,14 +119,14 @@ void rc_deftable::declare_property(long id)
   long len = 0;
 
   // read length and name
-  char *str = mTable.get(id);
+  char *str  = mTable.get(id);
   char *name = (char *)(str + idx);
-  len = strlen(name);
+  len        = strlen(name);
   idx += len + 1;
 
   // read parent class name
   char *parent = (char *)(str + idx);
-  len = strlen(parent);
+  len          = strlen(parent);
   idx += len + 1;
 
   // read props
@@ -186,13 +186,15 @@ void rc_deftable::add_class(const char *name, const char *parent, short props, c
  * @param min_args Minimal number of arguments.
  * @param max_args Maximal number of arguments.
  * @param splat Flag saying method accepts any number of arguments.
- * @param names Array of method names as char pointers, zero-ended, names->length() = max_args.
+ * @param names Array of method names as char pointers, zero-ended,
+ * names->length() = max_args.
  * @param point Code execution point, relative to current script.
  */
-void rc_deftable::add_method(const char *name, const char *cls, short props, long point, long min_args, long max_args, bool splat, sc_voidarray *names)
+void rc_deftable::add_method(const char *name, const char *cls, short props, long point, long min_args, long max_args,
+                             bool splat, sc_voidarray *names)
 {
   long idx, pos;
-  long total = 0;
+  long total    = 0;
   long *lengths = new long[names->length()];
   long name_len = strlen(name), cls_len = strlen(cls);
 
@@ -203,11 +205,11 @@ void rc_deftable::add_method(const char *name, const char *cls, short props, lon
     total += lengths[idx];
   }
 
-  char *buf = new char[name_len + cls_len + sizeof(short) + sizeof(long)*2 + sizeof(bool) + total + 3];
+  char *buf = new char[name_len + cls_len + sizeof(short) + sizeof(long) * 2 + sizeof(bool) + total + 3];
 
   // prefix
   *buf = 'm';
-  pos = 1;
+  pos  = 1;
 
   // (name:char[])
   strcpy(buf + pos, name);
@@ -237,7 +239,7 @@ void rc_deftable::add_method(const char *name, const char *cls, short props, lon
   }
 
   // register in the table
-  delete [] lengths;
+  delete[] lengths;
   mTable.add_existing(buf, pos);
 }
 
@@ -255,7 +257,7 @@ void rc_deftable::add_property(const char *name, const char *cls, short props)
   // magic constant assumes prefix character to determine definition type
   // ( 'ñ' = class, 'm' = method, 'p' = property ),
   // a trailing null character and two null bytes after name and class.
-  char *buf = new char[name_len + cls_len + sizeof(long)*2 + sizeof(short) + 3];
+  char *buf = new char[name_len + cls_len + sizeof(long) * 2 + sizeof(short) + 3];
 
   // prefix
   *buf = 'p';

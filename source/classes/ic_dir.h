@@ -13,8 +13,8 @@
  */
 ic_dir::ic_dir()
 {
-  mName = NULL;
-  mLength = 0;  
+  mName   = NULL;
+  mLength = 0;
 }
 
 /**
@@ -25,14 +25,14 @@ ic_dir::ic_dir(const char *name)
 {
   mName = new char[strlen(name)];
   strcpy(mName, name);
-  mLength = 0;  
+  mLength = 0;
 }
 
 /**
  * ic_dir constructor.
  * @param name Directory name.
  */
-ic_dir::ic_dir(ic_string *name) 
+ic_dir::ic_dir(ic_string *name)
 {
   mName = new char[name->length()];
   strcpy(mName, name->get());

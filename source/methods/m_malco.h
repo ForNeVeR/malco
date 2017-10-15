@@ -1,9 +1,9 @@
 /**
-* @file m_malco.h
-* @author impworks
-* Malco method header.
-* Defines all methods for Malco namespace.
-*/
+ * @file m_malco.h
+ * @author impworks
+ * Malco method header.
+ * Defines all methods for Malco namespace.
+ */
 
 #ifndef M_MALCO_H
 #define M_MALCO_H
@@ -64,7 +64,7 @@ void malco_error_mode(rc_head *head)
     else
       head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, 1, "int", "error_mode"), M_EXC_ARGS);
   }
-  
+
   head->rSRC.push(head->new_int(mode));
 }
 

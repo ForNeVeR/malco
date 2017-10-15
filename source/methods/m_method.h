@@ -11,28 +11,25 @@
 void method_op_cmp_method(rc_head *head)
 {
   // methods cannot be bigger or less, they're either 'equal' or 'undefined'
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  
+  ic_object *item  = item_var->get();
+
   rc_method *left = (rc_method *)obj->mData, *right = (rc_method *)item->mData;
-  if(    left->mNative == right->mNative
-      && left->mProperties == right->mProperties
-      && left->mExecPoint == right->mExecPoint
-      && left->pNativeFunc == right->pNativeFunc
-    )
+  if(left->mNative == right->mNative && left->mProperties == right->mProperties &&
+     left->mExecPoint == right->mExecPoint && left->pNativeFunc == right->pNativeFunc)
     head->rSRC.push(head->new_int(0L));
   else
     head->rSRC.push(head->new_undef());
-  
+
   head->obj_unlink(item_var);
 }
 
 void method_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   // a method cannot be 'false'
   bool left = true, right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : 1);
@@ -42,10 +39,10 @@ void method_op_cmp_bool(rc_head *head)
 
 void method_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  const char *str = ((rc_method *)obj->mData)->mName;
+  ic_object *item  = item_var->get();
+  const char *str  = ((rc_method *)obj->mData)->mName;
   // note the -1 part to reverse values, as item is at rightside
   char result = ((ic_string *)item->mData)->compare(str) * (-1);
   head->rSRC.push(head->new_int(result));
@@ -76,7 +73,7 @@ void method_class(rc_head *head)
 void method_args(rc_head *head)
 {
   rc_method *method = (rc_method *)head->pCurrObj->get()->mData;
-  ic_array *arr = new ic_array();
+  ic_array *arr     = new ic_array();
   for(long idx = 0; idx < method->mParams.length(); idx++)
     arr->append(head->new_string((ic_string *)method->mParams.get(idx)), false);
 

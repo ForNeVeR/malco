@@ -13,7 +13,7 @@
  */
 void range_op_create(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj    = head->pCurrObj->get();
   rc_var *first_var = head->rSRC.pop(), *second_var = head->rSRC.pop();
   ic_object *first = first_var->get(), *second = (second_var ? second_var->get() : NULL);
 
@@ -25,7 +25,7 @@ void range_op_create(rc_head *head)
       if(head->pCore->class_type(second->pClass) == M_CLASS_INT)
       {
         ((ic_range *)obj->mData)->mStart = ((ic_int *)first->mData)->mValue;
-        ((ic_range *)obj->mData)->mEnd = ((ic_int *)second->mData)->mValue;
+        ((ic_range *)obj->mData)->mEnd   = ((ic_int *)second->mData)->mValue;
         ((ic_range *)obj->mData)->iter_rewind();
       }
       else
@@ -54,9 +54,9 @@ void range_op_create(rc_head *head)
  */
 void range_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool left = ((ic_range *)obj->mData)->length() != 0, right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : (left ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -68,9 +68,9 @@ void range_op_cmp_bool(rc_head *head)
  */
 void range_op_cmp_range(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   long left = ((ic_range *)obj->mData)->length(), right = ((ic_range *)item->mData)->length();
   char result = (left == right ? 0 : (left > right ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -82,10 +82,10 @@ void range_op_cmp_range(rc_head *head)
  */
 void range_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  const char* left = ((ic_range *)obj->mData)->to_s();
+  ic_object *item  = item_var->get();
+  const char *left = ((ic_range *)obj->mData)->to_s();
   // note the -1 part to reverse values, as item is at rightside
   char result = ((ic_string *)item->mData)->compare(left) * (-1);
   head->rSRC.push(head->new_int(result));
@@ -97,10 +97,10 @@ void range_op_cmp_string(rc_head *head)
  */
 void range_op_rel_int(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  bool result = ((ic_range *)obj->mData)->contains(((ic_int *)item->mData)->mValue);
+  ic_object *item  = item_var->get();
+  bool result      = ((ic_range *)obj->mData)->contains(((ic_int *)item->mData)->mValue);
   head->rSRC.push(head->new_bool(result));
   head->obj_unlink(item_var);
 }
@@ -110,10 +110,10 @@ void range_op_rel_int(rc_head *head)
  */
 void range_op_rel_float(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  bool result = ((ic_range *)obj->mData)->contains(((ic_float *)item->mData)->mValue);
+  ic_object *item  = item_var->get();
+  bool result      = ((ic_range *)obj->mData)->contains(((ic_float *)item->mData)->mValue);
   head->rSRC.push(head->new_bool(result));
   head->obj_unlink(item_var);
 }
@@ -124,7 +124,7 @@ void range_op_rel_float(rc_head *head)
 void range_length(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long len = ((ic_range *)obj->mData)->length();
+  long len       = ((ic_range *)obj->mData)->length();
   head->rSRC.push(head->new_int(len, obj->mTainted));
 }
 
@@ -137,17 +137,17 @@ void range_set_do(rc_head *head)
 
   rc_var *first_var = head->rSRC.pop(), *second_var = head->rSRC.pop();
   ic_object *first = first_var->get(), *second = NULL;
-  if(second_var)
-    second = second_var->get();
+  if(second_var) second = second_var->get();
 
   if(!obj->mFrozen)
   {
     if(head->pCore->class_type(first->pClass) == M_CLASS_STRING)
       ((ic_range *)obj->mData)->set(((ic_string *)first->mData)->get());
-    else if(head->pCore->class_type(first->pClass) == M_CLASS_INT && second && head->pCore->class_type(second->pClass) == M_CLASS_INT)
+    else if(head->pCore->class_type(first->pClass) == M_CLASS_INT && second &&
+            head->pCore->class_type(second->pClass) == M_CLASS_INT)
     {
       ((ic_range *)obj->mData)->mStart = ((ic_int *)first->mData)->mValue;
-      ((ic_range *)obj->mData)->mEnd = ((ic_int *)second->mData)->mValue;
+      ((ic_range *)obj->mData)->mEnd   = ((ic_int *)second->mData)->mValue;
     }
     else
       head->exception(ic_string::format(M_ERR_FX_WRONG_TYPE, 1, "string or int", "set!"), M_EXC_ARGS);
@@ -156,8 +156,7 @@ void range_set_do(rc_head *head)
     head->exception(M_ERR_FROZEN, M_EXC_SCRIPT);
 
   head->obj_unlink(first_var);
-  if(second_var)
-    head->obj_unlink(second_var);
+  if(second_var) head->obj_unlink(second_var);
 }
 
 /**
@@ -166,7 +165,7 @@ void range_set_do(rc_head *head)
 void range_next(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_range *iv = (ic_range *)obj->mData;
+  ic_range *iv   = (ic_range *)obj->mData;
   if(!iv->mFinished)
   {
     long next = iv->iter_next();
@@ -180,7 +179,7 @@ void range_next(rc_head *head)
 void range_rewind(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ((ic_range*)obj->mData)->iter_rewind();
+  ((ic_range *)obj->mData)->iter_rewind();
 }
 
 /**
@@ -188,9 +187,9 @@ void range_rewind(rc_head *head)
  */
 void range_has(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool value;
   char cls = head->pCore->class_type(item->pClass);
 
@@ -206,7 +205,8 @@ void range_has(rc_head *head)
   }
   else if(cls == M_CLASS_RANGE)
   {
-    value = ((ic_range *)obj->mData)->mStart  <= ((ic_range *)item->mData)->mStart && ((ic_range *)obj->mData)->mEnd  >= ((ic_range *)item->mData)->mEnd;
+    value = ((ic_range *)obj->mData)->mStart <= ((ic_range *)item->mData)->mStart &&
+            ((ic_range *)obj->mData)->mEnd >= ((ic_range *)item->mData)->mEnd;
     head->rSRC.push(head->new_bool(value, obj->mTainted));
   }
   else
@@ -221,17 +221,16 @@ void range_has(rc_head *head)
 void range_each(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_range *rg = (ic_range *)obj->mData;
+  ic_range *rg   = (ic_range *)obj->mData;
   rc_var *fx_var = head->rSRC.pop();
-  ic_object *fx = fx_var->get();
+  ic_object *fx  = fx_var->get();
 
   if(head->pCore->class_type(fx->pClass) == M_CLASS_METHOD)
   {
     rg->iter_rewind();
     while(1)
     {
-      if(rg->mFinished)
-        break;
+      if(rg->mFinished) break;
 
       head->rSRC.push(head->new_int(rg->iter_next(), obj->mTainted));
       head->method_invoke((rc_method *)fx->mData);
@@ -250,10 +249,10 @@ void range_each(rc_head *head)
 void range_start(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_range *rg = (ic_range *)obj->mData;
+  ic_range *rg   = (ic_range *)obj->mData;
 
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = (item_var ? item_var->get() : NULL);
+  ic_object *item  = (item_var ? item_var->get() : NULL);
 
   // push current value
   head->rSRC.push(head->new_int(rg->mStart, obj->mTainted));
@@ -279,10 +278,10 @@ void range_start(rc_head *head)
 void range_end(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  ic_range *rg = (ic_range *)obj->mData;
+  ic_range *rg   = (ic_range *)obj->mData;
 
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = (item_var ? item_var->get() : NULL);
+  ic_object *item  = (item_var ? item_var->get() : NULL);
 
   // push current value
   head->rSRC.push(head->new_int(rg->mEnd, obj->mTainted));
@@ -307,10 +306,10 @@ void range_end(rc_head *head)
  */
 void range_to_a(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
-  ic_range *iv = (ic_range *)obj->mData;
+  ic_object *obj  = head->pCurrObj->get();
+  ic_range *iv    = (ic_range *)obj->mData;
   rc_var *arr_var = head->new_array();
-  ic_object *arr = arr_var->get();
+  ic_object *arr  = arr_var->get();
   iv->iter_rewind();
   while(!iv->mFinished)
   {
@@ -327,7 +326,7 @@ void range_to_a(rc_head *head)
 void range_to_b(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  bool value = ((ic_range *)obj->mData)->to_b();
+  bool value     = ((ic_range *)obj->mData)->to_b();
   head->rSRC.push(head->new_bool(value, obj->mTainted));
 }
 
@@ -337,7 +336,7 @@ void range_to_b(rc_head *head)
 void range_to_f(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  double len = (double)((ic_range *)obj->mData)->length();
+  double len     = (double)((ic_range *)obj->mData)->length();
   head->rSRC.push(head->new_float(len, obj->mTainted));
 }
 
@@ -347,7 +346,7 @@ void range_to_f(rc_head *head)
 void range_to_i(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  long len = ((ic_range *)obj->mData)->length();
+  long len       = ((ic_range *)obj->mData)->length();
   head->rSRC.push(head->new_int(len, obj->mTainted));
 }
 
@@ -356,7 +355,7 @@ void range_to_i(rc_head *head)
  */
 void range_to_s(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   const char *str = ((ic_range *)obj->mData)->to_s();
   head->rSRC.push(head->new_string(str, obj->mTainted));
 }

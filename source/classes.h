@@ -61,8 +61,11 @@ class sc_map;
 class sc_voidmapitem;
 class sc_voidmap;
 
-template <typename T> class sc_anymapitem;
-template <typename T> class sc_anymap;
+template <typename T>
+class sc_anymapitem;
+
+template <typename T>
+class sc_anymap;
 
 class sc_ini;
 class sc_file;
@@ -99,18 +102,18 @@ class rc_vartable;
 //          misc stuff
 //--------------------------------
 
-#define STR_MIN_CPC                 256
+constexpr int STR_MIN_CPC = 256;
 
-#define IO_READ                     1
-#define IO_WRITE                    2
-#define IO_RW                       3
-#define FILE_APPEND                 4
-#define FILE_REPLACE                8
-#define FILE_BINARY                 16
+constexpr int IO_READ      = 1;
+constexpr int IO_WRITE     = 2;
+constexpr int IO_RW        = 3;
+constexpr int FILE_APPEND  = 4;
+constexpr int FILE_REPLACE = 8;
+constexpr int FILE_BINARY  = 16;
 
-#define REGEX_MAX_MATCHES           10
+constexpr int REGEX_MAX_MATCHES = 10;
 
-typedef void(*native_func)(rc_head*);
+typedef void (*native_func)(rc_head *);
 
 //****************************************************************
 //*                                                              *
@@ -126,9 +129,9 @@ typedef void(*native_func)(rc_head*);
 class ic_bool
 {
   public:
-  bool mValue;            /**< Boolean value. */
+  bool mValue; /**< Boolean value. */
 
-  ic_bool(bool value=false);
+  ic_bool(bool value = false);
 
   long to_i();
   double to_f();
@@ -144,12 +147,13 @@ class ic_bool
 class ic_int
 {
   private:
-  char *mStrBuf;          /**< Inner string buffer used to prevent memory leaks in convertors. */
+  char *mStrBuf; /**< Inner string buffer used to prevent memory leaks in
+                    convertors. */
 
   public:
-  long mValue;            /**< Long value. */
+  long mValue; /**< Long value. */
 
-  ic_int(long value=0);
+  ic_int(long value = 0);
   ~ic_int();
 
   bool to_b();
@@ -166,12 +170,13 @@ class ic_int
 class ic_float
 {
   private:
-  char *mStrBuf;          /**< Inner string buffer used to prevent memory leaks in convertors. */
+  char *mStrBuf; /**< Inner string buffer used to prevent memory leaks in
+                    convertors. */
 
   public:
-  double mValue;          /**< Double value. */
+  double mValue; /**< Double value. */
 
-  ic_float(double value=0);
+  ic_float(double value = 0);
   ~ic_float();
 
   bool to_b();
@@ -191,12 +196,13 @@ class ic_strbuffer
   friend class rc_head;
   friend class ic_file;
   friend class ic_socket;
+
   private:
-  char *mBuf;                 /**< Pointer to string buffer. */
-  long mLength;               /**< Buffer length. */
-  long mCapacity;             /**< Buffer capacity. */
-  ic_strbuffer *pPrev;        /**< Pointer to previous buffer. */
-  ic_strbuffer *pNext;        /**< Pointer to previous buffer. */
+  char *mBuf;          /**< Pointer to string buffer. */
+  long mLength;        /**< Buffer length. */
+  long mCapacity;      /**< Buffer capacity. */
+  ic_strbuffer *pPrev; /**< Pointer to previous buffer. */
+  ic_strbuffer *pNext; /**< Pointer to previous buffer. */
 
   ic_strbuffer(long cpc);
   ~ic_strbuffer();
@@ -219,57 +225,57 @@ class ic_string
   friend class ic_socket;
 
   private:
-  ic_strbuffer *mFirst;           /**< Pointer to first buffer. */
-  ic_strbuffer *mLast;            /**< Pointer to first buffer. */
-  int mNumBuffers;                /**< Number of buffers in the string. */
-  long mLength;                   /**< Total length of the string. */
-  long mCapacity;                 /**< Total capacity of the string. */
+  ic_strbuffer *mFirst; /**< Pointer to first buffer. */
+  ic_strbuffer *mLast;  /**< Pointer to first buffer. */
+  int mNumBuffers;      /**< Number of buffers in the string. */
+  long mLength;         /**< Total length of the string. */
+  long mCapacity;       /**< Total capacity of the string. */
 
   public:
   ic_string();
   ic_string(long cpc);
-  ic_string(const char *str, long new_len=0);
+  ic_string(const char *str, long new_len = 0);
   ic_string(const ic_string &str);
   ~ic_string();
-  static char* whitespace;
+  static char *whitespace;
 
   char *get();
-  void empty(long cpc=0);
-  void set(const char *src, long new_len=0);
-  void set(const ic_string *src, long new_len=0);
-  void append(const char *src, long new_len=0);
-  void append(const ic_string *src, long new_len=0);
+  void empty(long cpc = 0);
+  void set(const char *src, long new_len = 0);
+  void set(const ic_string *src, long new_len = 0);
+  void append(const char *src, long new_len = 0);
+  void append(const ic_string *src, long new_len = 0);
   void append(char src);
-  void prepend(const char *src, long new_len=0);
-  void prepend(ic_string *src, long new_len=0);
+  void prepend(const char *src, long new_len = 0);
+  void prepend(ic_string *src, long new_len = 0);
   void prepend(char src);
 
   void reverse();
-  long replace(const char *from, char *to, long max=0);
-  long replace(ic_string *from, ic_string *to, long max=0);
-  long replace(ic_regex *from, ic_string *to, long max=0);
-  void translate(char *from, char *to, long fromlen=0, long tolen=0);
+  long replace(const char *from, char *to, long max = 0);
+  long replace(ic_string *from, ic_string *to, long max = 0);
+  long replace(ic_regex *from, ic_string *to, long max = 0);
+  void translate(char *from, char *to, long fromlen = 0, long tolen = 0);
   void translate(ic_string *from, ic_string *to);
   void case_up();
   void case_down();
   void case_swap();
-  int compare(const char *str, long len=0);
-  int compare(ic_string *str, long len=0);
+  int compare(const char *str, long len = 0);
+  int compare(ic_string *str, long len = 0);
 
   char &char_at(long pos) const;
-  ic_string *substr_get(long start, long len=0);
+  ic_string *substr_get(long start, long len = 0);
   void substr_set(long start, long len, const char *to);
   void substr_set(long start, long len, ic_string *to);
-  long substr_first(const char *str, long offset=0);
-  long substr_first(ic_string *str, long offset=0);
-  long substr_last(const char *str, long offset=0);
-  long substr_last(ic_string *str, long offset=0);
+  long substr_first(const char *str, long offset = 0);
+  long substr_first(ic_string *str, long offset = 0);
+  long substr_last(const char *str, long offset = 0);
+  long substr_last(ic_string *str, long offset = 0);
   long substr_count(const char *str) const;
   long substr_count(ic_string *str) const;
 
-  sc_voidarray *split(const char *delimiter, long max=0);
-  sc_voidarray *split(ic_string *delimiter, long max=0);
-  sc_voidarray *split(ic_regex *regex, long max=0);
+  sc_voidarray *split(const char *delimiter, long max = 0);
+  sc_voidarray *split(ic_string *delimiter, long max = 0);
+  sc_voidarray *split(ic_regex *regex, long max = 0);
 
   void format(sc_voidarray strings);
   static ic_string *format(const char *str, ...);
@@ -280,7 +286,7 @@ class ic_string
   void trim();
 
   void file_load(const char *name);
-  void file_save(const char *name, char mode=FILE_REPLACE);
+  void file_save(const char *name, char mode = FILE_REPLACE);
 
   long to_i();
   double to_f();
@@ -288,24 +294,24 @@ class ic_string
   long length() const;
   long capacity() const;
 
-  ic_string &operator<< (const ic_string &right);
-  ic_string &operator<< (const char *right);
-  ic_string &operator= (const ic_string &right);
-  ic_string &operator= (const char *right);
-  bool operator== (ic_string &right);
-  bool operator== (const char *right);
-  bool operator!= (ic_string &right);
-  bool operator!= (const char *right);
-  bool operator> (ic_string &right);
-  bool operator> (const char *right);
-  bool operator>= (ic_string &right);
-  bool operator>= (const char *right);
-  bool operator< (ic_string &right);
-  bool operator< (const char *right);
-  bool operator<= (ic_string &right);
-  bool operator<= (const char *right);
-  char &operator[] (long pos);
-  operator char* ();
+  ic_string &operator<<(const ic_string &right);
+  ic_string &operator<<(const char *right);
+  ic_string &operator=(const ic_string &right);
+  ic_string &operator=(const char *right);
+  bool operator==(ic_string &right);
+  bool operator==(const char *right);
+  bool operator!=(ic_string &right);
+  bool operator!=(const char *right);
+  bool operator>(ic_string &right);
+  bool operator>(const char *right);
+  bool operator>=(ic_string &right);
+  bool operator>=(const char *right);
+  bool operator<(ic_string &right);
+  bool operator<(const char *right);
+  bool operator<=(ic_string &right);
+  bool operator<=(const char *right);
+  char &operator[](long pos);
+  operator char *();
 
 #if MALCO_DEBUG == 1
   void debug();
@@ -323,12 +329,12 @@ class ic_string
 class ic_regex
 {
   private:
-  std::regex mRegEx;                          /**< The regular expression implementation. */
-  const char *pError;                         /**< Error message. */
-  int mErrorOffset;                           /**< Offset at which regex couldn't compile. */
+  std::regex mRegEx;  /**< The regular expression implementation. */
+  const char *pError; /**< Error message. */
+  int mErrorOffset;   /**< Offset at which regex couldn't compile. */
 
-  int mOptions;                               /**< Options binary flags compressed into an int. */
-  char *mPattern;                             /**< Regex pattern. */
+  int mOptions;   /**< Options binary flags compressed into an int. */
+  char *mPattern; /**< Regex pattern. */
 
   public:
   ic_regex();
@@ -337,8 +343,8 @@ class ic_regex
   ~ic_regex();
 
   void set(const char *pattern);
-  ic_match *match(const char *str, int offset=0, long len=0);
-  ic_match *match(ic_string *str, int offset=0);
+  ic_match *match(const char *str, int offset = 0, long len = 0);
+  ic_match *match(ic_string *str, int offset = 0);
 
   void study();
 
@@ -350,10 +356,10 @@ class ic_regex
 
   ic_regex &operator=(const char *right);
   ic_regex &operator=(ic_regex &right);
-  bool operator== (ic_regex &right);
-  bool operator!= (ic_regex &right);
+  bool operator==(ic_regex &right);
+  bool operator!=(ic_regex &right);
 
-private:
+  private:
   void set(const char *pattern, std::regex::flag_type flags);
 };
 
@@ -369,10 +375,10 @@ class ic_match
   friend class ic_regex;
 
   private:
-  long mCount;                                /**< Number of matches found. */
-  int mMatches[REGEX_MAX_MATCHES*2];          /**< Found match bounds. */
-  const char *pString;                        /**< String to be matched. */
-  char *mSubstrings[REGEX_MAX_MATCHES];       /**< Pointers to requested substrings. */
+  long mCount;                          /**< Number of matches found. */
+  int mMatches[REGEX_MAX_MATCHES * 2];  /**< Found match bounds. */
+  const char *pString;                  /**< String to be matched. */
+  char *mSubstrings[REGEX_MAX_MATCHES]; /**< Pointers to requested substrings. */
   ic_match();
 
   public:
@@ -392,11 +398,12 @@ class ic_match
 class ic_time
 {
   private:
-  char *mStrBuf;      /**< Inner string buffer used to prevent memory leaks in convertors. */
+  char *mStrBuf; /**< Inner string buffer used to prevent memory leaks in
+                    convertors. */
 
   public:
-  time_t mTimestamp;  /**< Unix timestamp. */
-  struct tm mTime;    /**< Time structure with info broken down across members. */
+  time_t mTimestamp; /**< Unix timestamp. */
+  struct tm mTime;   /**< Time structure with info broken down across members. */
 
   ic_time(long tstamp = 0);
   ~ic_time();
@@ -440,16 +447,18 @@ class ic_time
 class ic_range
 {
   private:
-  long mCurr;                           /**< Current iteration item. */
-  char *mStrBuf;                        /**< Inner string buffer used to prevent memory leaks in convertors. */
+  long mCurr;    /**< Current iteration item. */
+  char *mStrBuf; /**< Inner string buffer used to prevent memory leaks in
+                    convertors. */
 
   public:
-  long mStart;                          /**< Interval starting value. */
-  long mEnd;                            /**< Interval ending value. */
-  bool mFinished;                       /**< A flag to indicate whether range iteration has finished. */
+  long mStart;    /**< Interval starting value. */
+  long mEnd;      /**< Interval ending value. */
+  bool mFinished; /**< A flag to indicate whether range iteration has finished.
+                   */
 
   ic_range(const char *str);
-  ic_range(long start=0, long end=0);
+  ic_range(long start = 0, long end = 0);
   ~ic_range();
 
   void set(const char *str);
@@ -487,18 +496,20 @@ class ic_object
   friend class rc_core;
   friend class rc_head;
   friend class rc_var;
+
   private:
-  long mLinks;                /**< Number of links to the object. */
+  long mLinks; /**< Number of links to the object. */
 
   public:
   ic_object(rc_class *root, void *data);
   ~ic_object();
 
-  sc_voidmap *mMembers;       /**< Object members. */
-  bool mFrozen;               /**< Flag indicating the object is frozen (no further modifications allowed). */
-  bool mTainted;              /**< Flag indicating the object is tainted. */
-  void *mData;                /**< Object binary data (ic_*). */
-  rc_class *pClass;           /**< Object class. */
+  sc_voidmap *mMembers; /**< Object members. */
+  bool mFrozen;         /**< Flag indicating the object is frozen (no further
+                           modifications allowed). */
+  bool mTainted;        /**< Flag indicating the object is tainted. */
+  void *mData;          /**< Object binary data (ic_*). */
+  rc_class *pClass;     /**< Object class. */
 
   char class_id();
   ic_object *taint(bool tainted);
@@ -513,9 +524,9 @@ class ic_object
 class ic_file
 {
   public:
-  FILE *mFile;                  /**< File object. */
-  char *mName;                  /**< File path / name. */
-  char mMode;                   /**< File access mode. */
+  FILE *mFile; /**< File object. */
+  char *mName; /**< File path / name. */
+  char mMode;  /**< File access mode. */
 
   ic_file();
   ic_file(const char *name);
@@ -587,8 +598,8 @@ class ic_dir
 class ic_socket
 {
   private:
-  char *mName;                  /**< Socket path / name. */
-  char mMode;                   /**< Socket access mode. */
+  char *mName; /**< Socket path / name. */
+  char mMode;  /**< Socket access mode. */
 
   public:
   ic_socket();
@@ -613,13 +624,13 @@ class ic_socket
 class ic_array
 {
   private:
-  long mCurrIdx;                /**< Current iteration index. */
-  rc_var *mCurr;                /**< Current object. */
-  sc_voidmap *mItems;           /**< Array storage. */
-  ic_int mAutoIndex;            /**< Automatic index generator. */
+  long mCurrIdx;      /**< Current iteration index. */
+  rc_var *mCurr;      /**< Current object. */
+  sc_voidmap *mItems; /**< Array storage. */
+  ic_int mAutoIndex;  /**< Automatic index generator. */
 
   public:
-  bool mFinished;               /**< Flag indicating the iteration has finished. */
+  bool mFinished; /**< Flag indicating the iteration has finished. */
 
   ic_array();
   ~ic_array();
@@ -655,10 +666,10 @@ class ic_array
 class sc_exception
 {
   public:
-  ic_string *mErrorMsg;         /**< Error message. */
-  int mErrorType;               /**< Error level. */
-  const char *mFile;            /**< Erroneous file name. */
-  long mLine;                   /**< Erroneous line number. */
+  ic_string *mErrorMsg; /**< Error message. */
+  int mErrorType;       /**< Error level. */
+  const char *mFile;    /**< Erroneous file name. */
+  long mLine;           /**< Erroneous line number. */
 
   sc_exception(const char *msg, int type, const char *file = NULL, long line = 0);
   sc_exception(ic_string *msg, int type, const char *file = NULL, long line = 0);
@@ -675,9 +686,9 @@ class sc_exception
 class sc_voiditem
 {
   friend class sc_voidlist;
-  sc_voiditem *pPrev;         /**< Previous item in list. */
-  sc_voiditem *pNext;         /**< Next item in list. */
-  void *mPtr;                 /**< Pointer to whatever data. */
+  sc_voiditem *pPrev; /**< Previous item in list. */
+  sc_voiditem *pNext; /**< Next item in list. */
+  void *mPtr;         /**< Pointer to whatever data. */
 
   sc_voiditem(void *ptr);
 };
@@ -692,9 +703,9 @@ class sc_voiditem
 class sc_voidlist
 {
   public:
-  sc_voiditem *mFirst;              /**< First item in list. */
-  sc_voiditem *mLast;               /**< Last item in list. */
-  long mLength;                     /**< Number of items in list. */
+  sc_voiditem *mFirst; /**< First item in list. */
+  sc_voiditem *mLast;  /**< Last item in list. */
+  long mLength;        /**< Number of items in list. */
 
   sc_voidlist();
   ~sc_voidlist();
@@ -702,10 +713,10 @@ class sc_voidlist
   void add(void *item);
   void del(void *item);
   void del(long id);
-  void* get(long id);
-  void* pop();
+  void *get(long id);
+  void *pop();
 
-  sc_voidarray* pack();
+  sc_voidarray *pack();
 };
 
 
@@ -718,7 +729,7 @@ class sc_voidlist
 class sc_voidarray
 {
   public:
-  void **mPtr;                /**< Array of pointers. */
+  void **mPtr; /**< Array of pointers. */
   sc_voidarray(int size = 0);
   sc_voidarray(const sc_voidarray &obj);
   ~sc_voidarray();
@@ -735,10 +746,10 @@ class sc_voidarray
   void resize(long size);
 
   private:
-  long mLength;               /**< Number of items in array. */
-  long mSize;                 /**< Number of items the array is allocated for (capacity). */
+  long mLength; /**< Number of items in array. */
+  long mSize;   /**< Number of items the array is allocated for (capacity). */
 
-  friend sc_voidarray* sc_voidlist::pack();
+  friend sc_voidarray *sc_voidlist::pack();
   friend long ic_string::replace(ic_regex *from, ic_string *to, long max);
   friend class rc_tape;
   friend class rc_strtable;
@@ -752,9 +763,9 @@ class sc_voidarray
 class sc_listitem
 {
   public:
-  sc_listitem *mPrev;             /**< Next object in list. */
-  sc_listitem *mNext;             /**< Previous object in list. */
-  rc_var *pObj;                   /**< Pointer to object. */
+  sc_listitem *mPrev; /**< Next object in list. */
+  sc_listitem *mNext; /**< Previous object in list. */
+  rc_var *pObj;       /**< Pointer to object. */
 
   sc_listitem();
 };
@@ -768,14 +779,14 @@ class sc_listitem
 class sc_list
 {
   public:
-  sc_listitem *mFirst;              /**< First object in list. */
-  sc_listitem *mLast;               /**< Last object in list. */
-  sc_listitem *mCurr;               /**< Current item for iterations. */
-  long mLength;                     /**< Length of the list. */
-  long mCurrIdx;                    /**< Current item's ID. */
+  sc_listitem *mFirst; /**< First object in list. */
+  sc_listitem *mLast;  /**< Last object in list. */
+  sc_listitem *mCurr;  /**< Current item for iterations. */
+  long mLength;        /**< Length of the list. */
+  long mCurrIdx;       /**< Current item's ID. */
 
   sc_list();
-  rc_var * pop();
+  rc_var *pop();
   void push(rc_var *ptr);
 
   void iter_rewind();
@@ -792,10 +803,10 @@ class sc_list
  * Stacks ic_objects. Is used as internal RVM stacks.
  */
 
-class sc_stack: public sc_list
+class sc_stack : public sc_list
 {
   public:
-  void push(rc_var  *ptr);
+  void push(rc_var *ptr);
 };
 
 
@@ -804,10 +815,10 @@ class sc_stack: public sc_list
  * The object queue class.
  * Queues ic_objects. Is used as internal RVM queues (accumulators).
  */
-class sc_queue: public sc_list
+class sc_queue : public sc_list
 {
   public:
-  void push(rc_var  *ptr);
+  void push(rc_var *ptr);
 };
 
 
@@ -819,13 +830,13 @@ class sc_queue: public sc_list
 class sc_mapitem
 {
   public:
-  int mBalance;           /**< Balance of the current item. */
-  sc_mapitem *mLink[2];   /**< Links to left and right children. */
-  sc_mapitem *pRoot;      /**< Link to parent item. */
-  ic_string *mKey;        /**< Key. */
-  ic_string *mValue;      /**< Value. */
-  sc_mapitem *pPrev;      /**< Pointer to previous item. */
-  sc_mapitem *pNext;      /**< Pointer to next item. */
+  int mBalance;         /**< Balance of the current item. */
+  sc_mapitem *mLink[2]; /**< Links to left and right children. */
+  sc_mapitem *pRoot;    /**< Link to parent item. */
+  ic_string *mKey;      /**< Key. */
+  ic_string *mValue;    /**< Value. */
+  sc_mapitem *pPrev;    /**< Pointer to previous item. */
+  sc_mapitem *pNext;    /**< Pointer to next item. */
 
   sc_mapitem();
   sc_mapitem(const char *key, const char *val);
@@ -842,7 +853,7 @@ class sc_mapitem
 class sc_map
 {
   private:
-  long mLength;  /**< Length of the map. */
+  long mLength; /**< Length of the map. */
 
   // tree rotation methods
   void adjust_balance(sc_mapitem *root, int dir, int bal);
@@ -861,11 +872,11 @@ class sc_map
   sc_mapitem *find(const char *key);
 
   public:
-  sc_mapitem *mRoot;      /**< Root item of the tree. */
-  sc_mapitem *mCurr;      /**< Current item for iteration. */
-  sc_mapitem *mCurrKey;   /**< Current item for key-based iteration. */
-  sc_mapitem *mFirst;     /**< First item of the linked list. */
-  sc_mapitem *mLast;      /**< Last item of the linked list. */
+  sc_mapitem *mRoot;    /**< Root item of the tree. */
+  sc_mapitem *mCurr;    /**< Current item for iteration. */
+  sc_mapitem *mCurrKey; /**< Current item for key-based iteration. */
+  sc_mapitem *mFirst;   /**< First item of the linked list. */
+  sc_mapitem *mLast;    /**< Last item of the linked list. */
   sc_map();
   sc_map(sc_map &map);
   ~sc_map();
@@ -899,7 +910,6 @@ class sc_map
 };
 
 
-
 /**
  * @class sc_voidmapitem
  * Stores a record of sc_voidmap.
@@ -908,13 +918,13 @@ class sc_map
 class sc_voidmapitem
 {
   public:
-  int mBalance;               /**< Balance of the current item. */
-  sc_voidmapitem *mLink[2];   /**< Links to left and right children. */
-  sc_voidmapitem *pRoot;      /**< Link to parent item. */
-  ic_string *mKey;            /**< Key. */
-  void *mValue;               /**< Value. */
-  sc_voidmapitem *pPrev;      /**< Pointer to previous item. */
-  sc_voidmapitem *pNext;      /**< Pointer to next item. */
+  int mBalance;             /**< Balance of the current item. */
+  sc_voidmapitem *mLink[2]; /**< Links to left and right children. */
+  sc_voidmapitem *pRoot;    /**< Link to parent item. */
+  ic_string *mKey;          /**< Key. */
+  void *mValue;             /**< Value. */
+  sc_voidmapitem *pPrev;    /**< Pointer to previous item. */
+  sc_voidmapitem *pNext;    /**< Pointer to next item. */
 
   sc_voidmapitem();
   sc_voidmapitem(const char *key, void *val);
@@ -931,7 +941,7 @@ class sc_voidmapitem
 class sc_voidmap
 {
   private:
-  long mLength;               /**< Length of the map. */
+  long mLength; /**< Length of the map. */
 
   // tree rotation methods
   void adjust_balance(sc_voidmapitem *root, int dir, int bal);
@@ -948,11 +958,11 @@ class sc_voidmap
   void clear_r(sc_voidmapitem *item);
 
   public:
-  sc_voidmapitem *mRoot;      /**< Root item of the tree. */
-  sc_voidmapitem *mCurr;      /**< Current item for iteration. */
-  sc_voidmapitem *mCurrKey;   /**< Current item for key-based iteration. */
-  sc_voidmapitem *mFirst;     /**< First item of the linked list. */
-  sc_voidmapitem *mLast;      /**< Last item of the linked list. */
+  sc_voidmapitem *mRoot;    /**< Root item of the tree. */
+  sc_voidmapitem *mCurr;    /**< Current item for iteration. */
+  sc_voidmapitem *mCurrKey; /**< Current item for key-based iteration. */
+  sc_voidmapitem *mFirst;   /**< First item of the linked list. */
+  sc_voidmapitem *mLast;    /**< Last item of the linked list. */
 
   sc_voidmap();
   sc_voidmap(sc_voidmap &map);
@@ -994,13 +1004,13 @@ template <typename T>
 class sc_anymapitem
 {
   public:
-  int mBalance;               /**< Balance of the current item. */
-  sc_anymapitem *mLink[2];    /**< Links to left and right children. */
-  sc_anymapitem *pRoot;       /**< Link to parent item. */
-  ic_string *mKey;            /**< Key. */
-  T *mValue;                  /**< Value. */
-  sc_anymapitem *pPrev;       /**< Pointer to previous item. */
-  sc_anymapitem *pNext;       /**< Pointer to next item. */
+  int mBalance;            /**< Balance of the current item. */
+  sc_anymapitem *mLink[2]; /**< Links to left and right children. */
+  sc_anymapitem *pRoot;    /**< Link to parent item. */
+  ic_string *mKey;         /**< Key. */
+  T *mValue;               /**< Value. */
+  sc_anymapitem *pPrev;    /**< Pointer to previous item. */
+  sc_anymapitem *pNext;    /**< Pointer to next item. */
 
   sc_anymapitem();
   sc_anymapitem(const char *key, T *val);
@@ -1014,8 +1024,8 @@ class sc_anymapitem
 template <typename T>
 class sc_anymap
 {
-private:
-  long mLength;               /**< Length of the map. */
+  private:
+  long mLength; /**< Length of the map. */
 
   // tree rotation methods
   void adjust_balance(sc_anymapitem<T> *root, int dir, int bal);
@@ -1033,12 +1043,12 @@ private:
 
   sc_anymapitem<T> *find(const char *key);
 
-public:
-  sc_anymapitem<T> *mRoot;      /**< Root item of the tree. */
-  sc_anymapitem<T> *mCurr;      /**< Current item for iteration. */
-  sc_anymapitem<T> *mCurrKey;   /**< Current item for key-based iteration. */
-  sc_anymapitem<T> *mFirst;     /**< First item of the linked list. */
-  sc_anymapitem<T> *mLast;      /**< Last item of the linked list. */
+  public:
+  sc_anymapitem<T> *mRoot;    /**< Root item of the tree. */
+  sc_anymapitem<T> *mCurr;    /**< Current item for iteration. */
+  sc_anymapitem<T> *mCurrKey; /**< Current item for key-based iteration. */
+  sc_anymapitem<T> *mFirst;   /**< First item of the linked list. */
+  sc_anymapitem<T> *mLast;    /**< Last item of the linked list. */
 
   sc_anymap();
   sc_anymap(sc_anymap &map);
@@ -1054,7 +1064,7 @@ public:
   void clear();
 
   void iter_rewind();
-  sc_anymapitem<T>  *iter_next();
+  sc_anymapitem<T> *iter_next();
   void key_rewind();
   sc_anymapitem<T> *key_next();
 
@@ -1136,9 +1146,9 @@ class sc_md5
   private:
   uint32_t mI[2];
   uint32_t mBuf[4];
-  unsigned char mIn[64];        /**< Input buffer. */
-  unsigned char mDigest[16];    /**< Internal MD5 digest. */
-  char mReadable[33];           /**< Human-readable MD5 digest. */
+  unsigned char mIn[64];     /**< Input buffer. */
+  unsigned char mDigest[16]; /**< Internal MD5 digest. */
+  char mReadable[33];        /**< Human-readable MD5 digest. */
 
   void init();
   void update(const unsigned char *buf, int len);
@@ -1210,24 +1220,24 @@ class sc_random
 class rc_core
 {
   public:
-  int mTask;                    /**< Task ID (what Malco was called for). */
-  int mRunMode;                 /**< Current run mode. */
-  int mErrorMode;               /**< Current error reporting mode. */
-  int mState;                   /**< Current state of execution. */
-  clock_t mStartTime;           /**< Radix start of execution. */
-  ic_string *mFile;             /**< Root file to be executed. */
+  int mTask;          /**< Task ID (what Malco was called for). */
+  int mRunMode;       /**< Current run mode. */
+  int mErrorMode;     /**< Current error reporting mode. */
+  int mState;         /**< Current state of execution. */
+  clock_t mStartTime; /**< Radix start of execution. */
+  ic_string *mFile;   /**< Root file to be executed. */
 
-  sc_ini *mSetup;               /**< Configuration. */
-  rc_parser *mParser;           /**< Source code parser pointer. */
-  rc_compiler *mCompiler;       /**< Compiler pointer. */
+  sc_ini *mSetup;         /**< Configuration. */
+  rc_parser *mParser;     /**< Source code parser pointer. */
+  rc_compiler *mCompiler; /**< Compiler pointer. */
 
-  ic_string *mSource;           /**< Source script. */
-  rc_head *mHead;               /**< Execution head. */
-  rc_tape *mTape;               /**< Execution tape. */
-  rc_strtable *mStrTable;       /**< Constant string table. */
-  rc_class *pClassRoot;         /**< Root class for object hierarchy. */
+  ic_string *mSource;     /**< Source script. */
+  rc_head *mHead;         /**< Execution head. */
+  rc_tape *mTape;         /**< Execution tape. */
+  rc_strtable *mStrTable; /**< Constant string table. */
+  rc_class *pClassRoot;   /**< Root class for object hierarchy. */
 
-  sc_voidmap *mPlugins;         /**< Core plugins. */
+  sc_voidmap *mPlugins; /**< Core plugins. */
 
   struct rc_classcache
   {
@@ -1248,7 +1258,7 @@ class rc_core
     rc_class *pClass;
     rc_class *pArray;
     rc_class *pException;
-  } mClassCache;                /**< Cache for built-in class pointers. */
+  } mClassCache; /**< Cache for built-in class pointers. */
 
   rc_core();
   ~rc_core();
@@ -1295,40 +1305,42 @@ class rc_core
 /**
  * @class rc_head
  * The Radix execution head class.
- * Represents an "execution head" class that traverses the bytecode "tape" and executes commands one by one.
- * It is defined as a separate class to make Malco easier to convert to multithreading when the time comes.
+ * Represents an "execution head" class that traverses the bytecode "tape" and
+ * executes commands one by one. It is defined as a separate class to make Malco
+ * easier to convert to multithreading when the time comes.
  */
 class rc_head
 {
   public:
-  char mFile[255];              /**< Current source file. */
-  long mLine;                   /**< Current source line. */
-  long mOffset;                 /**< Current command index. */
-  rc_cmd *pCmd;                 /**< Current command. */
+  char mFile[255]; /**< Current source file. */
+  long mLine;      /**< Current source line. */
+  long mOffset;    /**< Current command index. */
+  rc_cmd *pCmd;    /**< Current command. */
 
   rc_core *pCore;
-  long mStatLines;              /**< Number of lines processed. */
-  long mStatFiles;              /**< Number of files processed. */
-  long mStatCommands;           /**< Number of commands processed. */
-  clock_t mStartTime;           /**< Time of execution. */
+  long mStatLines;    /**< Number of lines processed. */
+  long mStatFiles;    /**< Number of files processed. */
+  long mStatCommands; /**< Number of commands processed. */
+  clock_t mStartTime; /**< Time of execution. */
 
   // register
-  rc_var *rAX;                  /**< AX register. */
+  rc_var *rAX; /**< AX register. */
 
   // accumulators
-  sc_queue rSRC;                /**< IN accumulator. */
-  sc_queue rDST;                /**< Assign variable queue. */
-  sc_stack rUS;                 /**< User stack. */
-  sc_voidarray rCS;             /**< Call stack. */
-  sc_voidlist rSS;              /**< Safe zone stack. */
+  sc_queue rSRC;    /**< IN accumulator. */
+  sc_queue rDST;    /**< Assign variable queue. */
+  sc_stack rUS;     /**< User stack. */
+  sc_voidarray rCS; /**< Call stack. */
+  sc_voidlist rSS;  /**< Safe zone stack. */
 
   // location info
-  sc_voidarray *mVars;          /**< Variable table for current execution point. */
-  rc_var *pCurrObj;             /**< Current object for casual execution. */
-  rc_class *pCurrClass;         /**< Current class / namespace for static execution. */
-  rc_class *pTmpClass;          /**< Temporarily selected class for calling stuff from sub-namespaces. */
+  sc_voidarray *mVars;  /**< Variable table for current execution point. */
+  rc_var *pCurrObj;     /**< Current object for casual execution. */
+  rc_class *pCurrClass; /**< Current class / namespace for static execution. */
+  rc_class *pTmpClass;  /**< Temporarily selected class for calling stuff from
+                           sub-namespaces. */
 
-  bool mExternalScope;          /**< Flag indicating that scope should not be removed. */
+  bool mExternalScope; /**< Flag indicating that scope should not be removed. */
 
   rc_head(rc_core *core);
   ~rc_head();
@@ -1340,7 +1352,7 @@ class rc_head
   void state_save();
   void state_load();
   rc_method *method_resolve(const char *name, rc_class *root);
-  void method_invoke(const char *name, rc_var *object = NULL, bool report=true);
+  void method_invoke(const char *name, rc_var *object = NULL, bool report = true);
   void method_invoke(rc_method *method, rc_var *object = NULL);
 
   void nsp_select(const char *name);
@@ -1498,16 +1510,17 @@ class rc_head
 class rc_headstate
 {
   public:
-  rc_var *rAX;                  /**< AX register state. */
+  rc_var *rAX; /**< AX register state. */
 
-  long mOffset;                 /**< State's command offset. */
+  long mOffset; /**< State's command offset. */
 
-  sc_voidarray *mVars;          /**< Variable table for state's execution point. */
-  rc_class *pStateClass;        /**< State's local namespace for execution. */
-  rc_class *pStateTmpClass;     /**< State's class / namespace for execution. */
-  rc_var *pStateObj;            /**< State's object for execution. */
+  sc_voidarray *mVars;      /**< Variable table for state's execution point. */
+  rc_class *pStateClass;    /**< State's local namespace for execution. */
+  rc_class *pStateTmpClass; /**< State's class / namespace for execution. */
+  rc_var *pStateObj;        /**< State's object for execution. */
 
-  bool mExternalScope;          /**< State's flag indicating that local scope should not be deleted. */
+  bool mExternalScope; /**< State's flag indicating that local scope should not
+                          be deleted. */
 };
 
 
@@ -1518,10 +1531,10 @@ class rc_headstate
 class rc_lexem
 {
   public:
-  char mType;                         /**< Lexem type. */
-  long mLine;                         /**< Lexem line. */
-  long mOffset;                       /**< Lexem position in line. */
-  long mParam;                        /**< Item ID in constant string table. */
+  char mType;   /**< Lexem type. */
+  long mLine;   /**< Lexem line. */
+  long mOffset; /**< Lexem position in line. */
+  long mParam;  /**< Item ID in constant string table. */
 
   rc_lexem(char type, long line, long offset, long param = 0);
 };
@@ -1530,15 +1543,16 @@ class rc_lexem
 /**
  * @class rc_parser
  * The Radix parser class.
- * Parses source code and generates a stream of lexems. Also generates constant value tables.
+ * Parses source code and generates a stream of lexems. Also generates constant
+ * value tables.
  */
 class rc_parser
 {
   public:
-  sc_voidarray mLexems;               /**< Lexem stream. */
-  long mLength;                       /**< Total length of the tape. */
-  long mLastLength;                   /**< Length of the tape's last buffer. */
-  long mLastBuf;                      /**< Number of buffers used in tape. */
+  sc_voidarray mLexems; /**< Lexem stream. */
+  long mLength;         /**< Total length of the tape. */
+  long mLastLength;     /**< Length of the tape's last buffer. */
+  long mLastBuf;        /**< Number of buffers used in tape. */
 
   rc_parser();
   ~rc_parser();
@@ -1571,18 +1585,19 @@ class rc_optimizer
 /**
  * @class rc_command
  * The RVM command class.
- * Stores information about a single command: it's type, table modifier and operand address.
+ * Stores information about a single command: it's type, table modifier and
+ * operand address.
  */
 class rc_cmd
 {
   public:
-  unsigned char mCmd;         /**< Command code. */
-  unsigned char mModifier;    /**< Parameter modifier. */
+  unsigned char mCmd;      /**< Command code. */
+  unsigned char mModifier; /**< Parameter modifier. */
   union
   {
     long addr;
     double val;
-  } mParam;                   /**< Parameter. */
+  } mParam; /**< Parameter. */
 };
 
 
@@ -1591,15 +1606,15 @@ class rc_cmd
  * The RVM command tape class.
  * Stores all the commands of the current executed script as buffers.
  */
-#define TAPE_BUF_SIZE       1024
-#define TAPE_CHUNK_SIZE     8
+constexpr int TAPE_BUF_SIZE   = 1024;
+constexpr int TAPE_CHUNK_SIZE = 8;
 class rc_tape
 {
   private:
-  sc_voidarray mTape;                 /**< Array of pointers. */
-  long mLength;                       /**< Total length of the tape. */
-  long mLastLength;                   /**< Length of the tape's last buffer. */
-  long mLastBuf;                      /**< Number of buffers used in tape. */
+  sc_voidarray mTape; /**< Array of pointers. */
+  long mLength;       /**< Total length of the tape. */
+  long mLastLength;   /**< Length of the tape's last buffer. */
+  long mLastBuf;      /**< Number of buffers used in tape. */
 
   public:
   rc_tape();
@@ -1631,9 +1646,10 @@ class rc_tape
 class rc_stritem
 {
   friend class rc_strtable;
+
   private:
-  char *mString;                      /**< String. */
-  long mLength;                       /**< String precomputed length. */
+  char *mString; /**< String. */
+  long mLength;  /**< String precomputed length. */
 
   rc_stritem();
   ~rc_stritem();
@@ -1645,15 +1661,15 @@ class rc_stritem
  * The RVM string table class.
  * Stores all constant strings for current script.
  */
-#define STRTABLE_BUF_SIZE       128
-#define STRTABLE_CHUNK_SIZE     8
+constexpr int STRTABLE_BUF_SIZE   = 128;
+constexpr int STRTABLE_CHUNK_SIZE = 8;
 class rc_strtable
 {
   private:
-  sc_voidarray mTable;                /**< Array of pointers. */
-  long mLength;                       /**< Total length of the table. */
-  long mLastLength;                   /**< Length of the table's last buffer. */
-  long mLastBuf;                      /**< Number of buffers used in table. */
+  sc_voidarray mTable; /**< Array of pointers. */
+  long mLength;        /**< Total length of the table. */
+  long mLastLength;    /**< Length of the table's last buffer. */
+  long mLastBuf;       /**< Number of buffers used in table. */
 
   public:
   rc_strtable();
@@ -1685,8 +1701,8 @@ class rc_strtable
 class rc_deftable
 {
   private:
-  rc_strtable mTable;               /**< Underlying string table to store formatted data. */
-  rc_core *pCore;                   /**< Pointer to core. */
+  rc_strtable mTable; /**< Underlying string table to store formatted data. */
+  rc_core *pCore;     /**< Pointer to core. */
 
   void declare_class(long idx);
   void declare_method(long idx);
@@ -1696,7 +1712,8 @@ class rc_deftable
   rc_deftable(rc_core *core);
 
   void add_class(const char *name, const char *parent, short props, const char *root);
-  void add_method(const char *name, const char *cls, short props, long point, long min_args, long max_args, bool splat, sc_voidarray *names);
+  void add_method(const char *name, const char *cls, short props, long point, long min_args, long max_args, bool splat,
+                  sc_voidarray *names);
   void add_property(const char *name, const char *cls, short props);
 
   void clear();
@@ -1717,18 +1734,19 @@ class rc_deftable
 class rc_class
 {
   public:
-  char *mName;                  /**< Class name. */
-  char *mFullName;              /**< Full class name, from root to current class. */
-  rc_class *pParent;            /**< Pointer to parent class. */
-  rc_class *pRoot;              /**< Pointer to root class. */
-  long mNumObjs;                /**< Total count of objects of this class. */
-  short mProperties;            /**< Bit set of class properties. */
+  char *mName;       /**< Class name. */
+  char *mFullName;   /**< Full class name, from root to current class. */
+  rc_class *pParent; /**< Pointer to parent class. */
+  rc_class *pRoot;   /**< Pointer to root class. */
+  long mNumObjs;     /**< Total count of objects of this class. */
+  short mProperties; /**< Bit set of class properties. */
 
-  sc_voidmap mClasses;          /**< Subclass table (rc_class). */
-  sc_voidmap mMethods;          /**< Method table (rc_method). */
-  sc_voidmap mMembers;          /**< Members table (rc_var). */
-  sc_voidmap mStaticMembers;    /**< Static members table (rc_var). */
-  int mDataType;                /**< Indicates ic_basic type if this class derives from a basic class. */
+  sc_voidmap mClasses;       /**< Subclass table (rc_class). */
+  sc_voidmap mMethods;       /**< Method table (rc_method). */
+  sc_voidmap mMembers;       /**< Members table (rc_var). */
+  sc_voidmap mStaticMembers; /**< Static members table (rc_var). */
+  int mDataType;             /**< Indicates ic_basic type if this class derives from a basic
+                                class. */
 };
 
 
@@ -1741,20 +1759,23 @@ class rc_class
 class rc_method
 {
   public:
-  const char *mName;              /**< Method name. */
-  rc_class *pClass;               /**< Class this method belongs to. */
-  short mProperties;              /**< Bit set of method properties. */
-  sc_voidarray mParams;           /**< Parameter names. */
+  const char *mName;    /**< Method name. */
+  rc_class *pClass;     /**< Class this method belongs to. */
+  short mProperties;    /**< Bit set of method properties. */
+  sc_voidarray mParams; /**< Parameter names. */
 
-  int mMinArgs;                   /**< Minimum number of acceptable arguments. */
-  int mMaxArgs;                   /**< Maximum number of acceptable arguments. */
-  bool mSplatArgs;                /**< A flag indicating unlimited number of arguments (they're splatted). */
+  int mMinArgs;    /**< Minimum number of acceptable arguments. */
+  int mMaxArgs;    /**< Maximum number of acceptable arguments. */
+  bool mSplatArgs; /**< A flag indicating unlimited number of arguments (they're
+                      splatted). */
 
-  bool mNative;                   /**< A flat indicating whether method is written in Malco or in C++. */
-  long mExecPoint;                /**< Start of method's code (Malco mode). */
-  native_func pNativeFunc;        /**< Pointer to native function (Native mode). */
+  bool mNative;            /**< A flat indicating whether method is written in Malco or in
+                              C++. */
+  long mExecPoint;         /**< Start of method's code (Malco mode). */
+  native_func pNativeFunc; /**< Pointer to native function (Native mode). */
 
-  sc_voidarray *pExternalScope;   /**< Used in case method is a lambda and is executed in parent scope. */
+  sc_voidarray *pExternalScope; /**< Used in case method is a lambda and is
+                                   executed in parent scope. */
 
   void setup(int min, int max = 0, bool splat = false, ...);
   void op();
@@ -1770,13 +1791,15 @@ class rc_method
 class rc_var
 {
   public:
+  // clang-format off
   //char *mName;          /**< Variable caption. */
-  void *pObj;           /**< Object the variable points at. */
-  short mProperties;    /**< Bit set of variable properties. */
+  void *pObj;        /**< Object the variable points at. */
+  short mProperties; /**< Bit set of variable properties. */
   long mLinks;
 
   //rc_var *pBaseVar;     /**< Base variable (if this variable is a property). */
   //rc_class *pBaseClass; /**< Class the variable belongs to. */
+  // clang-format on
 
   rc_var();
   rc_var(ic_object *obj);
@@ -1804,19 +1827,19 @@ class rc_rasm
   ic_string *get_error_filename();
 
   private:
-  rc_core *pCore;                 // Core instance.
+  rc_core *pCore; // Core instance.
 
-  rc_tape mTape;                  // Tape for compiled code.
-  rc_deftable mDefTable;          // Definition table.
-  rc_strtable mStrTable;          // String table.
+  rc_tape mTape;         // Tape for compiled code.
+  rc_deftable mDefTable; // Definition table.
+  rc_strtable mStrTable; // String table.
 
-  ic_string mCode;                // Source code.
-  ic_string mFileName;            // Source file name.
-  int mLineNumber;                // Source line number.
-  sc_voidarray mVariables;        // Local variable names (as char *).
-  sc_voidmap mLabelMap;           // label_name => (void *)command_number.
-  sc_voidarray mClassNameStack;   // Stack for class names (as char *).
-  ic_string *mCurrentMethodName;  // Last not closed method name.
+  ic_string mCode;               // Source code.
+  ic_string mFileName;           // Source file name.
+  int mLineNumber;               // Source line number.
+  sc_voidarray mVariables;       // Local variable names (as char *).
+  sc_voidmap mLabelMap;          // label_name => (void *)command_number.
+  sc_voidarray mClassNameStack;  // Stack for class names (as char *).
+  ic_string *mCurrentMethodName; // Last not closed method name.
 
   void process_line(ic_string *line);
   ic_string *get_current_class();
@@ -1833,15 +1856,15 @@ class rc_rasm
   static ic_string *extract_command_name(ic_string *line);
   static short extract_modifiers(ic_string *line);
 
-  static bool has_parameter(ic_string *line, int index=0);
-  static ic_string *extract_raw_parameter(ic_string *line, int index=0);
-  static int extract_int_parameter(ic_string *line, int index=0);
-  static double extract_float_parameter(ic_string *line, int index=0);
-  static ic_string *extract_string_parameter(ic_string *line, int index=0);
+  static bool has_parameter(ic_string *line, int index = 0);
+  static ic_string *extract_raw_parameter(ic_string *line, int index = 0);
+  static int extract_int_parameter(ic_string *line, int index = 0);
+  static double extract_float_parameter(ic_string *line, int index = 0);
+  static ic_string *extract_string_parameter(ic_string *line, int index = 0);
 
-  static bool is_parameter_int(ic_string *line, int index=0);
-  static bool is_parameter_float(ic_string *line, int index=0);
-  static bool is_parameter_string(ic_string *line, int index=0);
+  static bool is_parameter_int(ic_string *line, int index = 0);
+  static bool is_parameter_float(ic_string *line, int index = 0);
+  static bool is_parameter_string(ic_string *line, int index = 0);
 
   static void solve_escape_seq(ic_string *line);
 };

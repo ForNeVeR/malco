@@ -16,9 +16,9 @@
 
 ic_range::ic_range(long start, long end)
 {
-  mStart = start;
-  mEnd = end;
-  mCurr = 0;
+  mStart    = start;
+  mEnd      = end;
+  mCurr     = 0;
   mFinished = false;
 }
 
@@ -37,9 +37,9 @@ ic_range::ic_range(const char *str)
  */
 void ic_range::set(const char *str)
 {
-  mStart = atol(str);
-  mEnd = atol(strstr(str, "..")+2);
-  mCurr = 0;
+  mStart    = atol(str);
+  mEnd      = atol(strstr(str, "..") + 2);
+  mCurr     = 0;
   mFinished = false;
 }
 
@@ -70,10 +70,9 @@ inline bool ic_range::contains(double value)
  */
 inline int ic_range::compare(ic_range *obj)
 {
-  long first = labs(mStart - mEnd);
+  long first  = labs(mStart - mEnd);
   long second = labs(obj->mStart - obj->mEnd);
-  if(first == second)
-    return 0;
+  if(first == second) return 0;
   if(first > second)
     return -1;
   else
@@ -111,7 +110,7 @@ long ic_range::iter_next()
 inline void ic_range::iter_rewind()
 {
   mFinished = false;
-  mCurr = 0;
+  mCurr     = 0;
 }
 
 /**
@@ -142,7 +141,7 @@ const char *ic_range::to_s()
   delete mStrBuf;
 
   // determine approx buffer size
-  char bufsize = 15, idx=0;
+  char bufsize = 15, idx = 0;
   if(mStart > 100000 || mStart < -100000) bufsize += 5;
   if(mEnd > 100000 || mEnd < -100000) bufsize += 5;
   mStrBuf = new char[bufsize];
@@ -153,8 +152,8 @@ const char *ic_range::to_s()
   std::strncpy(mStrBuf, number.c_str(), 10);
 
   // add dots
-  for(idx=0; idx<20; idx++)
-    if(*(mStrBuf+idx) == '\0') break;
+  for(idx = 0; idx < 20; idx++)
+    if(*(mStrBuf + idx) == '\0') break;
   strcpy(mStrBuf + idx, "..");
 
   number = std::to_string(mEnd);
@@ -181,9 +180,9 @@ ic_range &ic_range::operator=(const char *str)
  */
 ic_range &ic_range::operator=(ic_range &right)
 {
-  mStart = right.mStart;
-  mEnd = right.mEnd;
-  mCurr = right.mCurr;
+  mStart    = right.mStart;
+  mEnd      = right.mEnd;
+  mCurr     = right.mCurr;
   mFinished = right.mFinished;
   return *this;
 }
@@ -203,7 +202,7 @@ inline bool ic_range::operator==(ic_range &right)
  * @param right ic_range to be compared.
  * @return bool
  */
- inline bool ic_range::operator!=(ic_range &right)
+inline bool ic_range::operator!=(ic_range &right)
 {
   return compare(&right) != 0;
 }

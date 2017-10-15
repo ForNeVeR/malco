@@ -14,7 +14,7 @@
  */
 ic_float::ic_float(double value)
 {
-  mValue = value;
+  mValue  = value;
   mStrBuf = NULL;
 }
 
@@ -52,11 +52,11 @@ const char *ic_float::to_s()
 {
   delete mStrBuf;
 
-  mStrBuf = new char[32];
+  mStrBuf  = new char[32];
   char len = sprintf(mStrBuf, "%.10f", mValue) - 1;
 
   // trim off trailing zeroes
-  while(len > 1 && mStrBuf[len] == '0' && mStrBuf[len-1] != '.')
+  while(len > 1 && mStrBuf[len] == '0' && mStrBuf[len - 1] != '.')
   {
     mStrBuf[len] = '\0';
     len--;

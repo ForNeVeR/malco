@@ -101,7 +101,7 @@ inline bool sc_file::remove(ic_string *name)
  */
 char *sc_file::checksum(const char *name)
 {
-  ic_int mtime = sc_file::time(name);
+  ic_int mtime  = sc_file::time(name);
   ic_string str = mtime.to_s();
   sc_md5 md5;
 
@@ -116,7 +116,7 @@ char *sc_file::checksum(const char *name)
  */
 char *sc_file::checksum(ic_string *name)
 {
-  ic_int mtime = sc_file::time(name);
+  ic_int mtime  = sc_file::time(name);
   ic_string str = mtime.to_s();
   sc_md5 md5;
 
@@ -124,7 +124,6 @@ char *sc_file::checksum(ic_string *name)
   strncpy(sc_file::mStrBuf, md5.string(&str), 15);
   return sc_file::mStrBuf;
 }
-
 
 
 #endif

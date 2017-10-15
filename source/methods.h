@@ -188,21 +188,21 @@ void string_has(rc_head *head);
 void string_case_up(rc_head *head);
 void string_case_down(rc_head *head);
 void string_case_swap(rc_head *head);
-void string_case_fix(rc_head *head);                  // <<< todo
+void string_case_fix(rc_head *head); // <<< todo
 void string_case_up_do(rc_head *head);
 void string_case_down_do(rc_head *head);
 void string_case_swap_do(rc_head *head);
-void string_case_fix_do(rc_head *head);               // <<< todo
+void string_case_fix_do(rc_head *head); // <<< todo
 void string_chars(rc_head *head);
 void string_lines(rc_head *head);
 void string_translate(rc_head *head);
 void string_translate_do(rc_head *head);
-void string_is_alnum(rc_head *head);                  // <<< todo
-void string_is_alpha(rc_head *head);                  // <<< todo
-void string_is_ascii(rc_head *head);                  // <<< todo
-void string_is_digit(rc_head *head);                  // <<< todo
-void string_is_print(rc_head *head);                  // <<< todo
-void string_is_upper(rc_head *head);                  // <<< todo
+void string_is_alnum(rc_head *head); // <<< todo
+void string_is_alpha(rc_head *head); // <<< todo
+void string_is_ascii(rc_head *head); // <<< todo
+void string_is_digit(rc_head *head); // <<< todo
+void string_is_print(rc_head *head); // <<< todo
+void string_is_upper(rc_head *head); // <<< todo
 void string_to_b(rc_head *head);
 void string_to_f(rc_head *head);
 void string_to_i(rc_head *head);
@@ -386,16 +386,16 @@ void array_next_key(rc_head *head);
 void array_next_pair(rc_head *head);
 void array_rewind(rc_head *head);
 void array_find(rc_head *head);
-void array_flip(rc_head *head);                       // <<< todo
-void array_flip_do(rc_head *head);                    // <<< todo
+void array_flip(rc_head *head);    // <<< todo
+void array_flip_do(rc_head *head); // <<< todo
 void array_sort(rc_head *head);
 void array_sort_do(rc_head *head);
 void array_sort_quick(rc_head *head);
 void array_sort_quick_do(rc_head *head);
 void array_sort_shell(rc_head *head);
 void array_sort_shell_do(rc_head *head);
-void array_sort_by(rc_head *head);                    // <<< todo
-void array_sort_by_do(rc_head *head);                 // <<< todo
+void array_sort_by(rc_head *head);    // <<< todo
+void array_sort_by_do(rc_head *head); // <<< todo
 void array_shuffle(rc_head *head);
 void array_shuffle_do(rc_head *head);
 void array_map_do(rc_head *head);
@@ -418,8 +418,8 @@ void array_collect(rc_head *head);
 void array_pop_do(rc_head *head);
 void array_push_do(rc_head *head);
 void array_clear_do(rc_head *head);
-void array_reverse(rc_head *head);                    // <<< todo
-void array_reverse_do(rc_head *head);                 // <<< todo
+void array_reverse(rc_head *head);    // <<< todo
+void array_reverse_do(rc_head *head); // <<< todo
 void array_zip(rc_head *head);
 void array_zip_do(rc_head *head);
 void array_min(rc_head *head);
@@ -494,7 +494,7 @@ void malco_release(rc_head *head);
 void malco_version(rc_head *head);
 void malco_unicode(rc_head *head);
 void malco_copyright(rc_head *head);
-void malco_modules(rc_head *head);                    // <<< todo
+void malco_modules(rc_head *head); // <<< todo
 void malco_error_mode(rc_head *head);
 void malco_how_to_create_explosives(rc_head *head);
 

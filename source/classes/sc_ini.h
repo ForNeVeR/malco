@@ -15,8 +15,7 @@
 sc_ini_section::sc_ini_section(const char *name)
 {
   mName = new char[std::strlen(name) + 1];
-  if(!mName)
-    ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
+  if(!mName) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   std::strcpy(mName, name);
 }
 
@@ -34,12 +33,11 @@ sc_ini_section::~sc_ini_section()
  */
 sc_ini::sc_ini()
 {
-  section_count = 0;
+  section_count     = 0;
   last_section_name = new char[1];
-  if(!last_section_name)
-    ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
+  if(!last_section_name) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   last_section_name[0] = '\0';
-  mFilename = NULL;
+  mFilename            = NULL;
 }
 
 /**
@@ -49,7 +47,7 @@ sc_ini::sc_ini()
  */
 sc_ini::sc_ini(const char *filename)
 {
-  section_count = 0;
+  section_count     = 0;
   last_section_name = NULL;
   // We don't need to fill last_section_name here because file_load will do it.
   mFilename = NULL;
@@ -62,10 +60,10 @@ sc_ini::sc_ini(const char *filename)
 sc_ini::~sc_ini()
 {
   for(long i = 0; i < sections.length(); i++)
-    delete (sc_ini_section *) sections[i];
+    delete(sc_ini_section *)sections[i];
 
-  delete [] last_section_name;
-  delete [] mFilename;
+  delete[] last_section_name;
+  delete[] mFilename;
 }
 
 /**
@@ -77,25 +75,23 @@ void sc_ini::file_load(const char *filename)
   // clean contents of previous ini and re-init some fields
   for(long i = 0; i < sections.length(); i++)
   {
-    delete (sc_ini_section *) sections[i];
+    delete(sc_ini_section *)sections[i];
     sections.del(i);
   }
 
   delete[] last_section_name;
   last_section_name = new char[1];
-  if(!last_section_name)
-    ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
+  if(!last_section_name) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   last_section_name[0] = '\0';
 
   if(mFilename)
   {
-    delete [] mFilename;
+    delete[] mFilename;
     mFilename = NULL;
   }
 
   mFilename = new char[strlen(filename) + 1];
-  if(!mFilename)
-    ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
+  if(!mFilename) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   strcpy(mFilename, filename);
 
   // fill this object with new contents
@@ -118,21 +114,21 @@ void sc_ini::file_load(const char *filename)
     {
       switch(line->char_at(0))
       {
-      case ';': // comment
-        break;
-      case '[':
-        if(line->char_at(line->length() - 1) == ']')
-        // not properly-named value or section else; ignoring
-        {
-          ic_string *old_line = line;
-          line = old_line->substr_get(1, old_line->length() - 2);
-          delete old_line;
-          line->trim(); // here we got name of section in line
+        case ';': // comment
+          break;
+        case '[':
+          if(line->char_at(line->length() - 1) == ']')
+          // not properly-named value or section else; ignoring
+          {
+            ic_string *old_line = line;
+            line                = old_line->substr_get(1, old_line->length() - 2);
+            delete old_line;
+            line->trim(); // here we got name of section in line
 
-          add_section(line->get());
-        }
-        break;
-      default: // value name
+            add_section(line->get());
+          }
+          break;
+        default: // value name
         {
           long equal_pos = line->substr_first("="); // position of = sign
           if(equal_pos > 0)
@@ -143,7 +139,8 @@ void sc_ini::file_load(const char *filename)
             ic_string *value = line->substr_get(equal_pos + 1);
             value->ltrim();
 
-            set_value(param_name->get(), value->get()); // adds parameter into last opened section
+            set_value(param_name->get(),
+                      value->get()); // adds parameter into last opened section
 
             delete param_name;
             delete value;
@@ -162,8 +159,7 @@ void sc_ini::file_load(const char *filename)
  */
 void sc_ini::file_save(const char *filename)
 {
-  if(filename == NULL)
-    filename = mFilename;
+  if(filename == NULL) filename = mFilename;
 
   // TODO: Exception if mFilename == NULL
   ic_string file_content;
@@ -174,7 +170,7 @@ void sc_ini::file_save(const char *filename)
     for(long j = 0; j < param_names->length(); j++)
     {
       file_content << (char *)param_names->mPtr[j] << "="
-        << ((sc_ini_section *)sections[i])->params[(char *)param_names->mPtr[j]] << "\n";
+                   << ((sc_ini_section *)sections[i])->params[(char *)param_names->mPtr[j]] << "\n";
     }
     delete param_names;
   }
@@ -191,8 +187,7 @@ sc_voidarray *sc_ini::get_sections()
   for(long i = 0; i < section_count; i++)
   {
     char *section_name = new char[std::strlen(((sc_ini_section *)sections[i])->mName) + 1];
-    if(!section_name)
-      ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
+    if(!section_name) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
     std::strcpy(section_name, ((sc_ini_section *)sections[i])->mName);
     result->add(section_name);
   }
@@ -201,8 +196,10 @@ sc_voidarray *sc_ini::get_sections()
 
 
 /**
- * Returns sc_voidarray that contains section parameter names collection as char *.
- * @param section_name Name of section, parameter names of which you want to extract.
+ * Returns sc_voidarray that contains section parameter names collection as char
+ * *.
+ * @param section_name Name of section, parameter names of which you want to
+ * extract.
  */
 sc_voidarray *sc_ini::get_params(const char *section_name)
 {
@@ -216,10 +213,12 @@ sc_voidarray *sc_ini::get_params(const char *section_name)
 }
 
 /**
- * Returns parameter value from section or default value if parameter doesn't exists.
+ * Returns parameter value from section or default value if parameter doesn't
+ * exists.
  * @param param_name Name of parameter.
  * @param section_name Name of section.
- * @param default_value Default value of parameter (will be returned if parameter doesn't exists).
+ * @param default_value Default value of parameter (will be returned if
+ * parameter doesn't exists).
  */
 ic_string *sc_ini::get_value(const char *param_name, const char *section_name, const char *default_value)
 {
@@ -233,7 +232,8 @@ ic_string *sc_ini::get_value(const char *param_name, const char *section_name, c
 
 /**
  * Sets parameter value.
- * @note Changes do not placed in file by this method; you need to call file_save() for it.
+ * @note Changes do not placed in file by this method; you need to call
+ * file_save() for it.
  * @param param_name Name of parameter.
  * @param value New value of parameter.
  * @param section_name Name of section.
@@ -259,11 +259,9 @@ void sc_ini::del_param(const char *param_name, const char *section_name)
 
   if(section_name)
   {
-    if(last_section_name)
-      delete[] last_section_name;
+    if(last_section_name) delete[] last_section_name;
     last_section_name = new char[strlen(section_name) + 1];
-    if(!last_section_name)
-      ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
+    if(!last_section_name) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
     strcpy(last_section_name, section_name);
   }
 }
@@ -275,8 +273,7 @@ void sc_ini::del_param(const char *param_name, const char *section_name)
 void sc_ini::del_section(const char *section_name)
 {
   long section_index = find_section(section_name);
-  if(section_index != -1)
-    sections.del(section_index);
+  if(section_index != -1) sections.del(section_index);
 }
 
 // Next methods are private, so don't need to document them.
@@ -293,8 +290,7 @@ long sc_ini::find_section(const char *section_name)
 
   for(long i = 0; i < section_count; i++)
   {
-    if(std::strcmp(((sc_ini_section *)sections[i])->mName, last_section_name) == 0)
-      return i;
+    if(std::strcmp(((sc_ini_section *)sections[i])->mName, last_section_name) == 0) return i;
   }
   return -1;
 }
@@ -304,8 +300,7 @@ long sc_ini::find_section(const char *section_name)
 sc_ini_section *sc_ini::add_section(const char *section_name)
 {
   long section_index = find_section(section_name);
-  if(section_index != -1)
-    return (sc_ini_section *)sections[section_index];
+  if(section_index != -1) return (sc_ini_section *)sections[section_index];
 
   sections.add(new sc_ini_section(section_name));
   return (sc_ini_section *)sections[section_count++];

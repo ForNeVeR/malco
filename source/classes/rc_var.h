@@ -13,11 +13,11 @@
  */
 rc_var::rc_var()
 {
-//  mName = NULL;
+  //  mName = NULL;
   mProperties = 0;
-  mLinks = 1;
-  //pBaseVar = NULL;
-  //pBaseClass = NULL;
+  mLinks      = 1;
+  // pBaseVar = NULL;
+  // pBaseClass = NULL;
   pObj = NULL;
 }
 
@@ -26,11 +26,11 @@ rc_var::rc_var()
  */
 rc_var::rc_var(ic_object *obj)
 {
-  //mName = NULL;
+  // mName = NULL;
   mProperties = M_PROP_CONST;
-  mLinks = 1;
-  //pBaseVar = NULL;
-  //pBaseClass = NULL;
+  mLinks      = 1;
+  // pBaseVar = NULL;
+  // pBaseClass = NULL;
   pObj = (void *)obj;
   obj->mLinks++;
 }
@@ -40,11 +40,11 @@ rc_var::rc_var(ic_object *obj)
  */
 rc_var::rc_var(rc_var *obj)
 {
-  //mName = NULL;
+  // mName = NULL;
   mProperties = M_PROP_LINK;
-  mLinks = 1;
-  //pBaseVar = NULL;
-  //pBaseClass = NULL;
+  mLinks      = 1;
+  // pBaseVar = NULL;
+  // pBaseClass = NULL;
   pObj = (void *)obj;
   obj->mLinks++;
 }

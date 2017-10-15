@@ -13,9 +13,9 @@
  */
 void regex_op_create(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = (item_var ? item_var->get() : NULL);
+  ic_object *item  = (item_var ? item_var->get() : NULL);
 
   if(item)
   {
@@ -40,9 +40,9 @@ void regex_op_create(rc_head *head)
  */
 void regex_op_cmp_bool(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   bool left = ((ic_regex *)obj->mData)->to_b(), right = ((ic_bool *)item->mData)->mValue;
   char result = (left == right ? 0 : (left ? -1 : 1));
   head->rSRC.push(head->new_int(result));
@@ -54,9 +54,9 @@ void regex_op_cmp_bool(rc_head *head)
  */
 void regex_op_cmp_regex(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
+  ic_object *item  = item_var->get();
   const char *left = ((ic_regex *)obj->mData)->to_s(), *right = ((ic_regex *)item->mData)->to_s();
   char result = strcmp(left, right);
   head->rSRC.push(head->new_int(result));
@@ -68,10 +68,10 @@ void regex_op_cmp_regex(rc_head *head)
  */
 void regex_op_cmp_string(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj   = head->pCurrObj->get();
   rc_var *item_var = head->rSRC.pop();
-  ic_object *item = item_var->get();
-  const char *str = ((ic_regex *)obj->mData)->to_s();
+  ic_object *item  = item_var->get();
+  const char *str  = ((ic_regex *)obj->mData)->to_s();
   // note the -1 part to reverse values, as item is at rightside
   char result = ((ic_string *)item->mData)->compare(str) * (-1);
   head->rSRC.push(head->new_int(result));
@@ -83,9 +83,9 @@ void regex_op_cmp_string(rc_head *head)
  */
 void regex_match(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   rc_var *str_var = head->rSRC.pop();
-  ic_object *str = str_var->get();
+  ic_object *str  = str_var->get();
 
   if(head->pCore->class_type(str->pClass) == M_CLASS_STRING)
   {
@@ -113,7 +113,7 @@ void regex_study(rc_head *head)
 void regex_to_b(rc_head *head)
 {
   ic_object *obj = head->pCurrObj->get();
-  bool val = ((ic_regex *)obj->mData)->to_b();
+  bool val       = ((ic_regex *)obj->mData)->to_b();
   head->rSRC.push(head->new_bool(val, obj->mTainted));
 }
 
@@ -122,7 +122,7 @@ void regex_to_b(rc_head *head)
  */
 void regex_to_s(rc_head *head)
 {
-  ic_object *obj = head->pCurrObj->get();
+  ic_object *obj  = head->pCurrObj->get();
   const char *str = ((ic_regex *)obj->mData)->to_s();
   head->rSRC.push(head->new_string(str, obj->mTainted));
 }

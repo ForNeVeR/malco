@@ -12,7 +12,6 @@
  */
 bool ic_dir::copy_r(const char *from, const char *to)
 {
-
 }
 
 /**
@@ -22,7 +21,6 @@ bool ic_dir::copy_r(const char *from, const char *to)
  */
 bool ic_dir::remove_r(const char *name)
 {
-
 }
 
 /**
@@ -32,7 +30,6 @@ bool ic_dir::remove_r(const char *name)
  */
 bool ic_dir::copy(const char *name)
 {
-
 }
 
 /**
@@ -52,7 +49,6 @@ bool ic_dir::copy(ic_string *name)
  */
 bool ic_dir::rename(const char *name)
 {
-
 }
 
 /**
@@ -71,7 +67,6 @@ bool ic_dir::rename(ic_string *name)
  */
 bool ic_dir::create()
 {
-
 }
 
 /**
@@ -80,7 +75,6 @@ bool ic_dir::create()
  */
 bool ic_dir::remove()
 {
-
 }
 
 /**
@@ -89,7 +83,6 @@ bool ic_dir::remove()
  */
 long ic_dir::length()
 {
-
 }
 
 /**
@@ -98,13 +91,11 @@ long ic_dir::length()
  */
 ic_string *ic_dir::iter_next()
 {
-
 }
- 
+
 /**
  * Rewinds the directory iterator,
  */
 void ic_dir::iter_rewind()
 {
-
 }

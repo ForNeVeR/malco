@@ -16,9 +16,9 @@
  */
 ic_regex::ic_regex()
 {
-  mPattern = NULL;
+  mPattern     = NULL;
   mErrorOffset = -1;
-  mOptions = 0;
+  mOptions     = 0;
 }
 
 /**
@@ -27,9 +27,9 @@ ic_regex::ic_regex()
  */
 ic_regex::ic_regex(const char *pattern)
 {
-  mPattern = NULL;
+  mPattern     = NULL;
   mErrorOffset = -1;
-  mOptions = 0;
+  mOptions     = 0;
 
   set(pattern);
 }
@@ -38,11 +38,11 @@ ic_regex::ic_regex(const char *pattern)
  * ic_regex copy constructor.
  * @param regex Pointer to source regex.
  */
-ic_regex::ic_regex(ic_regex* regex)
+ic_regex::ic_regex(ic_regex *regex)
 {
-  mPattern = NULL;
+  mPattern     = NULL;
   mErrorOffset = -1;
-  mOptions = 0;
+  mOptions     = 0;
 
   set(regex->mPattern);
 }
@@ -64,10 +64,10 @@ void ic_regex::set(const char *pattern)
 }
 
 /**
-* Assigns a new regular expression.
-* @param pattern Pointer to source string to be compiled.
-* @param flags Initial flags of the regex.
-*/
+ * Assigns a new regular expression.
+ * @param pattern Pointer to source string to be compiled.
+ * @param flags Initial flags of the regex.
+ */
 void ic_regex::set(const char *pattern, std::regex::flag_type flags)
 {
   // validate pattern
@@ -77,14 +77,14 @@ void ic_regex::set(const char *pattern, std::regex::flag_type flags)
   if(*pattern != '/')
   {
     mErrorOffset = -1;
-    pError = "Illegal regex syntax";
+    pError       = "Illegal regex syntax";
     return;
   }
 
   // scan for modifiers and closing slash
-  for(idx=new_len-1; idx>=0; idx--)
+  for(idx = new_len - 1; idx >= 0; idx--)
   {
-    chr = *(pattern+idx);
+    chr = *(pattern + idx);
     if(chr == 'i')
     {
       flags |= std::regex::icase;
@@ -101,37 +101,40 @@ void ic_regex::set(const char *pattern, std::regex::flag_type flags)
 
     // error occured
     mErrorOffset = -1;
-    pError = "Illegal regex modifier";
+    pError       = "Illegal regex modifier";
     return;
   }
 
   if(idx == 0)
   {
     mErrorOffset = -1;
-    pError = "Ending slash not found";
+    pError       = "Ending slash not found";
     return;
   }
 
   if(idx == 1)
   {
     mErrorOffset = -1;
-    pError = "Regex is empty";
+    pError       = "Regex is empty";
     return;
   }
 
   // store data
-  delete [] mPattern;
-  
-  mPattern = new char[new_len+1];
+  delete[] mPattern;
+
+  mPattern = new char[new_len + 1];
   if(!mPattern) ERROR(M_ERR_NO_MEMORY, M_EMODE_ERROR);
   strcpy(mPattern, pattern);
   mOptions = flags;
 
   // compile regular expression
   const auto tmp_buf = std::string(pattern + 1, idx - 1);
-  try {
+  try
+  {
     mRegEx = std::regex(tmp_buf, flags);
-  } catch (const std::regex_error &error) {
+  }
+  catch(const std::regex_error &error)
+  {
     pError = error.what();
     ERROR(M_ERR_BAD_REGEXP, M_EMODE_ERROR);
   }
@@ -146,26 +149,25 @@ void ic_regex::set(const char *pattern, std::regex::flag_type flags)
  */
 ic_match *ic_regex::match(const char *str, int offset, long len)
 {
-  if(mPattern == nullptr)
-    ERROR(M_ERR_BAD_REGEXP, M_EMODE_ERROR);
+  if(mPattern == nullptr) ERROR(M_ERR_BAD_REGEXP, M_EMODE_ERROR);
 
   if(!len) len = strlen(str);
 
   auto match = std::unique_ptr<ic_match>(new ic_match());
 
   auto search = std::cregex_iterator(str + offset, str + len, mRegEx);
-  auto end = std::cregex_iterator();
-  auto count = 0;
+  auto end    = std::cregex_iterator();
+  auto count  = 0;
   for(auto i = 0; i < REGEX_MAX_MATCHES && search != end; ++i, ++search)
   {
     ++count;
-    auto begin = offset + search->position();
-    auto end = begin + search->length();
-    match->mMatches[i * 2] = begin;
+    auto begin                 = offset + search->position();
+    auto end                   = begin + search->length();
+    match->mMatches[i * 2]     = begin;
     match->mMatches[i * 2 + 1] = end;
   }
-  
-  match->mCount = count;
+
+  match->mCount  = count;
   match->pString = str;
   return match.release();
 }
@@ -248,10 +250,10 @@ ic_regex &ic_regex::operator=(const char *right)
  */
 ic_regex &ic_regex::operator=(ic_regex &right)
 {
-  mPattern = NULL;
-  pError = NULL;
+  mPattern     = NULL;
+  pError       = NULL;
   mErrorOffset = -1;
-  mOptions = 0;
+  mOptions     = 0;
 
   set(right.mPattern);
 
@@ -263,7 +265,7 @@ ic_regex &ic_regex::operator=(ic_regex &right)
  * @param right String to be compared.
  * @return bool
  */
-bool ic_regex::operator== (ic_regex &right)
+bool ic_regex::operator==(ic_regex &right)
 {
   return strcmp(mPattern, right.mPattern) == 0;
 }
@@ -273,7 +275,7 @@ bool ic_regex::operator== (ic_regex &right)
  * @param right String to be compared.
  * @return bool
  */
-bool ic_regex::operator!= (ic_regex &right)
+bool ic_regex::operator!=(ic_regex &right)
 {
   return strcmp(mPattern, right.mPattern) != 0;
 }
